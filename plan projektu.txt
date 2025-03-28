@@ -1,21 +1,36 @@
-Pola - wierzchołki startowe (źródła):
-a) położenie
-b) ile wyrasta jęczmienia średnio (w każdym tyle samo na ćwiartkę)
-Browary:
-a) położenie?
-b) ile może przetworzyć jęczmienia
-c) ile uzyskuje się piwa z tony jęczmienia (w każdym tyle samo)
-Karczmy - wierzchołki końcowe (ujścia):
-a) położenie?
-Mapa - drogi:
-a) ilość zboża oraz piwa, którą można przewieźć między skrzyżowaniami
+Node (węzeł):
+a) położenie (punkt na płaszczyźnie)
+b) maksymalna przepustowość
+c) obecne wykorzystanie przepustowości
+źródło S - początkowa rezerwa jęczmienia
+ujście T - końcowy odbiór piwa przez karczmy
+źródło S i ujście T to będą Node, które nie mają limitów przepustowości
+
+Field P (pole) - dziedziczy z Node, zawiera dodatkowo:
+b) określona produkcja (w każdym tyle samo na ćwiartkę) - przepustowość krawędzi z S do pól
+
+Brewery B (browar) - dziedziczy z Node, przetwarza jęczmień na piwo; zawiera dodatkowo:
+b) maksymalna pojemność przetwarzania jęczmienia (dla dróg z i do B)
+c) przelicznik konwersji piwa z tony jęczmienia (w każdym tyle samo)
+
+Intersection X (skrzyżowanie) - dziedziczy z Node, zawiera:
+b) limity przepustowości (dla każdej drogi z X)
+
+Road (droga) - inaczej krawędź w grafie; zawiera:
+a) Node początkowy
+b) Node końcowy
+c) maksymalną przepustowość generowaną na podstawie wierzchołków, między którymi jest poprowadzona
+
+Pub (karczma) - dziedziczy z Node, zawsze prowadzi do T;
+
+Map - będzie zawierać wszystkie Node'y i Road'y
 
 Cel: Znalezienie maksymalnej ilości trunku, jaką można dostarczyć do karczm.
 
 
 Część 2:
-Mapa:
-b) koszt naprawy (np. na podstawie długości drogi)
+Do każdego Road'a trzeba dodać:
++ koszt naprawy
 
 Cel: minimalny koszt połączenia wszystkich wierzchołków przy tej samej ilości piwa dostarczanego do karczm
 
