@@ -1,13 +1,12 @@
 Node (węzeł):
 a) położenie (punkt na płaszczyźnie)
 b) maksymalna przepustowość
-c) obecne wykorzystanie przepustowości
 źródło S - początkowa rezerwa jęczmienia
 ujście T - końcowy odbiór piwa przez karczmy
 źródło S i ujście T to będą Node, które nie mają limitów przepustowości
 
-Field P (pole) - dziedziczy z Node, zawiera dodatkowo:
-b) określona produkcja (w każdym tyle samo na ćwiartkę) - przepustowość krawędzi z S do pól
+Field F (pole) - dziedziczy z Node;
+określona produkcja (w każdym tyle samo na ćwiartkę) - przepustowość z S do F
 
 Brewery B (browar) - dziedziczy z Node; 
 punkt, po którego osiągnięciu towar zostanie przemnożony przez licznik; 
@@ -20,10 +19,12 @@ b) limity przepustowości (dla każdej drogi z X)
 
 Pub (karczma) - dziedziczy z Node, zawsze prowadzi do T;
 
+wektor wektorów Road będzie listą sąsiedztwa trzymającą początkowe Node'y
 Road (droga) - inaczej krawędź w grafie; zawiera:
-a) Node początkowy
-b) Node końcowy
-c) maksymalną przepustowość generowaną na podstawie wierzchołków, między którymi jest poprowadzona
+a) Node końcowy
+b) maksymalną przepustowość generowaną na podstawie wierzchołków, między którymi jest poprowadzona
+c) pozostałą przepustowość
+d) koszt naprawy
 raczej będzie trzymana w Map jako struct
 
 Map:
