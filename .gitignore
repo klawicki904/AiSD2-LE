@@ -1,2 +1,8 @@
-# ignore the auto-generated .vs file (can grow huge quickly)
-.vs
+# ignore everything inside source CPP directory
+source CPP/
+# whitelist all cpp and header files inside source CPP directory
+!source CPP/*.cpp
+!source CPP/*.h
+!source CPP/*.sln
+!source CPP/*.vcxproj
+!source CPP/*.vcxproj.filters

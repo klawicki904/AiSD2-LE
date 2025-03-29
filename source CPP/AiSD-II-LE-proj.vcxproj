@@ -127,11 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AiSD-II-LE-proj.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Field.cpp" />
+    <ClCompile Include="Node.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Field.h" />
+    <ClInclude Include="Node.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

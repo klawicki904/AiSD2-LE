@@ -9,21 +9,27 @@ ujście T - końcowy odbiór piwa przez karczmy
 Field P (pole) - dziedziczy z Node, zawiera dodatkowo:
 b) określona produkcja (w każdym tyle samo na ćwiartkę) - przepustowość krawędzi z S do pól
 
-Brewery B (browar) - dziedziczy z Node, przetwarza jęczmień na piwo; zawiera dodatkowo:
+Brewery B (browar) - dziedziczy z Node; 
+punkt, po którego osiągnięciu towar zostanie przemnożony przez licznik; 
+zawiera dodatkowo:
 b) maksymalna pojemność przetwarzania jęczmienia (dla dróg z i do B)
 c) przelicznik konwersji piwa z tony jęczmienia (w każdym tyle samo)
 
 Intersection X (skrzyżowanie) - dziedziczy z Node, zawiera:
 b) limity przepustowości (dla każdej drogi z X)
 
+Pub (karczma) - dziedziczy z Node, zawsze prowadzi do T;
+
 Road (droga) - inaczej krawędź w grafie; zawiera:
 a) Node początkowy
 b) Node końcowy
 c) maksymalną przepustowość generowaną na podstawie wierzchołków, między którymi jest poprowadzona
+raczej będzie trzymana w Map jako struct
 
-Pub (karczma) - dziedziczy z Node, zawsze prowadzi do T;
-
-Map - będzie zawierać wszystkie Node'y i Road'y
+Map:
+zawiera funkcję main;
+będzie pobierać informacje o Node'ach i na ich podstawie stworzy Road'y i da rozwiązania zadań;
+będzie zawierać wszystkie Node'y i Road'y
 
 Cel: Znalezienie maksymalnej ilości trunku, jaką można dostarczyć do karczm.
 
@@ -33,11 +39,14 @@ Do każdego Road'a trzeba dodać:
 + koszt naprawy
 
 Cel: minimalny koszt połączenia wszystkich wierzchołków przy tej samej ilości piwa dostarczanego do karczm
-
+dodać do algorytmu na maksymalny przepływ z zajęć usuwanie cykli o ujemnym koszcie, bo "przepływ jest przepływem o minimalnym koszcie <=> w sieci residualnej nie ma cyklu o ujemnym koszcie" (wykład)
+https://en.wikipedia.org/wiki/Minimum-cost_flow_problem
 
 
 Część 3:
-Miasto:
-4 części: 
-a) współrzędne graniczne każdej części
-b) ilość jęczmienia wyrastająca na jednym polu
+Dane są:
+- ilość części, na które zostało podzielone miasto;
+- współrzędne graniczne każdej części;
+- ilość jęczmienia wyrastająca na wszystkich polach dla każdej części
+
+Po uzyskaniu tych informacji (można je zapisać w Map) wystarczy dla każdego pola sprawdzić, do której części należy i odpalić algorytm dla nowych danych
