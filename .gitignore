@@ -1,8 +1,16 @@
-# ignore everything inside source CPP directory
+# Ignore everything in source CPP directory
 source CPP/*
-# whitelist cpp, header and project files
+
+# Allow only selected extensions
 !*.cpp
 !*.h
 !*.sln
 !*.vcxproj
 !*.vcxproj.filters
+!*.txt
+!*.png
+!*.pdf
+!*.drawio
+
+# Allow directories (so Git can track files within)
+
