@@ -2,10 +2,9 @@
 
 /*
 TODO dla pierwszej czesci:
-0. naprawic algorytm Forda-Fulkersona (brakuje dodawania przeplywu w przeciwnym kierunku)
 1. Stworzyc brakujace klasy
 2. Wczytywanie nazw Node'ow zamiast indeksow
-3. Generowanie Road'ow na podstawie podanych Node'ow
+3. Generowanie grafu na podstawie podanych Node'ow
 4. Browary przemnazajace przechodzaca wartosc
 */
 
@@ -21,160 +20,93 @@ TODO dla pierwszej czesci:
 #include <vector>
 #include <queue>
 #include <limits>
-#include <algorithm>
-#include <iomanip>
-
 using namespace std;
 
-struct Road
-{
-    int to;
-    int remainingFlow;
-};
+//#define INF INT_MAX
 
-int main()
-{
-    //Field testField = Field(1, 2, 1.3);
-    //cout << testField.GetX() << ", " << testField.GetY() << ", " << testField.GetCapacity() << endl;
+// BFS for finding the augumenting path in the current state of the graph
+bool bfs(vector<vector<int>>& residualGraph, int source, int sink, vector<int>& parent) {
+    int V = residualGraph.size();
+    vector<bool> visited(V, false);
+    queue<int> q;
+    q.push(source);
+    visited[source] = true;
+    parent[source] = -1;
 
-    ifstream plik("daneZwagami.txt");
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
 
-    int vertices;
-    int newEdge1, newEdge2, maxFlow;
-    string line;
-
-    if (!(plik >> vertices >> newEdge1))
-    {
-        return -1;
-    }
-    //vertices++;
-
-    vector<vector<Road>> nList(vertices);
-
-    while (plik >> newEdge1 >> newEdge2 >> maxFlow)
-    {
-        Road edgeDataTemp;
-        edgeDataTemp.to = newEdge2;
-        //edgeDataTemp.maxFlow = maxFlow;
-        edgeDataTemp.remainingFlow = maxFlow;
-        //edgeDataTemp.backwardsFlow = 0;
-
-        nList[newEdge1].push_back(edgeDataTemp);
-    }
-
-    size_t finish = nList.size() - 1;
-    int maxFlowInPath = 0;
-    /// BFS:
-    /// tablica poprzednikow: -2 dla startowego, -1 dla pozostalych, obecny wierzcholek dla dodanych do kolejki
-    /// jesli dostepne 0 przeplywu, nie przechodzimy
-    /// szukamy najkrotszej drogi w sensie ilosci wierzcholkow
-    /// robimy tak dlugo, az nie znajdziemy sciezek powiekszajacych
-    while (true)
-    {
-        /// lista sasiedztwa
-        cout << "\nLista sasiedztwa: z: ( do, pozostaly):\n";
-        for (int i = 0; i < vertices - 1; i++)
-        {
-            cout << i << ": \t";
-            for (unsigned int j = 0; j < nList[i].size(); j++)
-            {
-                //cout << "( " << nList[i][j].to << ", " << nList[i][j].maxFlow << ", " << nList[i][j].remainingFlow << ", " << nList[i][j].backwardsFlow << " )\t";
-                cout << "( " << nList[i][j].to << ", " << nList[i][j].remainingFlow << " )\t";
-            }
-            cout << endl;
-        }
-
-
-        int start = 0;
-        vector<int> visited(nList.size());
-        vector<int> parents(nList.size());
-        vector<int> distances(nList.size());
-        queue<int> Q;
-        for (int i = 0; i < parents.size(); i++)
-        {
-            parents[i] = -1;
-            distances[i] = INT_MAX;
-        }
-        parents[start] = -2;
-
-        visited[start] = 1;
-        Q.push(start);
-        int v = 0;
-        while (!Q.empty())
-        {
-            int u = Q.front();
-            //cout<< Q.front()<<" ";
-            for (int i = 0; i < nList[u].size(); i++)
-            {
-                v = nList[u][i].to;
-                if (visited[v] == 0 && nList[u][i].remainingFlow > 0)
-                {
-                    visited[v] = 1;
-                    parents[v] = u;
-                    distances[v] = min(distances[u], nList[u][i].remainingFlow);
-                    Q.push(v);
-                }
-            }
-            Q.pop();
-            visited[u] = 2;
-        }
-
-        cout << "\nparents:\n";
-        for (int i = 0; i < parents.size(); i++)
-        {
-            cout << i << ": " << parents[i] << "\n";
-        }
-
-        cout << "\ndistances:\n";
-        for (int i = 0; i < distances.size(); i++)
-        {
-            cout << i << ": " << distances[i] << "\n";
-        }
-
-        /// nie znaleziono sciezki do ujscia
-        if (parents[finish] == -1) break;
-
-        vector<int> shortestPath;
-        //maxFlowInPath = distances[nList.size() - 1];
-
-        cout << "\nShortest path:\n";
-
-        //cout << finish;
-        shortestPath.push_back(finish);
-        do
-        {
-            finish = parents[finish];
-            //cout << " -> " << finish;
-            shortestPath.push_back(finish);
-        } while (finish != start);
-
-        finish = nList.size() - 1;
-        reverse(shortestPath.begin(), shortestPath.end());
-
-        //cout << endl;
-        for (int i = 0; i < shortestPath.size(); i++)
-        {
-            cout << shortestPath[i] << ", ";
-        }
-        cout << endl;
-
-        cout << "Max Flow In This Path: " << distances[finish] << endl;
-        maxFlowInPath += distances[finish];
-
-        for (int i = 0; i < shortestPath.size() - 1; i++)
-        {
-            v = shortestPath[i];
-
-            for (int j = 0; j < nList[v].size(); j++)
-            {
-                if (nList[v][j].to == shortestPath[i + 1])
-                {
-                    nList[v][j].remainingFlow -= distances[finish];
-                }
+        for (int v = 0; v < V; v++) {
+            if (!visited[v] && residualGraph[u][v] > 0) {
+                parent[v] = u;
+                visited[v] = true;
+                q.push(v);
+                if (v == sink) return true; // found a path to sink
             }
         }
     }
+    return false;
+}
 
-    cout << "Max Flow In Whole Path: " << maxFlowInPath << endl;
 
+int fordFulkerson(vector<vector<int>> graph, int source, int sink) {
+    int V = graph.size();
+    //vector<vector<int>> residualGraph = graph; // copy the graph to use as the residual graph
+    vector<int> parent(V);
+    int maxFlow = 0;
+
+    while (bfs(graph, source, sink, parent)) {
+        int pathFlow = INT_MAX;
+        vector<int> path;
+
+        // find the bottleneck (min flow in path)
+        for (int v = sink; v != source; v = parent[v]) {
+            int u = parent[v];
+            pathFlow = min(pathFlow, graph[u][v]);
+        }
+
+        // update the residual graph
+        for (int v = sink; v != source; v = parent[v]) {
+            int u = parent[v];
+            graph[u][v] -= pathFlow;
+            graph[v][u] += pathFlow;
+            path.push_back(v);
+        }
+        path.push_back(source);
+        reverse(path.begin(), path.end());
+
+        // display the found augumenting path
+        cout << "Sciezka powiekszajaca: ";
+        for (int node : path) {
+            cout << node << " ";
+        }
+        cout << "| Przeplyw: " << pathFlow << endl;
+
+        maxFlow += pathFlow;
+    }
+    return maxFlow;
+}
+
+int main() {
+    ifstream inputFile("daneZwagami.txt");
+    if (!inputFile) {
+        cerr << "Blad otwarcia pliku!" << endl;
+        return 1;
+    }
+
+    int vertices, edges;
+    inputFile >> vertices >> edges;
+    vector<vector<int>> graph(vertices, vector<int>(vertices, 0));
+
+    int u, v, capacity;
+    while (inputFile >> u >> v >> capacity) {
+        graph[u][v] = capacity;
+    }
+    inputFile.close();
+
+    int source = 0, sink = vertices - 1;
+
+    cout << "Maksymalny przeplyw: " << fordFulkerson(graph, source, sink) << endl;
+    return 0;
 }
