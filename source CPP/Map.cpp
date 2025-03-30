@@ -1,17 +1,17 @@
 // Ten plik zawiera funkcjê „main”. W nim rozpoczyna siê i koñczy wykonywanie programu.
 
-/// na razie tylko liczy maksymalny przeplyw dla grafu na zdjeciu "example diagram.png"
-
 /*
 TODO dla pierwszej czesci:
-0. Stworzyc brakujace klasy
-1. Wczytywanie nazw Node'ow zamiast indeksow (uzyc std::map)
-2. Generowanie Road'ow na podstawie podanych Node'ow
+0. naprawic algorytm Forda-Fulkersona (brakuje dodawania przeplywu w przeciwnym kierunku)
+1. Stworzyc brakujace klasy
+2. Wczytywanie nazw Node'ow zamiast indeksow
+3. Generowanie Road'ow na podstawie podanych Node'ow
+4. Browary przemnazajace przechodzaca wartosc
 */
 
 
 //#include "Node.h"
-#include "Field.h"
+//#include "Field.h"
 //#include "Brewery.h"
 //#include "Pub.h"
 
@@ -29,10 +29,7 @@ using namespace std;
 struct Road
 {
     int to;
-    int maxFlow;
     int remainingFlow;
-    int backwardsFlow;
-    int repairCost;
 };
 
 int main()
@@ -43,30 +40,29 @@ int main()
     ifstream plik("daneZwagami.txt");
 
     int vertices;
-    int newEdge1, newEdge2, maxFlow, repairCost;
+    int newEdge1, newEdge2, maxFlow;
     string line;
 
-    if (!(plik >> vertices))
+    if (!(plik >> vertices >> newEdge1))
     {
         return -1;
     }
-    vertices++;
+    //vertices++;
 
     vector<vector<Road>> nList(vertices);
 
-    while (plik >> newEdge1 >> newEdge2 >> maxFlow >> repairCost)
+    while (plik >> newEdge1 >> newEdge2 >> maxFlow)
     {
         Road edgeDataTemp;
         edgeDataTemp.to = newEdge2;
-        edgeDataTemp.maxFlow = maxFlow;
+        //edgeDataTemp.maxFlow = maxFlow;
         edgeDataTemp.remainingFlow = maxFlow;
-        edgeDataTemp.backwardsFlow = 0;
-        edgeDataTemp.repairCost = repairCost;
+        //edgeDataTemp.backwardsFlow = 0;
 
         nList[newEdge1].push_back(edgeDataTemp);
     }
 
-    int finish = nList.size() - 1;
+    size_t finish = nList.size() - 1;
     int maxFlowInPath = 0;
     /// BFS:
     /// tablica poprzednikow: -2 dla startowego, -1 dla pozostalych, obecny wierzcholek dla dodanych do kolejki
@@ -76,13 +72,14 @@ int main()
     while (true)
     {
         /// lista sasiedztwa
-        cout << "\nLista sasiedztwa: z: ( do, maxPrzeplyw, pozostaly, zwrotny, naprawa):\n";
+        cout << "\nLista sasiedztwa: z: ( do, pozostaly):\n";
         for (int i = 0; i < vertices - 1; i++)
         {
             cout << i << ": \t";
             for (unsigned int j = 0; j < nList[i].size(); j++)
             {
-                cout << "( " << nList[i][j].to << ", " << nList[i][j].maxFlow << ", " << nList[i][j].remainingFlow << ", " << nList[i][j].backwardsFlow << " )\t";
+                //cout << "( " << nList[i][j].to << ", " << nList[i][j].maxFlow << ", " << nList[i][j].remainingFlow << ", " << nList[i][j].backwardsFlow << " )\t";
+                cout << "( " << nList[i][j].to << ", " << nList[i][j].remainingFlow << " )\t";
             }
             cout << endl;
         }

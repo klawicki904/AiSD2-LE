@@ -2,7 +2,9 @@
 
 using namespace std;
 
-Node::Node() : x(0), y(0), capacity(0.0) {}
+// parameter-less constructor needed for inheritance
+Node::Node()
+    : x(0), y(0), capacity(0.0) {}
 
 Node::Node(const int& _x, const int& _y, const double& _cap)
     : x(_x), y(_y), capacity(_cap){}
