@@ -36,7 +36,8 @@ TODO dla pierwszej czêœci:
 //#include "Field.h"
 //#include "Brewery.h"
 //#include "Pub.h"
-
+#include "EdgeData.h" //dane krawedzi
+#include "AdjacencyList.h" //lista sasiedztwa
 
 #include <iostream>
 #include <fstream>
@@ -46,48 +47,21 @@ TODO dla pierwszej czêœci:
 //#include <algorithm>
 //#include <iomanip>
 
+
 using namespace std;
 
-struct edgeData
-{
-    int to;
-    //int maxFlow;
-    int remainingFlow;
-    //int backwardsFlow;
-};
 
 int main()
 {
-    ifstream plik("daneZwagami.txt");
-
-    int vertices;
-    int newEdge1, newEdge2, maxFlow;
-    string line;
-
-    if (!(plik >> vertices >> newEdge1))
-    {
+    AdjacencyList nList;
+    if (!nList.readFileToGraph("daneZwagami.txt")) {
         return -1;
     }
-    //vertices++;
 
-    vector<vector<edgeData>> nList(vertices);
+    //nList.printGraph();
 
-    while (plik >> newEdge1 >> newEdge2 >> maxFlow)
-    {
-        edgeData edgeDataTemp;
-        edgeDataTemp.to = newEdge2;
-        //edgeDataTemp.maxFlow = maxFlow;
-        edgeDataTemp.remainingFlow = maxFlow;
-        //edgeDataTemp.backwardsFlow = 0;
 
-        nList[newEdge1].push_back(edgeDataTemp);
-
-        edgeDataTemp.to = newEdge1;
-        edgeDataTemp.remainingFlow = 0;
-        nList[newEdge2].push_back(edgeDataTemp);
-    }
-
-    int finish = nList.size() - 1;
+    int finish = nList.vertices - 1;
     int maxFlowInPath = 0;
     /// BFS:
     /// tablica poprzednikow: -2 dla startowego, -1 dla pozostalych, obecny wierzcholek dla dodanych do kolejki
@@ -98,21 +72,22 @@ int main()
     {
         /// lista sasiedztwa
         cout << "\nLista sasiedztwa: z: ( do, pozostaly ):\n";
-        for (int i = 0; i < vertices - 1; i++)
+        for (int i = 0; i < nList.vertices - 1; i++)
         {
             cout << i << ": \t";
-            for (unsigned int j = 0; j < nList[i].size(); j++)
+            //for (unsigned int j = 0; j < nList[i].size(); j++)
+            for (EdgeData j : nList.nList[i])
             {
-                cout << "( " << nList[i][j].to << ", " << nList[i][j].remainingFlow << " )\t";
+                cout << "( " << j.v << ", " << j.remainingFlow << " )\t";
             }
             cout << endl;
         }
-
+    
 
         int start = 0;
-        vector<bool> visited(nList.size(), false);
-        vector<int> parents(nList.size(), -1);
-        vector<int> distances(nList.size(), INT_MAX);
+        vector<bool> visited(nList.vertices, false);
+        vector<int> parents(nList.vertices, -1);
+        vector<int> distances(nList.vertices, INT_MAX);
         queue<int> Q;
         parents[start] = -2;
 
@@ -124,14 +99,14 @@ int main()
             int u = Q.front();
             Q.pop();
             //cout<< Q.front()<<" ";
-            for (int i = 0; i < nList[u].size(); i++)
+            for (int i = 0; i < nList.nList[u].size(); i++)
             {
-                v = nList[u][i].to;
-                if (visited[v] == false && nList[u][i].remainingFlow > 0)
+                v = nList.nList[u][i].v;
+                if (visited[v] == false && nList.nList[u][i].remainingFlow > 0)
                 {
                     visited[v] = true;
                     parents[v] = u;
-                    distances[v] = min(distances[u], nList[u][i].remainingFlow);
+                    distances[v] = min(distances[u], nList.nList[u][i].remainingFlow);
                     Q.push(v);
                 }
             }
@@ -168,7 +143,7 @@ int main()
             shortestPath.push_back(finish);
         } while (finish != start);
 
-        finish = nList.size() - 1;
+        finish = nList.vertices - 1; //bylo zmieniane
         reverse(shortestPath.begin(), shortestPath.end());
 
         //cout << endl;
@@ -186,17 +161,17 @@ int main()
         {
             v = shortestPath[i];
             // find the edge a->b from shortestPath in adjacency list and subtract flow
-            for (int j = 0; j < nList[v].size(); j++)
+            for (int j = 0; j < nList.nList[v].size(); j++)
             {
-                if (nList[v][j].to == shortestPath[i + 1])
+                if (nList.nList[v][j].v == shortestPath[i + 1])
                 {
-                    nList[v][j].remainingFlow -= distances[finish];
+                    nList.nList[v][j].remainingFlow -= distances[finish];
                     // find the opposite direction (b->a) and add flow
-                    for (j = 0; j < nList[shortestPath[i + 1]].size(); j++)
+                    for (j = 0; j < nList.nList[shortestPath[i + 1]].size(); j++)
                     {
-                        if (nList[shortestPath[i + 1]][j].to == shortestPath[i])
+                        if (nList.nList[shortestPath[i + 1]][j].v == shortestPath[i])
                         {
-                            nList[shortestPath[i + 1]][j].remainingFlow += distances[finish];
+                            nList.nList[shortestPath[i + 1]][j].remainingFlow += distances[finish];
                         }
                         break; // found the edge b->a so stop searching
                     }
@@ -207,5 +182,5 @@ int main()
     }
 
     cout << "Max Flow In Whole Path: " << maxFlowInPath << endl;
-
+    return 0;
 }

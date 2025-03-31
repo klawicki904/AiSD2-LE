@@ -127,11 +127,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AdjacencyList.cpp" />
+    <ClCompile Include="EdgeData.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="Node.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AdjacencyList.h" />
+    <ClInclude Include="EdgeData.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="Node.h" />
   </ItemGroup>
