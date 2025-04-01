@@ -1,42 +1,26 @@
 // Ten plik zawiera funkcjê „main”. W nim rozpoczyna siê i koñczy wykonywanie programu.
 
-// algorytm Forda-Fulkersona u¿ywa macierzy s¹siedztwa, bo 
+// algorytm Forda-Fulkersona u¿ywa³ macierzy s¹siedztwa, bo 
 // z list¹ s¹siedztwa by³ problem przy przechodzeniu w drug¹ stronê
+// problem zosta³ naprawiony, teraz algorytm u¿ywa listy s¹siedztwa
 
 /*
-TODO dla pierwszej czêœci:
-1. Stworzyæ brakuj¹ce klasy
-2. Wczytywanie nazw Node'ów zamiast indeksów
-3. Generowanie grafu na podstawie podanych Node'ów
-4. Browary przemnazaj¹ce przechodzac¹ wartoœæ
-*/
+Do zrobienia dla ca³ego projektu:
+1. Generator grafów (plik z po³¹czeniami) do testowania algorytmu.
+2. GUI
 
+Do zrobienia dla pierwszej czêœci:
+1a. Przerobiæ ten plik tak, ¿eby wczytywa³ z pliku node'y zamiast po³¹czeñ
+1b. Przerobiæ ten plik tak, ¿eby generowa³ plik z po³¹czeniami na podstawie wczytanych node'ów
+2. Browary przemna¿aj¹ce przechodz¹c¹ wartoœæ
+
+
+*/
 
 //#include "Node.h"
 //#include "Field.h"
 //#include "Brewery.h"
 //#include "Pub.h"
-
-
-// Ten plik zawiera funkcjê „main”. W nim rozpoczyna siê i koñczy wykonywanie programu.
-
-// algorytm Forda-Fulkersona u¿ywa macierzy s¹siedztwa, bo 
-// z list¹ s¹siedztwa by³ problem przy przechodzeniu w drug¹ stronê
-
-/*
-TODO dla pierwszej czêœci:
-1. Stworzyæ brakuj¹ce klasy
-2. Wczytywanie nazw Node'ów zamiast indeksów
-3. Generowanie grafu na podstawie podanych Node'ów
-4. Browary przemnazaj¹ce przechodzac¹ wartoœæ
-*/
-
-
-//#include "Node.h"
-//#include "Field.h"
-//#include "Brewery.h"
-//#include "Pub.h"
-
 
 #include <iostream>
 #include <fstream>
@@ -48,16 +32,36 @@ TODO dla pierwszej czêœci:
 
 using namespace std;
 
+double beerConvertsionRate = 0.5;
+enum NodeType
+{
+    none,
+    field,
+    brewery,
+    pub
+};
+
+struct Vector2
+{
+    int x;
+    int y;
+};
+
 struct edgeData
 {
+    NodeType nodeType = none;
+    Vector2 position;
     int to;
-    //int maxFlow;
-    int remainingFlow;
-    //int backwardsFlow;
+    double remainingFlow;
 };
 
 int main()
 {
+    // 1a. Przerobiæ ten plik tak, ¿eby wczytywa³ z pliku node'y zamiast po³¹czeñ
+
+
+
+
     ifstream plik("daneZwagami.txt");
 
     int vertices;
@@ -68,27 +72,27 @@ int main()
     {
         return -1;
     }
-    //vertices++;
 
     vector<vector<edgeData>> nList(vertices);
 
+    int lastBrewery; // index of last brewery to multiply max flows of the ones after
+
     while (plik >> newEdge1 >> newEdge2 >> maxFlow)
     {
+        // 2. Browary przemna¿aj¹ce przechodz¹c¹ wartoœæ
         edgeData edgeDataTemp;
         edgeDataTemp.to = newEdge2;
-        //edgeDataTemp.maxFlow = maxFlow;
         edgeDataTemp.remainingFlow = maxFlow;
-        //edgeDataTemp.backwardsFlow = 0;
-
         nList[newEdge1].push_back(edgeDataTemp);
 
+        // TODO: do this only when path doesn't already exist
         edgeDataTemp.to = newEdge1;
         edgeDataTemp.remainingFlow = 0;
-        nList[newEdge2].push_back(edgeDataTemp);
+        nList[newEdge2].push_back(edgeDataTemp); // create a path in the opposite direction with no flow
     }
 
     int finish = nList.size() - 1;
-    int maxFlowInPath = 0;
+    double maxFlowInPath = 0;
     /// BFS:
     /// tablica poprzednikow: -2 dla startowego, -1 dla pozostalych, obecny wierzcholek dla dodanych do kolejki
     /// jesli dostepne 0 przeplywu, nie przechodzimy
@@ -96,7 +100,7 @@ int main()
     /// robimy tak dlugo, az nie znajdziemy sciezek powiekszajacych
     while (true)
     {
-        /// lista sasiedztwa
+        /// wyswietl stan listy sasiedztwa
         cout << "\nLista sasiedztwa: z: ( do, pozostaly ):\n";
         for (int i = 0; i < vertices - 1; i++)
         {
@@ -108,11 +112,10 @@ int main()
             cout << endl;
         }
 
-
         int start = 0;
         vector<bool> visited(nList.size(), false);
         vector<int> parents(nList.size(), -1);
-        vector<int> distances(nList.size(), INT_MAX);
+        vector<double> distances(nList.size(), INT_MAX);
         queue<int> Q;
         parents[start] = -2;
 
@@ -135,8 +138,6 @@ int main()
                     Q.push(v);
                 }
             }
-
-            //visited[u] = 2;
         }
 
         cout << "\nparents:\n";
@@ -190,13 +191,27 @@ int main()
             {
                 if (nList[v][j].to == shortestPath[i + 1])
                 {
-                    nList[v][j].remainingFlow -= distances[finish];
+                    if (nList[v][j].nodeType == brewery)
+                    {
+                        nList[v][j].remainingFlow -= distances[finish] * beerConvertsionRate;
+                    }
+                    else
+                    {
+                        nList[v][j].remainingFlow -= distances[finish];
+                    }
                     // find the opposite direction (b->a) and add flow
                     for (j = 0; j < nList[shortestPath[i + 1]].size(); j++)
                     {
                         if (nList[shortestPath[i + 1]][j].to == shortestPath[i])
                         {
-                            nList[shortestPath[i + 1]][j].remainingFlow += distances[finish];
+                            if (nList[v][j].nodeType == brewery)
+                            {
+                                nList[shortestPath[i + 1]][j].remainingFlow += distances[finish] * beerConvertsionRate;
+                            }
+                            else
+                            {
+                                nList[shortestPath[i + 1]][j].remainingFlow += distances[finish];
+                            }
                         }
                         break; // found the edge b->a so stop searching
                     }
