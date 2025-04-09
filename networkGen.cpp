@@ -11,7 +11,7 @@
 using namespace std;
 
 bool areSectionsTooClose(vector<int> &sectionTab){
-    for(int i=1;i<sectionTab.size();i++)if(sectionTab[i]<=sectionTab[i-1]+2)return true;
+    for(int i=1;i<sectionTab.size();i++)if(sectionTab[i]<=sectionTab[i-1]+1)return true;
     return false;
 }
 
@@ -32,7 +32,7 @@ int main() {
     vector<vector<pair<int, int>>> vertTab(vertN+1);
     fill(amIConnected.begin(),amIConnected.end(),false);
     amIConnected[0]=true;
-    amIConnected[vertN]=true;
+    amIConnected[vertN+1]=true;
     sectionTab[0]=0;
     sectionTab[sectionN]=vertN+1;
     {
@@ -59,10 +59,11 @@ int main() {
         if(i==0)continue;
         int connectionN;
         set<int> uniqueConnections;
+        cout<<i<<" "<<j<<endl;
         if(density==2)connectionN=rand()%4+2;
         else if(density==1)connectionN=rand()%2+2;
-        else connectionN=rand()%2+1;
-        cout<<i<<" "<<j<<endl;
+        else connectionN=1;
+
         while(uniqueConnections.size()<connectionN)uniqueConnections.insert(rand()%(sectionTab[j+1]-sectionTab[j])+sectionTab[j]);
         for(auto it=uniqueConnections.begin();it!=uniqueConnections.end();it++){
             vertTab[i].emplace_back(*it,rand()%17+5);
@@ -72,12 +73,14 @@ int main() {
     for(int i=sectionTab[sectionN-1];i<vertN+1;i++)vertTab[i].emplace_back(vertN+1,99);
     //for(int i=sectionTab[sectionN-1];i<vertN+1;i++)vertTab[i].emplace_back(vertN+1,INT_MAX);
     ///korekty
-    for(int j=1;j<sectionN;j++)for(int i=sectionTab[j];i<sectionTab[j+1];i++)if(!amIConnected[i]){
+    for(int j=1;j<sectionN;j++)for(int i=sectionTab[j];i<sectionTab[j+1];i++){
+        if(!amIConnected[i]){
         cout<<endl<<"korekta: "<<i<<" "<<j;
         int temp;
         if(j==1)temp=rand()%(sectionTab[1]-1)+1;
         else temp=rand()%(sectionTab[j]-sectionTab[j-1])+sectionTab[j-1];
         vertTab[temp].emplace_back(i,rand()%17+5);
+    }
     }
     cout<<endl;
     if(!amIConnected[vertN]){
