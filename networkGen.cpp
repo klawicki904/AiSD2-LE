@@ -72,7 +72,7 @@ int main() {
     for(int i=sectionTab[sectionN-1];i<vertN+1;i++)vertTab[i].emplace_back(vertN+1,99);
     //for(int i=sectionTab[sectionN-1];i<vertN+1;i++)vertTab[i].emplace_back(vertN+1,INT_MAX);
     ///korekty
-    for(int j=1;j<sectionN-1;j++)for(int i=sectionTab[j];i<sectionTab[j+1];i++)if(!amIConnected[i]){
+    for(int j=1;j<sectionN;j++)for(int i=sectionTab[j];i<sectionTab[j+1];i++)if(!amIConnected[i]){
         cout<<endl<<"korekta: "<<i<<" "<<j;
         int temp;
         if(j==1)temp=rand()%(sectionTab[1]-1)+1;
