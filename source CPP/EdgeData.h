@@ -1,4 +1,4 @@
-﻿#ifndef EDGE_DATA_H
+#ifndef EDGE_DATA_H
 #define EDGE_DATA_H
 
 
@@ -7,13 +7,13 @@ class EdgeData
 
 public:
 	int v; // u -> v
-	int remainingFlow;
+	double remainingFlow;
 	//int maxFlow;
 	//int backwardsFlow;
 
 	EdgeData();
 
-	EdgeData(int v, int remainingFlow);
+	EdgeData(int v, double remainingFlow);
 };
 
 #endif

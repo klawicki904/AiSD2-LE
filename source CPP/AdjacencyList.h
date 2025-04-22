@@ -1,10 +1,11 @@
-﻿#ifndef ADJACENCY_LIST_H
+#ifndef ADJACENCY_LIST_H
 #define ADJACENCY_LIST_H
 
 #include <iostream>
 #include "EdgeData.h"
 #include <vector>
 #include <fstream>
+#include <queue>
 
 using namespace std;
 
@@ -22,6 +23,10 @@ public:
 	bool readFileToGraph(string fileName);
 
 	void printGraph();
+
+	void bfsFlow(vector<vector<EdgeData>>& aList, vector<int>& parents, vector<double>& flows, int start );
+
+	double fordFulkerson();
 };
 
 #endif

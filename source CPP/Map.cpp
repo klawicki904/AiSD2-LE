@@ -1,186 +1,116 @@
 // Ten plik zawiera funkcjê „main”. W nim rozpoczyna siê i koñczy wykonywanie programu.
 
-// algorytm Forda-Fulkersona u¿ywa macierzy s¹siedztwa, bo 
+// algorytm Forda-Fulkersona u¿ywa³ macierzy s¹siedztwa, bo 
 // z list¹ s¹siedztwa by³ problem przy przechodzeniu w drug¹ stronê
+// problem zosta³ naprawiony, teraz algorytm u¿ywa listy s¹siedztwa
 
 /*
-TODO dla pierwszej czêœci:
-1. Stworzyæ brakuj¹ce klasy
-2. Wczytywanie nazw Node'ów zamiast indeksów
-3. Generowanie grafu na podstawie podanych Node'ów
-4. Browary przemnazaj¹ce przechodzac¹ wartoœæ
-*/
+Do zrobienia:
+1. Dokumentacja (dokument tekstowy i arkusz/harmonogram)
 
+2. Interface konsolowy - program, który bêdzie:
+- wczytywa³ z pliku i zapisywa³ do pliku informacje o node'ach i drogach;
+- generowa³ plik ze œcie¿kami, który bêdzie od razu dzia³a³ dla algorytmu poszukuj¹cego
+- przechowywa³ dane po wczytaniu
+- pozwala³ na wyœwietlanie danych w konsoli
+- pozwala³ na modyfikacjê danych w konsoli
+- dba³ o prawid³owoœæ wprowadzonych danych
+przyk³adowy plik:
+0.5 (konwersja jêczmienia na piwo)
+FIELDS
+1 0.1 1.2 FIELD 30
+BREWERIES
+2 3.5 2.2 BREWERY 20
+3 4.5 3.2 BREWERY 15
+4 5.5 4.2 BREWERY 10
+PUBS
+5 5.6 2.7 PUB
+6 6.7 3.8 PUB
+ROADS
+4 (iloœæ wierzcho³ków) 8 (iloœæ po³¹czeñ)
+1 2 30.0
+1 3 20.0
+1 4 30.0
+2 5 7.0
+2 6 3.2
+3 5 8.2
+4 5 8.5
+4 6 6.9
+
+3. Modyfikacja algorytmu przep³ywu dla problemu projektu (ten plik):
+3a. Pole, przez które przechodzi œcie¿ka powiêkszaj¹ca musi aktualizowaæ maksymalny przep³yw dla ka¿dej krawêdzi, która z niego wychodzi
+np. jeœli pole ma 30 zbo¿a i wychodz¹ z niego 2 strza³ki po 30, po przeprowadzeniu 25 zbo¿a przez œcie¿kê trzeba ustawiæ wszystkie strza³ki na max(obecny, 30-25)
+3b. Browarnia, przez któr¹ przechodzi œcie¿ka powiêkszaj¹ca musi aktualizowaæ przep³yw dla ka¿dej krawêdzi, która do niego prowadzi, ¿eby nie dosz³o do przekroczenia pojemnoœci browarni
+
+4. Browary przemna¿aj¹ce przechodz¹c¹ wartoœæ
+
+5. GUI (bêdzie dba³o o prawid³owy przep³yw miêdzy polami i browarami)
+
+
+?. Generator grafów (plik z po³¹czeniami) do testowania algorytmu:
+Wejœcie: liczba ca³kowita - iloœæ node'ów
+Wyjœcie: plik tekstowy mo¿liwy do przetworzenia przez algorytm
+
+*/
 
 //#include "Node.h"
 //#include "Field.h"
 //#include "Brewery.h"
 //#include "Pub.h"
-
-
-// Ten plik zawiera funkcjê „main”. W nim rozpoczyna siê i koñczy wykonywanie programu.
-
-// algorytm Forda-Fulkersona u¿ywa macierzy s¹siedztwa, bo 
-// z list¹ s¹siedztwa by³ problem przy przechodzeniu w drug¹ stronê
-
-/*
-TODO dla pierwszej czêœci:
-1. Stworzyæ brakuj¹ce klasy
-2. Wczytywanie nazw Node'ów zamiast indeksów
-3. Generowanie grafu na podstawie podanych Node'ów
-4. Browary przemnazaj¹ce przechodzac¹ wartoœæ
-*/
-
-
-//#include "Node.h"
-//#include "Field.h"
-//#include "Brewery.h"
-//#include "Pub.h"
-#include "EdgeData.h" //dane krawedzi
-#include "AdjacencyList.h" //lista sasiedztwa
 
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <queue>
-#include <limits>
+#include "AdjacencyList.h"
+#include "Matrix.h"
 //#include <algorithm>
 //#include <iomanip>
 
-
 using namespace std;
+
+//double beerConvertsionRate = 0.5; // jeszcze nie u¿yte
+//// mo¿emy zapisaæ ka¿dy typ w oddzielnej klasie, ale bêd¹ przechowywaæ co najwy¿ej swoje po³o¿enie i jedn¹ zmienn¹
+//// (jeszcze nie u¿yte) rodzaj wêz³a (¿adne (Ÿród³o lub ujœcie), pole, browarnia, karczma)
+//enum NodeType
+//{
+//    none,
+//    field,
+//    brewery,
+//    pub
+//};
+//// (jeszcze nie u¿yte) struktura wektor do przechowania po³o¿enia wierzcho³ka
+//struct Vector2
+//{
+//    int x = 0;
+//    int y = 0;
+//};
 
 
 int main()
 {
     AdjacencyList nList;
-    if (!nList.readFileToGraph("daneZwagami.txt")) {
+    Matrix graphMatrix;
+    if (!nList.readFileToGraph("./daneZwagami.txt"))
+    {
+        return -1;
+    }
+    if (!graphMatrix.readFileToGraph("./daneZeWszystkim.txt"))
+    {
         return -1;
     }
 
-    //nList.printGraph();
-
-
-    int finish = nList.vertices - 1;
-    int maxFlowInPath = 0;
-    /// BFS:
-    /// tablica poprzednikow: -2 dla startowego, -1 dla pozostalych, obecny wierzcholek dla dodanych do kolejki
-    /// jesli dostepne 0 przeplywu, nie przechodzimy
-    /// szukamy najkrotszej drogi w sensie ilosci wierzcholkow
-    /// robimy tak dlugo, az nie znajdziemy sciezek powiekszajacych
-    while (true)
-    {
-        /// lista sasiedztwa
-        cout << "\nLista sasiedztwa: z: ( do, pozostaly ):\n";
-        for (int i = 0; i < nList.vertices - 1; i++)
-        {
-            cout << i << ": \t";
-            //for (unsigned int j = 0; j < nList[i].size(); j++)
-            for (EdgeData j : nList.nList[i])
-            {
-                cout << "( " << j.v << ", " << j.remainingFlow << " )\t";
-            }
-            cout << endl;
-        }
+   // nList.printGraph();
+    //graphMatrix.printGraph();
     
+    cout << nList.fordFulkerson() << endl;
+    cout << graphMatrix.fordFulkerson() << endl;
 
-        int start = 0;
-        vector<bool> visited(nList.vertices, false);
-        vector<int> parents(nList.vertices, -1);
-        vector<int> distances(nList.vertices, INT_MAX);
-        queue<int> Q;
-        parents[start] = -2;
 
-        visited[start] = 1;
-        Q.push(start);
-        int v = 0;
-        while (!Q.empty())
-        {
-            int u = Q.front();
-            Q.pop();
-            //cout<< Q.front()<<" ";
-            for (int i = 0; i < nList.nList[u].size(); i++)
-            {
-                v = nList.nList[u][i].v;
-                if (visited[v] == false && nList.nList[u][i].remainingFlow > 0)
-                {
-                    visited[v] = true;
-                    parents[v] = u;
-                    distances[v] = min(distances[u], nList.nList[u][i].remainingFlow);
-                    Q.push(v);
-                }
-            }
-
-            //visited[u] = 2;
+   /* for (Node i : graphMatrix.listVertives) {
+        if (i.capacity != -1) {
+            cout <<i.id << " " << i.x << endl;
         }
+    }*/
+    //cout << graphMatrix.fordFulkerson2() << endl;
 
-        cout << "\nparents:\n";
-        for (int i = 0; i < parents.size(); i++)
-        {
-            cout << i << ": " << parents[i] << "\n";
-        }
-
-        cout << "\ndistances:\n";
-        for (int i = 0; i < distances.size(); i++)
-        {
-            cout << i << ": " << distances[i] << "\n";
-        }
-
-        /// nie znaleziono sciezki do ujscia
-        if (parents[finish] == -1) break;
-
-        vector<int> shortestPath;
-        //maxFlowInPath = distances[nList.size() - 1];
-
-        cout << "\nShortest path:\n";
-
-        //cout << finish;
-        shortestPath.push_back(finish);
-        do
-        {
-            finish = parents[finish];
-            //cout << " -> " << finish;
-            shortestPath.push_back(finish);
-        } while (finish != start);
-
-        finish = nList.vertices - 1; //bylo zmieniane
-        reverse(shortestPath.begin(), shortestPath.end());
-
-        //cout << endl;
-        for (int i = 0; i < shortestPath.size(); i++)
-        {
-            cout << shortestPath[i] << ", ";
-        }
-        cout << endl;
-
-        cout << "Max Flow In This Path: " << distances[finish] << endl;
-        maxFlowInPath += distances[finish];
-
-        // update flow in the found path
-        for (int i = 0; i < shortestPath.size() - 1; i++)
-        {
-            v = shortestPath[i];
-            // find the edge a->b from shortestPath in adjacency list and subtract flow
-            for (int j = 0; j < nList.nList[v].size(); j++)
-            {
-                if (nList.nList[v][j].v == shortestPath[i + 1])
-                {
-                    nList.nList[v][j].remainingFlow -= distances[finish];
-                    // find the opposite direction (b->a) and add flow
-                    for (j = 0; j < nList.nList[shortestPath[i + 1]].size(); j++)
-                    {
-                        if (nList.nList[shortestPath[i + 1]][j].v == shortestPath[i])
-                        {
-                            nList.nList[shortestPath[i + 1]][j].remainingFlow += distances[finish];
-                        }
-                        break; // found the edge b->a so stop searching
-                    }
-                    break; // found the edge a->b so stop searching
-                }
-            }
-        }
-    }
-
-    cout << "Max Flow In Whole Path: " << maxFlowInPath << endl;
+    
     return 0;
 }
