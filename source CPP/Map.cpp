@@ -79,7 +79,8 @@ int main()
     {
         return -1;
     }
-
+    cout << nList.fordFulkerson() << endl;
+    cout << graphMatrix.fordFulkerson() << endl;
 
     return 0;
 }
