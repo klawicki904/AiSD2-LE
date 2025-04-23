@@ -1,22 +1,22 @@
-// Ten plik zawiera funkcjê „main”. W nim rozpoczyna siê i koñczy wykonywanie programu.
+// Ten plik zawiera funkcjÄ™ â€mainâ€. W nim rozpoczyna siÄ™ i koÅ„czy wykonywanie programu.
 
-// algorytm Forda-Fulkersona u¿ywa³ macierzy s¹siedztwa, bo 
-// z list¹ s¹siedztwa by³ problem przy przechodzeniu w drug¹ stronê
-// problem zosta³ naprawiony, teraz algorytm u¿ywa listy s¹siedztwa
+// algorytm Forda-Fulkersona uÅ¼ywaÅ‚ macierzy sÄ…siedztwa, bo 
+// z listÄ… sÄ…siedztwa byÅ‚ problem przy przechodzeniu w drugÄ… stronÄ™
+// problem zostaÅ‚ naprawiony, teraz algorytm uÅ¼ywa listy sÄ…siedztwa
 
 /*
 Do zrobienia:
 1. Dokumentacja (dokument tekstowy i arkusz/harmonogram)
 
-2. Interface konsolowy - program, który bêdzie:
-- wczytywa³ z pliku i zapisywa³ do pliku informacje o node'ach i drogach;
-- generowa³ plik ze œcie¿kami, który bêdzie od razu dzia³a³ dla algorytmu poszukuj¹cego
-- przechowywa³ dane po wczytaniu
-- pozwala³ na wyœwietlanie danych w konsoli
-- pozwala³ na modyfikacjê danych w konsoli
-- dba³ o prawid³owoœæ wprowadzonych danych
-przyk³adowy plik:
-0.5 (konwersja jêczmienia na piwo)
+2. Interface konsolowy - program, ktÃ³ry bÄ™dzie:
+- wczytywaÅ‚ z pliku i zapisywaÅ‚ do pliku informacje o node'ach i drogach;
+- generowaÅ‚ plik ze Å›cieÅ¼kami, ktÃ³ry bÄ™dzie od razu dziaÅ‚aÅ‚ dla algorytmu poszukujÄ…cego
+- przechowywaÅ‚ dane po wczytaniu
+- pozwalaÅ‚ na wyÅ›wietlanie danych w konsoli
+- pozwalaÅ‚ na modyfikacjÄ™ danych w konsoli
+- dbaÅ‚ o prawidÅ‚owoÅ›Ä‡ wprowadzonych danych
+przykÅ‚adowy plik:
+0.5 (konwersja jÄ™czmienia na piwo)
 FIELDS
 1 0.1 1.2 FIELD 30
 BREWERIES
@@ -27,7 +27,7 @@ PUBS
 5 5.6 2.7 PUB
 6 6.7 3.8 PUB
 ROADS
-4 (iloœæ wierzcho³ków) 8 (iloœæ po³¹czeñ)
+4 (iloÅ›Ä‡ wierzchoÅ‚kÃ³w) 8 (iloÅ›Ä‡ poÅ‚Ä…czeÅ„)
 1 2 30.0
 1 3 20.0
 1 4 30.0
@@ -37,19 +37,19 @@ ROADS
 4 5 8.5
 4 6 6.9
 
-3. Modyfikacja algorytmu przep³ywu dla problemu projektu (ten plik):
-3a. Pole, przez które przechodzi œcie¿ka powiêkszaj¹ca musi aktualizowaæ maksymalny przep³yw dla ka¿dej krawêdzi, która z niego wychodzi
-np. jeœli pole ma 30 zbo¿a i wychodz¹ z niego 2 strza³ki po 30, po przeprowadzeniu 25 zbo¿a przez œcie¿kê trzeba ustawiæ wszystkie strza³ki na max(obecny, 30-25)
-3b. Browarnia, przez któr¹ przechodzi œcie¿ka powiêkszaj¹ca musi aktualizowaæ przep³yw dla ka¿dej krawêdzi, która do niego prowadzi, ¿eby nie dosz³o do przekroczenia pojemnoœci browarni
+3. Modyfikacja algorytmu przepÅ‚ywu dla problemu projektu (ten plik):
+3a. Pole, przez ktÃ³re przechodzi Å›cieÅ¼ka powiÄ™kszajÄ…ca musi aktualizowaÄ‡ maksymalny przepÅ‚yw dla kaÅ¼dej krawÄ™dzi, ktÃ³ra z niego wychodzi
+np. jeÅ›li pole ma 30 zboÅ¼a i wychodzÄ… z niego 2 strzaÅ‚ki po 30, po przeprowadzeniu 25 zboÅ¼a przez Å›cieÅ¼kÄ™ trzeba ustawiÄ‡ wszystkie strzaÅ‚ki na max(obecny, 30-25)
+3b. Browarnia, przez ktÃ³rÄ… przechodzi Å›cieÅ¼ka powiÄ™kszajÄ…ca musi aktualizowaÄ‡ przepÅ‚yw dla kaÅ¼dej krawÄ™dzi, ktÃ³ra do niego prowadzi, Å¼eby nie doszÅ‚o do przekroczenia pojemnoÅ›ci browarni
 
-4. Browary przemna¿aj¹ce przechodz¹c¹ wartoœæ
+4. Browary przemnaÅ¼ajÄ…ce przechodzÄ…cÄ… wartoÅ›Ä‡
 
-5. GUI (bêdzie dba³o o prawid³owy przep³yw miêdzy polami i browarami)
+5. GUI (bÄ™dzie dbaÅ‚o o prawidÅ‚owy przepÅ‚yw miÄ™dzy polami i browarami)
 
 
-?. Generator grafów (plik z po³¹czeniami) do testowania algorytmu:
-Wejœcie: liczba ca³kowita - iloœæ node'ów
-Wyjœcie: plik tekstowy mo¿liwy do przetworzenia przez algorytm
+?. Generator grafÃ³w (plik z poÅ‚Ä…czeniami) do testowania algorytmu:
+WejÅ›cie: liczba caÅ‚kowita - iloÅ›Ä‡ node'Ã³w
+WyjÅ›cie: plik tekstowy moÅ¼liwy do przetworzenia przez algorytm
 
 */
 
@@ -66,23 +66,6 @@ Wyjœcie: plik tekstowy mo¿liwy do przetworzenia przez algorytm
 
 using namespace std;
 
-//double beerConvertsionRate = 0.5; // jeszcze nie u¿yte
-//// mo¿emy zapisaæ ka¿dy typ w oddzielnej klasie, ale bêd¹ przechowywaæ co najwy¿ej swoje po³o¿enie i jedn¹ zmienn¹
-//// (jeszcze nie u¿yte) rodzaj wêz³a (¿adne (Ÿród³o lub ujœcie), pole, browarnia, karczma)
-//enum NodeType
-//{
-//    none,
-//    field,
-//    brewery,
-//    pub
-//};
-//// (jeszcze nie u¿yte) struktura wektor do przechowania po³o¿enia wierzcho³ka
-//struct Vector2
-//{
-//    int x = 0;
-//    int y = 0;
-//};
-
 
 int main()
 {
@@ -97,20 +80,6 @@ int main()
         return -1;
     }
 
-   // nList.printGraph();
-    //graphMatrix.printGraph();
-    
-    cout << nList.fordFulkerson() << endl;
-    cout << graphMatrix.fordFulkerson() << endl;
 
-
-   /* for (Node i : graphMatrix.listVertives) {
-        if (i.capacity != -1) {
-            cout <<i.id << " " << i.x << endl;
-        }
-    }*/
-    //cout << graphMatrix.fordFulkerson2() << endl;
-
-    
     return 0;
 }
