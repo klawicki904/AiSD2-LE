@@ -1,0 +1,10 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "zadanie-AiSD2-LE",
+      "appliesTo": "/",
+      "type": "launch"
+    }
+  ]
+}

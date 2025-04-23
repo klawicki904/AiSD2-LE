@@ -1,0 +1,13 @@
+﻿  pch.cpp
+  Matrix.cpp
+G:\Dokumenty\ALG II projekt\AiSD2-LE\source CPP\Matrix.cpp(258,1): error C1010: Nieoczekiwany koniec pliku podczas wyszukiwania prekompilowanego pliku nagłówkowego. Czy zapomniano dodać „#include "pch.h"” do źródła?
+  FordFulkersonTests.cpp
+G:\Dokumenty\ALG II projekt\AiSD2-LE\FordFulkersonTests\FordFulkersonTests.cpp(23,22): error C2660: "Matrix::fordFulkerson": funkcja nie przyjmuje 2 argumentów
+  (kompilowanie pliku źródłowego „/FordFulkersonTests.cpp”)
+      G:\Dokumenty\ALG II projekt\AiSD2-LE\source CPP\Matrix.h(39,12):
+      zobacz deklarację „Matrix::fordFulkerson”
+      G:\Dokumenty\ALG II projekt\AiSD2-LE\FordFulkersonTests\FordFulkersonTests.cpp(23,22):
+      podczas próby dopasowania listy argumentów "(int, int)"
+  
+  Uruchamianie rozszerzenia Code Analysis dla języka C/C++...
+  Generowanie kodu...

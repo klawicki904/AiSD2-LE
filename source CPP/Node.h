@@ -16,21 +16,30 @@ ujœcie T - koñcowy odbiór piwa przez karczmy
 
 class Node
 {
-protected:
-    
-
 public:
+    enum class NodeType {
+        None,
+        Field,
+        Brewery,
+        Pub
+    };
+
+    int id;
     int x;
     int y;
-    double capacity = 0.0;
-    Node();
-    Node(const int& _x, const int& _y, const double& _cap);
+    double capacity = -1;
+    NodeType type = NodeType::None;
 
+    Node();
+    Node(const int& _id, const int& _x, const int& _y, const double& _cap, NodeType _type = NodeType::None);
+
+    const int& GetId() const;
     const int& GetX() const;
     const int& GetY() const;
     const double& GetCapacity() const;
+    NodeType GetType() const;
     //const double& GetYield() const;
-    
+
 };
 
 #endif // NODE_H
