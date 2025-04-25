@@ -10,6 +10,18 @@
 //#include <limits>
 using namespace std;
 
+
+// NOTKA:
+// dziala od 8 wierzcholkow
+// przykladowe dane dla testow:
+// 40 9 ? ?
+// 20 4 ? ?
+// gestosc dziala lepiej dla wiekszej liczby wierzcholkow (czasami zdarza sie ze przy gestosci na poziomie 1 jest tyle samo krawedzi co na poziomie 2 przy 20 wierzcholkach)
+// dziala rowniez dla wiekszych danych np. 10 000+ ale nie bylem w stanie zweryfikowac wynikow ze strona visualgo (strona przy 150-200 wierzcholkach przestaje dzialac)
+// wspolczynnik liczby wierzcholkow do liczby zestawow skrzyzowan nie moze byc mniejszy niz 2.6
+/// nie przesadzaj z liczba zestawow skrzyzowan !!! (dwa sa dodane defaultowo wiec mozesz wpisac 0, wowczas powstana polaczenia bezposrednie)
+
+
 bool areSectionsTooClose(int section, set<int>&uniqueSections, int vsRatio)
 {
     int modifier=3;
@@ -91,12 +103,12 @@ int main()
                 else areAnyConnections=false;
                 break;
             case 1:
-                if(rand()%3==0 && !remoteConnectionsHigherChance)connectionN=rand()%2+1;
-                else if(rand()%2==0 && remoteConnectionsHigherChance)connectionN=rand()%2+1;
+                if(rand()%3==0 && !remoteConnectionsHigherChance)connectionN=1;
+                else if(rand()%2==0 && remoteConnectionsHigherChance)connectionN=1;
                 else areAnyConnections=false;
                 break;
             case 2:
-                if(rand()%2==0)connectionN=rand()%2+1;
+                if(rand()%3==0)connectionN=rand()%2+1;
                 else areAnyConnections=false;
                 break;
             }
@@ -116,26 +128,28 @@ int main()
     for(int j=1; j<sectionN; j++)for(int i=sectionTab[j-1]; i<sectionTab[j]; i++)
         {
             if(i==0)continue;
-
+            connectionN=0;
             set<int> uniqueConnections;
-            //cout<<"sasiednie polaczenie: "<<i<<" "<<j<<endl;
+            //cout<<"sasiednie polaczenie: "<<i<<" "<<j<<" dotychczasowe polaczenia: "<<vertTab[i].size()<<" ";
             switch(density)
             {
             case 0:
                 connectionN=1;
                 break;
             case 1:
-                connectionN=rand()%2+1;
+                if(rand()%3==0)connectionN=2;
+                else connectionN=1;
                 break;
             case 2:
-                if(sectionTab[j+1]-sectionTab[j]<3)connectionN=rand()%2+1;
+                if(sectionTab[j+1]-sectionTab[j]<=4)connectionN=rand()%2+1;
+                else connectionN=rand()%3+1;
                 break;
             }
 
-
+            //cout<<"liczba kolejnych polaczen: "<<connectionN<<endl;
             ///zobaczymy czy sie przyjmie
-            //connectionN-=vertTab[i].size()/2;
-            //if(connectionN<1)continue;
+            connectionN-=vertTab[i].size();
+            if(connectionN<1)continue;
 
             while(uniqueConnections.size()<connectionN)uniqueConnections.insert(rand()%(sectionTab[j+1]-sectionTab[j])+sectionTab[j]);
             for(auto it=uniqueConnections.begin(); it!=uniqueConnections.end(); it++)
