@@ -31,7 +31,7 @@ int main()
     cout<<"Ile zestawow skrzyzowan powinna liczyc siec? (nie liczac pol i miejsc docelowych): ";
     cin>>sectionN;
     sectionN+=2;
-    if((float)vertN/sectionN<2.5){
+    if((float)vertN/sectionN<2.6){
         cout<<"Stosunek liczby wierzcholkow do liczby skrzyzowan jest zbyt maly, aby poprawnie wygenerowac siec"<<endl;
         return 0;
     }
@@ -101,7 +101,7 @@ int main()
                 break;
             }
             if(!areAnyConnections)continue;
-            cout<<"zdalne polaczenie: "<<i<<" "<<j<<endl;
+            //cout<<"zdalne polaczenie: "<<i<<" "<<j<<endl;
             set<int> uniqueConnections;
             uniqueConnections.clear();
             while(uniqueConnections.size()!=connectionN)uniqueConnections.insert(rand()%(sectionTab[sectionN]-sectionTab[j+1])+sectionTab[j+1]);
@@ -118,7 +118,7 @@ int main()
             if(i==0)continue;
 
             set<int> uniqueConnections;
-            cout<<"sasiednie polaczenie: "<<i<<" "<<j<<endl;
+            //cout<<"sasiednie polaczenie: "<<i<<" "<<j<<endl;
             switch(density)
             {
             case 0:
@@ -134,8 +134,8 @@ int main()
 
 
             ///zobaczymy czy sie przyjmie
-            connectionN-=vertTab[i].size()/2;
-            if(connectionN<1)continue;
+            //connectionN-=vertTab[i].size()/2;
+            //if(connectionN<1)continue;
 
             while(uniqueConnections.size()<connectionN)uniqueConnections.insert(rand()%(sectionTab[j+1]-sectionTab[j])+sectionTab[j]);
             for(auto it=uniqueConnections.begin(); it!=uniqueConnections.end(); it++)
@@ -152,7 +152,7 @@ int main()
         {
             if(!amIConnected[i])
             {
-                cout<<"korekta: "<<i<<" "<<j<<endl;
+                //cout<<"korekta: "<<i<<" "<<j<<endl;
                 int temp;
                 if(j==1)temp=rand()%(sectionTab[1]-1)+1;
                 else temp=rand()%(sectionTab[j]-sectionTab[j-1])+sectionTab[j-1];
