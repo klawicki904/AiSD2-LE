@@ -1,5 +1,5 @@
-# Ignore everything in source CPP directory
-source CPP/*
+# Ignore everything in all sub-directories
+*
 
 # Allow only selected extensions
 !*.cpp
@@ -13,4 +13,4 @@ source CPP/*
 !*.drawio
 
 # Allow directories (so Git can track files within)
-
+!*/

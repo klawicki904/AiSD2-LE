@@ -1,0 +1,28 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36" version="26.2.14">
+  <diagram name="Page-1" id="lNVjkQ8NxKSheDgSMZhH">
+    <mxGraphModel dx="868" dy="475" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="KpMkHjueN7XZcOLYcd2K-1" value="" style="endArrow=none;html=1;rounded=0;strokeWidth=3;" edge="1" parent="1" source="KpMkHjueN7XZcOLYcd2K-2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="38" y="40" as="sourcePoint" />
+            <mxPoint x="798" y="40" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="KpMkHjueN7XZcOLYcd2K-2" value="" style="ellipse;shape=doubleEllipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="28" y="30" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="KpMkHjueN7XZcOLYcd2K-7" value="&lt;b&gt;Analiza wymagań i projektowanie architektury&lt;/b&gt;&lt;br&gt;&lt;i&gt;Wszyscy&lt;br&gt;&lt;/i&gt;- Interpretacja treści zadania  &lt;br&gt;- Podział ról i komponentów  &lt;br&gt;- Ogólny z&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;arys danych, grafu, algorytmów i&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;interfejsu&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="160" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="KpMkHjueN7XZcOLYcd2K-8" value="Tydzień 1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="75" y="10" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="KpMkHjueN7XZcOLYcd2K-10" value="&lt;b&gt;Dokumentacja wstępna&lt;/b&gt;&lt;br&gt;&lt;i&gt;Dominika i Weronika&lt;br&gt;&lt;/i&gt;- Specyfikacja danych wejściowych i wyjściowych&lt;br&gt;- Podział problemu na podproblemy&lt;i&gt;&lt;br&gt;&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="200" y="80" width="160" height="110" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
