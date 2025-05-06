@@ -8,12 +8,15 @@ class EdgeData
 public:
 	int v; // u -> v
 	double remainingFlow;
+	double cost; // koszt naprawy drogi
 	//int maxFlow;
-	//int backwardsFlow;
+	//int backwardsFlow; //dla optymalizacji
 
 	EdgeData();
 
 	EdgeData(int v, double remainingFlow);
+
+	EdgeData(int v, double remainingFlow, double cost);
 };
 
 #endif

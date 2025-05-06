@@ -1,22 +1,22 @@
-// Ten plik zawiera funkcję „main”. W nim rozpoczyna się i kończy wykonywanie programu.
+// Ten plik zawiera funkcj? �main�. W nim rozpoczyna si? i ko?czy wykonywanie programu.
 
-// algorytm Forda-Fulkersona używał macierzy sąsiedztwa, bo 
-// z listą sąsiedztwa był problem przy przechodzeniu w drugą stronę
-// problem został naprawiony, teraz algorytm używa listy sąsiedztwa
+// algorytm Forda-Fulkersona u?ywa? macierzy s?siedztwa, bo 
+// z list? s?siedztwa by? problem przy przechodzeniu w drug? stron?
+// problem zosta? naprawiony, teraz algorytm u?ywa listy s?siedztwa
 
 /*
 Do zrobienia:
 1. Dokumentacja (dokument tekstowy i arkusz/harmonogram)
 
-2. Interface konsolowy - program, który będzie:
-- wczytywał z pliku i zapisywał do pliku informacje o node'ach i drogach;
-- generował plik ze ścieżkami, który będzie od razu działał dla algorytmu poszukującego
-- przechowywał dane po wczytaniu
-- pozwalał na wyświetlanie danych w konsoli
-- pozwalał na modyfikację danych w konsoli
-- dbał o prawidłowość wprowadzonych danych
-przykładowy plik:
-0.5 (konwersja jęczmienia na piwo)
+2. Interface konsolowy - program, kt�ry b?dzie:
+- wczytywa? z pliku i zapisywa? do pliku informacje o node'ach i drogach;
+- generowa? plik ze ?cie?kami, kt�ry b?dzie od razu dzia?a? dla algorytmu poszukuj?cego
+- przechowywa? dane po wczytaniu
+- pozwala? na wy?wietlanie danych w konsoli
+- pozwala? na modyfikacj? danych w konsoli
+- dba? o prawid?owo?? wprowadzonych danych
+przyk?adowy plik:
+0.5 (konwersja j?czmienia na piwo)
 FIELDS
 1 0.1 1.2 FIELD 30
 BREWERIES
@@ -27,7 +27,7 @@ PUBS
 5 5.6 2.7 PUB
 6 6.7 3.8 PUB
 ROADS
-4 (ilość wierzchołków) 8 (ilość połączeń)
+4 (ilo?? wierzcho?k�w) 8 (ilo?? po??cze?)
 1 2 30.0
 1 3 20.0
 1 4 30.0
@@ -37,19 +37,19 @@ ROADS
 4 5 8.5
 4 6 6.9
 
-3. Modyfikacja algorytmu przepływu dla problemu projektu (ten plik):
-3a. Pole, przez które przechodzi ścieżka powiększająca musi aktualizować maksymalny przepływ dla każdej krawędzi, która z niego wychodzi
-np. jeśli pole ma 30 zboża i wychodzą z niego 2 strzałki po 30, po przeprowadzeniu 25 zboża przez ścieżkę trzeba ustawić wszystkie strzałki na max(obecny, 30-25)
-3b. Browarnia, przez którą przechodzi ścieżka powiększająca musi aktualizować przepływ dla każdej krawędzi, która do niego prowadzi, żeby nie doszło do przekroczenia pojemności browarni
+3. Modyfikacja algorytmu przep?ywu dla problemu projektu (ten plik):
+3a. Pole, przez kt�re przechodzi ?cie?ka powi?kszaj?ca musi aktualizowa? maksymalny przep?yw dla ka?dej kraw?dzi, kt�ra z niego wychodzi
+np. je?li pole ma 30 zbo?a i wychodz? z niego 2 strza?ki po 30, po przeprowadzeniu 25 zbo?a przez ?cie?k? trzeba ustawi? wszystkie strza?ki na max(obecny, 30-25)
+3b. Browarnia, przez kt�r? przechodzi ?cie?ka powi?kszaj?ca musi aktualizowa? przep?yw dla ka?dej kraw?dzi, kt�ra do niego prowadzi, ?eby nie dosz?o do przekroczenia pojemno?ci browarni
 
-4. Browary przemnażające przechodzącą wartość
+4. Browary przemna?aj?ce przechodz?c? warto??
 
-5. GUI (będzie dbało o prawidłowy przepływ między polami i browarami)
+5. GUI (b?dzie dba?o o prawid?owy przep?yw mi?dzy polami i browarami)
 
 
-?. Generator grafów (plik z połączeniami) do testowania algorytmu:
-Wejście: liczba całkowita - ilość node'ów
-Wyjście: plik tekstowy możliwy do przetworzenia przez algorytm
+?. Generator graf�w (plik z po??czeniami) do testowania algorytmu:
+Wej?cie: liczba ca?kowita - ilo?? node'�w
+Wyj?cie: plik tekstowy mo?liwy do przetworzenia przez algorytm
 
 */
 
@@ -71,7 +71,7 @@ int main()
 {
     AdjacencyList nList;
     Matrix graphMatrix;
-    if (!nList.readFileToGraph("./daneZwagami.txt"))
+    if (!nList.readFileToGraph("./daneZwagami2.txt"))
     {
         return -1;
     }
@@ -81,6 +81,6 @@ int main()
     }
     cout << nList.fordFulkerson() << endl;
     cout << graphMatrix.fordFulkerson() << endl;
-
+    cout << graphMatrix.fordFulkerson2();
     return 0;
 }
