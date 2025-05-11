@@ -76,7 +76,7 @@ void AdjacencyList::bfsFlow(vector<vector<EdgeData>>& aList, vector<int>& parent
     }
 }
 
-double AdjacencyList::fordFulkerson()
+double AdjacencyList::edmonsKarp()
 {
     double totalFlow = 0;
     while (true) // wykonuje, a¿ nie znajdzie œcie¿ki powiêkszaj¹cej
@@ -142,8 +142,10 @@ double AdjacencyList::fordFulkerson()
 
         // zaktualizuj przep³yw w liœcie s¹siedztwa
         int v;
+        bool foundOppositeDirection; // do sprawdzania, czy znaleziono drogê w przeciwnym kierunku
         for (size_t i = 0; i < shortestPath.size() - 1; i++) // dla ka¿dego wêz³a w œcie¿ce powiêkszaj¹cej (bez ostatniego)
         {
+            foundOppositeDirection = false;
             v = shortestPath[i];
             for (size_t j = 0; j < this->nList[v].size(); j++) // przeszukaj jego listê s¹siedztwa
             {
@@ -156,11 +158,17 @@ double AdjacencyList::fordFulkerson()
                         if (this->nList[shortestPath[i + 1]][j].v == shortestPath[i])
                         {
                             this->nList[shortestPath[i + 1]][j].remainingFlow += flows[finish]; // dodaj przep³yw w przeciwnym kierunku
+                            foundOppositeDirection = true; // droga w przeciwnym kierunku b->a znaleziona
+                            break; // droga b->a znaleziona, nie szukaj dalej
                         }
-                        break; // droga b->a znaleziona, nie szukaj dalej
                     }
                     break; // droga a->b znaleziona, nie szukaj dalej
                 }
+            }
+            if (!foundOppositeDirection)
+            {   // nie znaleziono drogi b->a
+                addEdge(shortestPath[i + 1], shortestPath[i], 0); // utwórz nowe po³¹czenie
+                this->nList[shortestPath[i + 1]][this->nList[shortestPath[i + 1]].size() - 1].remainingFlow += flows[finish]; // dodaj przep³yw w nowym, przeciwnym kierunku
             }
         }
     }
