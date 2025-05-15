@@ -26,7 +26,7 @@ public:
 
 	void bfsFlow(vector<vector<EdgeData>>& aList, vector<int>& parents, vector<double>& flows, int start );
 
-	double fordFulkerson();
+	double edmonsKarp();
 };
 
 #endif

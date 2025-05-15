@@ -79,8 +79,8 @@ int main()
     {
         return -1;
     }
-    cout << nList.fordFulkerson() << endl;
-    cout << graphMatrix.fordFulkerson() << endl;
-    cout << graphMatrix.fordFulkerson2();
+    cout << nList.edmonsKarp() << endl;
+    cout << graphMatrix.edmonsKarp() << endl;
+    cout << graphMatrix.edmonsKarp2();
     return 0;
 }

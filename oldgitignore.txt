@@ -1,3 +1,0 @@
-# ignore the auto-generated .vs directory (can grow huge quickly)
-.vs
-

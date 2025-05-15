@@ -38,7 +38,7 @@ public:
     bool readFileToGraph(string fileName);
 
     //Klasyczna metoda wyliczaj?ca maksymalny przep?yw
-    double fordFulkerson();
+    double edmonsKarp();
 
     //Zmodyfikowany bfs.  Je?eli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
     bool bfs(int x, const vector<vector<EdgeData>>& graf, int t, vector<int>& f);
@@ -46,7 +46,7 @@ public:
 
     ////Ford Fulkerson dla sieci w ktorej interesuja nas sciezki powiekszajace s-> ... -> t 
     // (Gdzie gdzies po drodze jest wierzcholek ktory jest browarem)
-    double fordFulkerson2();
+    double edmonsKarp2();
 
     bool bfs2(int x, const vector<vector<EdgeData>>& graf, int t, vector<int>& f);
 };

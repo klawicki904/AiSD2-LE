@@ -100,7 +100,7 @@ bool Matrix::readFileToGraph(string fileName) {
 }
 
 // Klasyczny fordFulkersow
-double Matrix::fordFulkerson() {
+double Matrix::edmonsKarp() {
     int s = 0;
     int t = vertices - 1;
 
@@ -184,7 +184,7 @@ bool Matrix::bfs(int s, const vector<vector<EdgeData>>& graf, int t, vector<int>
 
 ///Ford Fulkerson dla sieci w ktorej interesuja nas sciezki powiekszajace s-> ... -> t 
 // (Gdzie gdzies po drodze jest wierzcholek ktory jest browarem)
-double Matrix::fordFulkerson2() {
+double Matrix::edmonsKarp2() {
     int s = 0;
     int t = vertices - 1;
     int midT = vertices;
