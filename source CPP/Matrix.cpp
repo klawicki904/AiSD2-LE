@@ -1,6 +1,9 @@
+
+#include "gtest/gtest.h"
 #include "Matrix.h"
 #include <string>
 #include <sstream>
+
 
 
 // Konstruktor
@@ -221,19 +224,19 @@ double Matrix::fordFulkerson2() {
     {
         int tmpT = t;
         int tmp = f[t];
-        // cout << " Droga: z " << s << " do " << t << endl;
+         cout << " Droga: z " << s << " do " << t << endl;
         double min = siecResidualna.tab[tmp][tmpT].remainingFlow;
 
         //Wypisuje siezki powieszajace i wyznacza minimum przepustowosci z tej sciezki
         while (tmp != s) {
-            //cout << tmpT << " -> " << tmp << " min: " << min << endl;
+            cout << tmpT << " -> " << tmp << " min: " << min << endl;
             tmpT = tmp;
             tmp = f[tmp];
             if (min > siecResidualna.tab[tmp][tmpT].remainingFlow) {
                 min = siecResidualna.tab[tmp][tmpT].remainingFlow;
             }
         }
-        //cout << tmpT << " -> " << tmp << " min: " << min << endl;
+        cout << tmpT << " -> " << tmp << " min: " << min << endl;
 
         tmpT = t;
         tmp = f[t];
@@ -256,19 +259,19 @@ double Matrix::fordFulkerson2() {
     {
         int tmpT = t;
         int tmp = f2[t];
-        // cout << " Droga: z " << s << " do " << t << endl;
+         cout << " Droga: z " << s << " do " << t << endl;
         double min = siecResidualna.tab[tmp][tmpT].remainingFlow;
 
         //Wypisuje siezki powieszajace i wyznacza minimum przepustowosci z tej sciezki
         while (tmp != s) {
-            //cout << tmpT << " -> " << tmp << " min: " << min << endl;
+            cout << tmpT << " -> " << tmp << " min: " << min << endl;
             tmpT = tmp;
             tmp = f2[tmp];
             if (min > siecResidualna.tab[tmp][tmpT].remainingFlow) {
                 min = siecResidualna.tab[tmp][tmpT].remainingFlow;
             }
         }
-        //cout << tmpT << " -> " << tmp << " min: " << min << endl;
+        cout << tmpT << " -> " << tmp << " min: " << min << endl;
 
         tmpT = t;
         tmp = f2[t];
