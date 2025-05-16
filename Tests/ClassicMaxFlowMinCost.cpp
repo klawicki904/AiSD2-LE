@@ -10,6 +10,6 @@ TEST(MaxFlowClassicGraph, SimpleGraph1) {
     m.addEdge(1, 3, 10.0, 2.0);
     m.addEdge(2, 3, 10.0, 2.0);
 
-    double result = m.fordFulkerson();
+    double result = m.edmonsKarp();
     EXPECT_DOUBLE_EQ(20.0, result);
 }

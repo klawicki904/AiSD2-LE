@@ -3,6 +3,7 @@
 #include "Matrix.h"
 #include <string>
 #include <sstream>
+#include <functional>
 
 
 
@@ -38,7 +39,7 @@ void Matrix::addNode(const Node& node) {
 void Matrix::printGraph() const {
     for (int i = 0; i < vertices; ++i) {
         for (int j = 0; j < vertices; ++j) {
-            cout << tab[i][j].remainingFlow << " ";
+            cout << tab[i][j].remainingFlow << "[" <<  tab[i][j].cost <<"]" << " ";
         }
         cout << endl;
     }
@@ -98,6 +99,213 @@ bool Matrix::readFileToGraph(string fileName) {
     plik.close();
     return true;
 }
+
+void Matrix::dijkstra(int source) {
+    const double INF = numeric_limits<double>::max();
+    vector<double> d(vertices + 1, INF);
+    vector<int> visited(vertices + 1, 0);
+    d[source] = 0;
+
+    // Kolejka priorytetowa - pary {odleg?o??, wierzcho?ek}
+    priority_queue<pair<double, int>, vector<pair<double, int>>, greater<>> pq;
+    pq.push({ 0, source });
+
+    while (!pq.empty()) {
+        double dist = pq.top().first;
+        int u = pq.top().second;
+        pq.pop();
+
+        if (visited[u]) continue;
+        visited[u] = 1;
+
+        for (int v = 0; v < vertices; ++v) {
+            if (tab[u][v].remainingFlow != 0) {
+                double weight = tab[u][v].cost;
+                if (d[u] + weight < d[v]) {
+                    d[v] = d[u] + weight;
+                    pq.push({ d[v], v });
+                }
+            }
+        }
+    }
+
+    // Wy?wietlenie wyników
+   /* cout << "Odleg?o?ci od wierzcho?ka " << source << ":\n";
+    for (int i = 0; i < vertices; ++i) {
+        if (d[i] == INF) {
+            cout << "Do wierzcho?ka " << i << " nie ma ?cie?ki.\n";
+        }
+        else {
+            cout << "Odleg?o?? do wierzcho?ka " << i << ": " << d[i] << "\n";
+        }
+    }*/
+}
+
+bool Matrix::BellmanFord(int source, int target, double& cost, vector<int>& parents, const vector<vector<EdgeData>>& graf) {
+    const double INF = numeric_limits<double>::max();
+    vector<double> d(vertices + 1, INF); // dystanse
+    d[source] = 0;
+
+    for (int k = 0; k < vertices; ++k) {
+        for (int i = 0; i < vertices; ++i) {
+            for (int j = 0; j < vertices; ++j) {
+                if (graf[i][j].remainingFlow != 0 && d[i] != numeric_limits<double>::max()) {
+                    if (d[j] > d[i] + graf[i][j].cost) {
+                        d[j] = d[i] + graf[i][j].cost;
+                        parents[j] = i;
+                    }
+                }
+            }
+        }
+    }
+    // Wyniki
+    if (d[target] == INF) {
+        return false;
+    }
+    else {
+        /*for (int i = 0; i < vertices; i++) {
+            cout << i << " : " << d[i] << endl;
+        }*/
+        cost = d[target];
+        return true;
+    }
+};
+
+bool Matrix::dijkstraModify(int source, int target, double& cost, vector<int>& parents, const vector<vector<EdgeData>>& graf) {
+    const double INF = numeric_limits<double>::max();
+    vector<double> d(vertices + 1, INF);
+    vector<int> visited(vertices + 1, 0);
+    d[source] = 0;
+
+    // Kolejka priorytetowa - pary {odleg?o??, wierzcho?ek}
+    priority_queue<pair<double, int>, vector<pair<double, int>>, greater<>> pq;
+    pq.push({ 0, source });
+
+    while (!pq.empty()) {
+        double dist = pq.top().first;
+        int u = pq.top().second;
+        pq.pop();
+
+        if (visited[u]) continue;
+        visited[u] = 1;
+
+        if (u == target) break;// znaleziono najkrótsz? ?cie?k? do t
+
+        for (int v = 0; v < vertices; ++v) {
+            if (graf[u][v].remainingFlow != 0) {
+                double weight = graf[u][v].cost;
+                if (d[u] + weight < d[v]) {
+                    d[v] = d[u] + weight;
+                    parents[v] = u;
+                    pq.push({ d[v], v });
+                }
+            }
+        }
+    }
+
+    // Wy?wietlenie wyników
+    //cout << "Odleg?o?ci od wierzcho?ka " << source << ":\n";
+
+    if (d[target] == INF) {
+        return false;
+    }
+    else {
+        /*for (int i = 0; i < vertices; i++) {
+            cout << i << " : " << d[i] << endl;
+        }*/
+        cost = d[target];
+        return true;
+    }
+}
+
+//Algorytm Busackera_Gowena wyznacza najta?szy przep?yw w sieci dla docelowego przep?ywu F.
+double Matrix::BusackerGowen(double const maxFlow, 
+    bool (Matrix::*shortestPathFunc)(int, int, double&, vector<int>&, const vector<vector<EdgeData>>&)) {
+    int s = 0;
+    int t = vertices - 1;
+    double result = 0; //przeplyw, zwieksza si? a? nie osiagnie warto?ci F- tj. maxFlow. Podanego jako argument funkcji.
+    double summaricResult = 0; //Suma (cost * przeplyw)-jedna sciezka
+    double sumCost = 0; // Suma kosztow sciezek
+
+    // UWAGA !! Mozna przerobic aby dzialalo na orginale. Bez pomocniczej sieci, ale wtedy na sta?e graf zostaje zmodyfikowany.
+    Matrix siecResidualna(vertices); //siec residualna
+
+    vector<int> f(vertices); //tablica ojcow
+    double cost; //koszt jednej sciezki
+
+    //Siec residualna na start algorytmu jest taka sama jak siec przep?ywowa
+    for (int i = 0; i < vertices; i++) {
+        for (int j = 0; j < vertices; j++) {
+            siecResidualna.tab[i][j] = tab[i][j];
+        }
+    }
+        // Wykonuje dopoki nie zostal osiagniety przeplyw F(maxFlow)
+        // i dopoki istnieje sciezka z s do t (wybiera t? sci??k? która ma najni?szy koszt)
+        while (result < maxFlow && (this->*shortestPathFunc)(s, t, cost, f, siecResidualna.tab)) {
+            //siecResidualna.printGraph();
+            //cout << "Znalazlem sciezke o koszcie: " << cost << endl;
+            /*for (int i = 0; i < vertices; i++) {
+                cout << i << " : " << f[i] << endl;
+            }*/
+            int tmpT = t;
+            int tmp = f[t];
+            // cout << " Droga: z " << s << " do " << t << endl;
+
+
+            double maxFlowOfPath = siecResidualna.tab[tmp][tmpT].remainingFlow;
+
+            //Wypisuje siezki powieszajace i wyznacza minimum przepustowosci z tej sciezki
+            while (tmp != s) {
+                // cout << tmpT << " -> " << tmp << " min: " << maxFlowOfPath << endl;
+                tmpT = tmp;
+                tmp = f[tmp];
+                if (maxFlowOfPath > siecResidualna.tab[tmp][tmpT].remainingFlow) {
+                    maxFlowOfPath = siecResidualna.tab[tmp][tmpT].remainingFlow;
+                }
+            }
+            //cout << "Minimum" << maxFlowOfPath << endl;
+
+
+
+            if (result + maxFlowOfPath > maxFlow) {
+                maxFlowOfPath = maxFlow - result;
+            }
+
+            tmpT = t;
+            tmp = f[t];
+            //aktualizuje siec residualna
+            while (tmp != s) {
+                siecResidualna.tab[tmp][tmpT].remainingFlow -= maxFlowOfPath;
+                siecResidualna.tab[tmpT][tmp].remainingFlow += maxFlowOfPath;
+                siecResidualna.tab[tmpT][tmp].cost = -siecResidualna.tab[tmp][tmpT].cost;
+                tmpT = tmp;
+                tmp = f[tmp];
+            }
+            siecResidualna.tab[tmp][tmpT].remainingFlow -= maxFlowOfPath;
+            siecResidualna.tab[tmpT][tmp].remainingFlow += maxFlowOfPath;
+            siecResidualna.tab[tmpT][tmp].cost = -siecResidualna.tab[tmp][tmpT].cost;
+
+            result += maxFlowOfPath;
+            //cout << "Wynik: " << result << endl;
+            summaricResult += (maxFlowOfPath * cost);
+            cout << "Sciezka mozna przeslac: " << maxFlowOfPath << "j. kosztem: " << cost << endl;
+            cout << "Zatem koszt sciezki: " << (maxFlowOfPath * cost) << endl;
+            sumCost += cost;
+        }
+        cout << "Sumaryczny koszt: " << summaricResult << endl;
+        cout << "Suma kosztów dróg: " << sumCost << endl;
+
+        return summaricResult;
+}
+
+void Matrix::maxFlowMinCost() {
+    double maxFlow = edmonsKarp();
+    BusackerGowen(maxFlow, &Matrix::dijkstraModify);
+    cout << endl;
+    BusackerGowen(maxFlow, &Matrix::BellmanFord);
+}
+
+
 
 // Klasyczny fordFulkersow
 double Matrix::edmonsKarp() {

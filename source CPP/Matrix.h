@@ -2,12 +2,15 @@
 #define MATRIX_H
 
 #include <iostream>
+#include <functional>
 #include "Matrix.h"
 #include "Node.h"
 #include "EdgeData.h"
 #include <vector>
 #include <fstream>
 #include <queue>
+#include <limits>
+
 
 using namespace std;
 
@@ -37,8 +40,19 @@ public:
     //Czyta dane z pliku i inicjalizuje macierz
     bool readFileToGraph(string fileName);
 
+    void dijkstra(int source);
+
+    bool dijkstraModify(int source,  int target, double& cost, vector<int>& parents, const vector<vector<EdgeData>>& graf);
+
+    bool BellmanFord(int source, int target, double& cost, vector<int>& parents, const vector<vector<EdgeData>>& graf);
+
+    double BusackerGowen(double const maxFlow,
+        bool (Matrix::* shortestPathFunc)(int, int, double&, vector<int>&, const vector<vector<EdgeData>>&));
+
     //Klasyczna metoda wyliczaj?ca maksymalny przep?yw
     double edmonsKarp();
+
+    void maxFlowMinCost();
 
     //Zmodyfikowany bfs.  Je?eli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
     bool bfs(int x, const vector<vector<EdgeData>>& graf, int t, vector<int>& f);

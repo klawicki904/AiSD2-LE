@@ -71,16 +71,18 @@ int main()
 {
     AdjacencyList nList;
     Matrix graphMatrix;
-    if (!nList.readFileToGraph("./daneZwagami2.txt"))
+   /* if (!nList.readFileToGraph("./daneZwagami2.txt"))
+    {
+        return -1;
+    }*/
+   
+    if (!graphMatrix.readFileToGraph("./daneZwagami2.txt"))
     {
         return -1;
     }
-    if (!graphMatrix.readFileToGraph("./daneZeWszystkim.txt"))
-    {
-        return -1;
-    }
-    cout << nList.edmonsKarp() << endl;
-    cout << graphMatrix.edmonsKarp() << endl;
-    cout << graphMatrix.edmonsKarp2();
+   // cout << nList.edmonsKarp() << endl;
+    //cout << graphMatrix.edmonsKarp() << endl;
+   //cout << graphMatrix.edmonsKarp();
+    graphMatrix.maxFlowMinCost();
     return 0;
 }

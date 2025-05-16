@@ -7,9 +7,9 @@ class EdgeData
 
 public:
 	int v; // u -> v
-	double remainingFlow;
+	double remainingFlow; //pozostala przepustowosc
 	double cost; // koszt naprawy drogi
-	//int maxFlow;
+	double flow; //orginalna przepustowosc dla krawedzi
 	//int backwardsFlow; //dla optymalizacji
 
 	EdgeData();
