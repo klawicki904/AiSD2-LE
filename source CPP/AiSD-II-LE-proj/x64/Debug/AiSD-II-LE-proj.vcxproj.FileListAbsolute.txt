@@ -1,0 +1,6 @@
+C:\Users\nowyn\Source\Repos\AiSD2-LE\source CPP\x64\Debug\Resources\Generator\networkGen.exe
+C:\Users\nowyn\Source\Repos\AiSD2-LE\source CPP\x64\Debug\networkGenInterface.exe
+C:\Users\nowyn\Source\Repos\AiSD2-LE\source CPP\x64\Debug\networkGenInterface.pdb
+C:\Users\nowyn\Source\Repos\AiSD2-LE\source CPP\x64\Debug\networkGenInterface.exe.config
+C:\Users\nowyn\Source\Repos\AiSD2-LE\source CPP\AiSD-II-LE-proj\x64\Debug\AiSD-II-LE-proj.vcxproj.AssemblyReference.cache
+C:\Users\nowyn\source\repos\AiSD2-LE\source CPP\AiSD-II-LE-proj\x64\Debug\AiSD-II-.83AE3877.Up2Date
