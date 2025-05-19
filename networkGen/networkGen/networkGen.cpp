@@ -13,7 +13,7 @@ using namespace std;
 
 
 // NOTKA:
-// dziala od 10 wierzcholkow
+// dziala od 7 wierzcholkow
 // dziala rowniez dla wiekszych danych np. 10 000+
 // wspolczynnik liczby wierzcholkow do liczby zestawow skrzyzowan nie moze byc mniejszy niz 2.6
 
@@ -22,7 +22,7 @@ using namespace std;
 #define MINIMUM_CORRECT_RATIO 2.6   //znalazlem metoda prob i bledow najmniejszy stosunek liczby wierzcholkow do zestawow skrzyzowan ktory wygeneruje "ladna" mape skrzyzowan
                                     //nie chcemy skrzyzowan do ktorych przykladowo wchodzi milion drog a wychodzi tylko jedna
 
-#define MINIMUM_SECTION_POSITION_N 3    //minimalna dopuszczalna ilosc skrzyzowan w zestawie
+#define MINIMUM_SECTION_POSITION_N 3.5    //minimalna dopuszczalna ilosc skrzyzowan w zestawie
 
 static bool areSectionsTooClose(int section, set<int>& uniqueSections, int vsRatio)
 {
@@ -122,6 +122,7 @@ int main(int argc, char **argv)
     }
 
     //---------------input uzytkownika---------------
+    //z interfejsu
     if (argc == 7) {
         vertN = atoi(argv[1])-2;
         sectionN = atoi(argv[2]) + 4;
@@ -129,39 +130,44 @@ int main(int argc, char **argv)
         fieldN = atoi(argv[4]);
         breweryN = atoi(argv[5]);
         pubN = atoi(argv[6]);
+        if (vertN < 7)vertN = 10;
+        if (fieldN <= 0)fieldN = 1;
+        if (breweryN <= 0)breweryN = 1;
+        if (pubN <= 0)pubN = 1;
     }
     else {
+        //recznie
         cout << "Ile wierzcholkow powinna posiadac siec?: ";     //pola + skrzyzowania + browary + karczmy + punkty startu i konca
         cin >> vertN;
         vertN -= 2;     //2 wierzcholki abstrakcyjne
-        if (vertN / 5 - 1 < 0)cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == 0): ";     //przedzialow zawierajacych same skrzyzowania
-        else cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == " << vertN / 5 - 1 << "): ";     //przedzialow zawierajacych same skrzyzowania
-        cin >> sectionN;
-        sectionN += 4;
-        if ((float)vertN / (sectionN - 2) < MINIMUM_CORRECT_RATIO)
-        {
-            cout << "Stosunek liczby wierzcholkow do liczby skrzyzowan jest zbyt maly, aby poprawnie wygenerowac siec" << endl;
-            return 0;
-        }
-        cout << "Podaj liczbe pol: ";
+
+        cout << "Podaj liczbe pol (rekomendowana wartosc == "<<round((vertN+2)*0.15)<<"): ";
         cin >> fieldN;
         if (fieldN <= 0)fieldN = 1;
-        cout << "Podaj liczbe browarow: ";
+        cout << "Podaj liczbe browarow (rekomendowana wartosc == " << round((vertN + 2) * 0.24) << "): ";
         cin >> breweryN;
         if (breweryN <= 0)breweryN = 1;
-        cout << "Podaj liczbe karczm: ";
+        cout << "Podaj liczbe karczm (rekomendowana wartosc == " << round((vertN + 2) * 0.15) << "): ";
         cin >> pubN;
         if (pubN <= 0)pubN = 1;
-        if ((float)(vertN - fieldN - pubN) / (sectionN - 2) < MINIMUM_SECTION_POSITION_N)
-        {
-            cout << "Blad danych wejsciowych (mozliwe problemy):" << endl << "1. Podano zbyt duzo pol i/lub karczm, aby poprawnie wygenerowac siec"
-                << endl << "2. Stosunek liczby wierzcholkow do liczby skrzyzowan jest zbyt maly, aby poprawnie wygenerowac pola i karczmy";
-            return 0;
-        }
         if (breweryN > vertN - fieldN - pubN) {
             cout << "Podano wiecej browarow niz dostepnych wierzcholkow" << endl;
             return 0;
         }
+
+        if (round((float)(vertN-fieldN-pubN)/5)< 0)cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == 0): ";     //przedzialow zawierajacych same skrzyzowania
+        else cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == " << round((float)(vertN - fieldN - pubN) / 5) << "): ";     //przedzialow zawierajacych same skrzyzowania
+        cin >> sectionN;
+        sectionN += 4;      //dwa dla wierzcholkow abstrakcyjnych i dwa dla przynajmniej jednego zestawu skrzyzowan
+        
+        if ((vertN - fieldN - pubN) / 3 <= sectionN - 4)
+        {
+            cout << "Blad danych wejsciowych (mozliwe problemy):" << endl << "1. Podano zbyt duzo pol i/lub karczm, aby poprawnie wygenerowac siec"
+                << endl << "2. Stosunek liczby wierzcholkow do liczby zestawow skrzyzowan jest zbyt maly, aby poprawnie wygenerowac pola i karczmy"
+                << endl << "3. Stosunek liczby wierzcholkow do liczby zestawow skrzyzowan jest zbyt maly, aby poprawnie wygenerowac skrzyzowania" << endl;
+            return 0;
+        }
+        
         cout << "Jak duza ma byc szansa na drogi-skroty? (0 - normalna, 1 - wieksza, 2 - wieksza++): ";       //szansa na wylosowanie drogi skrotu
         //im wieksza szansa tym tez wiecej wierzcholkow
         cin >> density;
@@ -177,28 +183,50 @@ int main(int argc, char **argv)
 
 
     ///---------------losowanie przedzialow---------------
+    int modifier = 2;
+    if ((vertN - fieldN - pubN) / (sectionN - 2) < 4.5)modifier = 1;
+    vector<int> intervalIndexTab(vertN-fieldN-pubN);    //kandydaci na przedzialy
+    vector<int> values(2 * modifier + 1);               //sasiednie wartosci do usuniecia z wektora kandydatow
     set<int> uniqueSections;
     uniqueSections.insert(fieldN+1);
     uniqueSections.insert(vertN + 1 - pubN);
-    while (uniqueSections.size() < sectionN - 2)
+    for (int i = 0; i < intervalIndexTab.size(); i++)intervalIndexTab[i] = i + fieldN + 1;
+    while (uniqueSections.size() != sectionN - 2)
     {
-        int section = rand() % (vertN-pubN-fieldN) + fieldN+1;
-        if (!areSectionsTooClose(section, uniqueSections, vertN / sectionN))
-        {
-            uniqueSections.insert(section);
+        //for (auto it = uniqueSections.begin(); it != uniqueSections.end(); it++)cout << *it << " ";
+        //cout << endl;
+        int section = rand() % intervalIndexTab.size();
+        uniqueSections.insert(intervalIndexTab[section]);
+        if (section < modifier + 1) {
+            intervalIndexTab.erase(intervalIndexTab.begin(), intervalIndexTab.begin() + section);
+            if (intervalIndexTab.size() >= modifier + 1)intervalIndexTab.erase(intervalIndexTab.begin(), intervalIndexTab.begin() + modifier);
+            continue;
+        }
+        if (intervalIndexTab.size() - section < modifier + 1) {
+            intervalIndexTab.erase(intervalIndexTab.begin() + section, intervalIndexTab.end());
+            if (intervalIndexTab.size() >= modifier + 1)intervalIndexTab.erase(intervalIndexTab.end() - modifier, intervalIndexTab.end());
+            continue;
+        }
+        int j = 2 * modifier + 1;
+        for (int i = 0; i < j; i++)values[i] = intervalIndexTab[section] - modifier + i;
+        for (int i = 0, k = 0; i < j; i++, k++)if (intervalIndexTab[section - modifier + i] == values[k]) {
+            intervalIndexTab.erase(intervalIndexTab.begin() + section - modifier + i);
+            i--;
+            j--;
         }
     }
+
+    int i = 1;
+    for (auto it = uniqueSections.begin(); it != uniqueSections.end(); it++)
     {
-        int i = 1;
-        for (auto it = uniqueSections.begin(); it != uniqueSections.end(); it++)
-        {
-            sectionTab[i] = *it;
-            i++;
-        }
+        sectionTab[i] = *it;
+        i++;
     }
     cout << endl << "tablica sectionTab: " << endl;
     for (int i = 0; i < sectionTab.size(); i++)cout << sectionTab[i] << " ";
     cout << endl << "--------------------------------" << endl << "Podsumowanie:" << endl;
+
+
     ///---------------losowanie wspolrzednych pol---------------
     set<pair<int, int>> fieldCoordinatesSet;
     fieldCoordinatesSet.clear();
@@ -240,7 +268,7 @@ int main(int argc, char **argv)
         x = 100+(30 * j);
         int y;
         int nodesInSection = sectionTab[j + 1] - sectionTab[j];
-        cout << i <<" "<<j << endl;
+        //cout << i <<" "<<j << endl;
         if (nodesInSection % 2)y = (nodesInSection / 2 - 1) * 15 + 8 - ((i - sectionTab[j]) * 15);
         else y = nodesInSection / 2 * 15 - ((i - sectionTab[j]) * 15);
         vertTab[i]->coordinates = make_pair(x, y);

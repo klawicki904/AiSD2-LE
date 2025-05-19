@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -28,28 +29,25 @@ namespace networkGenInterface
         }
         private void AcceptUserInput(object sender, RoutedEventArgs e)
         {
-            generalInfoLabel.Content = "Generowanie... Proszę czekać";
             ExecuteGenerator();
             this.Close();
         }
 
         private void NumberCheck(object sender, TextCompositionEventArgs e)
         {
-            var controls = new Object[] { vertNBox, sectionNBox,densityList,fieldNBox,breweryNBox,pubNBox};
-            var labels = new Label[] { vertNLabel, sectionNLabel, densityLabel,fieldNLabel,breweryNLabel,pubNLabel};
+            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox,densityList};
+            var labels = new Label[] { vertNLabel, fieldNLabel, breweryNLabel, pubNLabel, sectionNLabel, densityLabel};
             GetControlIndex(ref sender, ref controls, out int controlIndex);
             e.Handled = !Regex.IsMatch(e.Text, @"^\d+$");
             if (!e.Handled && controlIndex!=controls.Length-1)
             {
-                if (controlIndex == 1)
+                if (controlIndex == 4)
                 {
-                    (controls[2] as ComboBox).Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
-                    (controls[2] as ComboBox).Foreground = Brushes.AntiqueWhite;
-                    (controls[2] as ComboBox).SelectedIndex = 0;
-                    (controls[2] as ComboBox).IsEnabled = true;
-                    (controls[3] as TextBox).Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
-                    (controls[3] as TextBox).IsEnabled = true;
-                    labels[3].Foreground = Brushes.AntiqueWhite;
+                    (controls[5] as ComboBox).Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+                    (controls[5] as ComboBox).Foreground = Brushes.AntiqueWhite;
+                    (controls[5] as ComboBox).SelectedIndex = 0;
+                    (controls[5] as ComboBox).IsEnabled = true;
+                    labels[1].Foreground = Brushes.AntiqueWhite;
                     densityBackground.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
                 }
                 else
@@ -63,7 +61,13 @@ namespace networkGenInterface
 
         private void KeyCheck(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Space) e.Handled = true;
+            if (e.Key == Key.Space)
+            {
+                e.Handled = true;
+                return;
+            }
+            if (!int.TryParse((sender as TextBox).Text, out int content)) return;
+            if (content == 0 && (e.Key == Key.D0 || e.Key == Key.NumPad0)) e.Handled=true;
         }
 
         private void PasteCheck(object sender, DataObjectPastingEventArgs e)
@@ -73,14 +77,14 @@ namespace networkGenInterface
 
         private void InputDataCheck(object sender, TextChangedEventArgs e)
         {
-            var controls = new Object[] { vertNBox, sectionNBox, densityList, fieldNBox, breweryNBox, pubNBox };
-            var labels = new Label[] { vertNLabel, sectionNLabel, densityLabel, fieldNLabel, breweryNLabel, pubNLabel};
+            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox, densityList };
+            var labels = new Label[] { vertNLabel, fieldNLabel, breweryNLabel, pubNLabel, sectionNLabel, densityLabel};
             GetControlIndex(ref sender, ref controls, out int controlIndex);
             if ((sender as TextBox).Text.Length == 0)
             {
                 for (int i = controlIndex + 1; i < controls.Length; i++)
                 {
-                    if (i == 2)
+                    if (i == 5)
                     {
                         (controls[i] as ComboBox).Background = Brushes.Transparent;
                         (controls[i] as ComboBox).Foreground = Brushes.Transparent;
@@ -96,7 +100,7 @@ namespace networkGenInterface
                     labels[i].Foreground = Brushes.Transparent;
                 }
             }
-            if (VertSectionRatioCheck() && FieldPubNCheck() && BreweryNCheck())
+            if (RatioCheck()  && BreweryNCheck())
             {
                 generateButton.Visibility = Visibility.Visible;
                 generateButton.IsEnabled = true;
@@ -107,6 +111,15 @@ namespace networkGenInterface
                 generateButton.Visibility = Visibility.Hidden;
                 generateButton.IsEnabled = false;
                 buttonLabel.Visibility = Visibility.Hidden;
+            }
+            if (controlIndex == 4)
+            {
+                if (!int.TryParse(vertNBox.Text, out int vertN)) return;
+                if(!int.TryParse(fieldNBox.Text, out int fieldN))return;
+                if(!int.TryParse(pubNBox.Text, out int pubN))return;
+                double recommendedValue = Math.Round((double)((vertN - fieldN - pubN - 2) / 5));
+                if (!RatioCheck()) generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue + "\nPodano zbyt mało wierzchołków\nlub zbyt dużo zestawów wierzchołków!";
+                else generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue;
             }
         }
         private void GetControlIndex(ref object sender, ref Object[] controls, out int controlIndex)
@@ -123,47 +136,44 @@ namespace networkGenInterface
         }
         private void ChangeGeneralInfo(object sender, RoutedEventArgs e)
         {
-            var controls = new Object[] { vertNBox, sectionNBox, densityList, fieldNBox, breweryNBox, pubNBox };
+            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox, densityList };
             GetControlIndex(ref sender, ref controls, out int controlIndex);
             switch (controlIndex) {
                 case 0:
                     generalInfoLabel.Content = "Podaj odpowiednio dużą liczbę wierzchołków";
                     break;
                 case 1:
-                    if ((int.Parse(vertNBox.Text)-2) / 5 - 1 < 0) generalInfoLabel.Content = "Rekomendowana wartość = 0";
-                    else generalInfoLabel.Content = "Rekomendowana wartość = " + ((int.Parse(vertNBox.Text)-2) / 5 - 1).ToString();
+                    generalInfoLabel.Content = "Rekomendowana wartość = " + Math.Round(int.Parse(vertNBox.Text)*0.12);
                     break;
                 case 2:
-                    generalInfoLabel.Content = "Różnorodność połączeń = Drogi skróty";
+                    generalInfoLabel.Content = "Rekomendowana wartość = " + Math.Round(int.Parse(vertNBox.Text) * 0.24, 0);
                     break;
                 case 3:
-                    if (!VertSectionRatioCheck()) generalInfoLabel.Content = "!Niepoprawne poprzednie dane wejściowe!";
-                    else generalInfoLabel.Content = "Rekomendowana wartość = " + (int)((int.Parse(vertNBox.Text) - 7 - (3.1 * int.Parse(sectionNBox.Text))) / 2);
+                    generalInfoLabel.Content = "Rekomendowana wartość = " + Math.Round(int.Parse(vertNBox.Text) * 0.14);
                     break;
                 case 4:
-                    if (!VertSectionRatioCheck()) generalInfoLabel.Content = "!Niepoprawne poprzednie dane wejściowe!";
-                    else generalInfoLabel.Content = "Rekomendowana wartość = " + Math.Round(int.Parse(vertNBox.Text) * 0.24, 0);
+                    if (!int.TryParse(vertNBox.Text, out int vertN)) return;
+                    if (!int.TryParse(fieldNBox.Text, out int fieldN)) return;
+                    if (!int.TryParse(pubNBox.Text, out int pubN)) return;
+                    double recommendedValue = Math.Round((double)((vertN - fieldN - pubN - 2) / 5));
+                    if (!BreweryNCheck()) generalInfoLabel.Content = "Brak miejsca dla browarów!";
+                    else if (!RatioCheck()) generalInfoLabel.Content = "Rekomendowana wartość = "+recommendedValue+"\nPodano zbyt mało wierzchołków\nlub zbyt dużo zestawów wierzchołków!";
+                    else generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue;
                     break;
                 case 5:
-                    if (!VertSectionRatioCheck()) generalInfoLabel.Content = "!Niepoprawne poprzednie dane wejściowe!";
-                    else generalInfoLabel.Content = "Rekomendowana wartość = " + (int)((int.Parse(vertNBox.Text) - 7 - (3.1 * int.Parse(sectionNBox.Text))) / 2);
+                    generalInfoLabel.Content = "Różnorodność połączeń = Drogi skróty";
                     break;
+
             }
         }
-        private bool VertSectionRatioCheck()
-        {
-            if (!int.TryParse(vertNBox.Text, out int vertN)) return false;
-            if (!int.TryParse(sectionNBox.Text, out int sectionN)) return false;
-            if (vertN < 10) return false;
-            return (float)(vertN - 2) / (sectionN + 2) >= 2.6;
-        }
-        private bool FieldPubNCheck()
+        private bool RatioCheck()
         {
             if (!int.TryParse(vertNBox.Text, out int vertN)) return false;
             if (!int.TryParse(sectionNBox.Text, out int sectionN)) return false;
             if (!int.TryParse(fieldNBox.Text, out int fieldN)) return false;
             if (!int.TryParse(pubNBox.Text, out int pubN)) return false;
-            return (float)(vertN-2-fieldN-pubN) / (sectionN + 2) >= 3;
+            if (vertN < 7) return false;
+            return Math.Round((float)(vertN -fieldN-pubN-2) / 3) > sectionN;
         }
         private bool BreweryNCheck()
         {
@@ -171,13 +181,12 @@ namespace networkGenInterface
             if (!int.TryParse(breweryNBox.Text, out int breweryN)) return false;
             if (!int.TryParse(fieldNBox.Text, out int fieldN)) return false;
             if (!int.TryParse(pubNBox.Text, out int pubN)) return false;
-            return breweryN<=vertN-fieldN-pubN;
+            return breweryN<=vertN-2-fieldN-pubN;
         }
         private void ExecuteGenerator()
         {
             string arguments = int.Parse(vertNBox.Text)+" "+int.Parse(sectionNBox.Text)+" "+densityList.SelectedIndex+" "
                 +int.Parse(fieldNBox.Text)+" "+int.Parse(breweryNBox.Text)+" "+int.Parse(pubNBox.Text);
-
             var generatorProcess = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -193,14 +202,9 @@ namespace networkGenInterface
             using (StreamWriter debugLogFile = new StreamWriter("networkGenDebugLog.txt"))
             {
                 debugLogFile.Write("networkGen debug log:");
-                while (!generatorProcess.StandardOutput.EndOfStream)
-                {
-                    debugLogFile.WriteLine(generatorProcess.StandardOutput.ReadLine());
-                    
-                }
+                while (!generatorProcess.StandardOutput.EndOfStream)debugLogFile.WriteLine(generatorProcess.StandardOutput.ReadLine());
             }
             generatorProcess.WaitForExit();
         }
-
     }
 }
