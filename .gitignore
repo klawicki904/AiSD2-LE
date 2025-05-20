@@ -11,6 +11,15 @@
 !*.png
 !*.pdf
 !*.drawio
+!.gitignore
+!*.csproj
+!*.cs
+!*.xaml
+!*.ico
+!*.config
+!*.exe
+!*.resx
+!*.settings
 
 # Allow directories (so Git can track files within)
 !*/

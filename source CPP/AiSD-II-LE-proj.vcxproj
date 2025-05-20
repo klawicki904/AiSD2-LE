@@ -141,6 +141,15 @@
     <ClInclude Include="Field.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AiSD-II-LE-proj.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\networkGen\networkGenInterface\networkGenInterface.csproj">
+      <Project>{cb141284-5abb-44a4-995f-a763ccd54ea7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
