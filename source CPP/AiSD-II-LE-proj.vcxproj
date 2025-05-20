@@ -160,7 +160,7 @@
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>Ten projekt zawiera odwo?ania do pakietów NuGet, których nie ma na tym komputerze. U?yj przywracania pakietów NuGet, aby je pobra?. Aby uzyska? wi?cej informacji, zobacz http://go.microsoft.com/fwlink/?LinkID=322105. Brakuj?cy plik: {0}.</ErrorText>
+      <ErrorText>Ten projekt zawiera odwo?ania do pakiet?w NuGet, kt?rych nie ma na tym komputerze. U?yj przywracania pakiet?w NuGet, aby je pobra?. Aby uzyska? wi?cej informacji, zobacz http://go.microsoft.com/fwlink/?LinkID=322105. Brakuj?cy plik: {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.7\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.7\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
   </Target>

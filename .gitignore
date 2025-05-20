@@ -21,5 +21,10 @@
 !*.resx
 !*.settings
 
+
 # Allow directories (so Git can track files within)
 !*/
+
+# === wyj?tek: do??cz ca?y folder packages i wszystko w nim ===
+!packages/
+!packages/**/*

@@ -1,3 +1,0 @@
-G:\Dokumenty\Projekt - Lokalny\source CPP\x64\Debug\gtest.pdb
-G:\Dokumenty\Projekt - Lokalny\source CPP\x64\Debug\gtest_main.pdb
-G:\Dokumenty\Projekt - Lokalny\source CPP\AiSD-II-LE-proj\x64\Debug\AiSD-II-.83AE3877.Up2Date
