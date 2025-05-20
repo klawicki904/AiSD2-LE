@@ -35,7 +35,7 @@
   <ItemDefinitionGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -100,7 +100,7 @@
     <ClCompile Include="..\source CPP\EdgeData.cpp" />
     <ClCompile Include="..\source CPP\Matrix.cpp" />
     <ClCompile Include="..\source CPP\Node.cpp" />
-    <ClCompile Include="ClassicMaxFlowMinCost.cpp" />
+    <ClCompile Include="ClassicAlgorithmTests.cpp" />
     <ClCompile Include="MaxFLowMinCost.cpp" />
   </ItemGroup>
   <ItemGroup>
