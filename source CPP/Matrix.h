@@ -2,12 +2,15 @@
 #define MATRIX_H
 
 #include <iostream>
+#include <functional>
 #include "Matrix.h"
 #include "Node.h"
 #include "EdgeData.h"
 #include <vector>
 #include <fstream>
 #include <queue>
+#include <limits>
+
 
 using namespace std;
 
@@ -37,18 +40,41 @@ public:
     //Czyta dane z pliku i inicjalizuje macierz
     bool readFileToGraph(string fileName);
 
-    //Klasyczna metoda wyliczaj?ca maksymalny przep?yw
-    double edmonsKarp();
+    // Wczytywanie pliku wejsciowego w najnowszej postaci
+    bool readFileToGraph2(string fileName);
 
     //Zmodyfikowany bfs.  Je?eli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
     bool bfs(int x, const vector<vector<EdgeData>>& graf, int t, vector<int>& f);
 
+    //algorytm znajdowania najkrotszych sciezek.
+    void dijkstra(int source);
 
-    ////Ford Fulkerson dla sieci w ktorej interesuja nas sciezki powiekszajace s-> ... -> t 
-    // (Gdzie gdzies po drodze jest wierzcholek ktory jest browarem)
-    double edmonsKarp2();
+    //algorytm znajdowania najkrotszych sciezek. Zmodyfikowany pod nasz problem
+    bool dijkstraModify(int source,  int target, double& cost, vector<int>& parents, const vector<vector<EdgeData>>& graf);
 
-    bool bfs2(int x, const vector<vector<EdgeData>>& graf, int t, vector<int>& f);
+    //algorytm znajdowania najkrotszych sciezek.
+    bool BellmanFord(int source, int target, double& cost, vector<int>& parents, const vector<vector<EdgeData>>& graf);
+
+    //Algorytm Busackera_Gowena wyznacza najta?szy przep?yw w sieci dla docelowego przep?ywu F.
+    // Nie tworze w nim sieci residualnej. Dzia?a na orginale. Zatem uruchomienie dwukrotnie tej metody nie da dobrych wynikow
+    // Nalezalo by po wywolaniu tej metody. naprawic siec (np. ponownie wczytac z pliku) by uruchomic j? po raz kolejny
+    double BusackerGowen2(double const maxFlow, int s, int t,
+        bool (Matrix::* shortestPathFunc)(int, int, double&, vector<int>&, const vector<vector<EdgeData>>&));
+
+    //Klasyczna metoda wyliczaj?ca maksymalny przep?yw bez przekazywania argumentow
+    double edmondsKarp();
+
+    // Klasyczny algorytm Edmondsa-Karpa. Z podaniem argumentow
+    double edmondsKarpClassic(int s, vector<vector<EdgeData>>& graf, int t, vector<int>& f);
+
+    // rozwiazanie problemu. tj liczenie maksymalnego przeplywu i minimalnego kosztu.
+    void maxFlowMinCost();
+
+    // rozwiazanie problemu. tj liczenie maksymalnego przeplywu i minimalnego kosztu. Dla problemu s->Browary->Puby
+    double maxFlowMinCost2();
+
+    //Stary "edmonsKarp2()". Liczy maksymalny przeplyw dla naszego problemu.
+    double maxFlowAlgorithm();
 };
 
 #endif	
