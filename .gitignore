@@ -20,6 +20,8 @@
 !*.exe
 !*.resx
 !*.settings
+!*.url
+!*.zip
 
 
 # Allow directories (so Git can track files within)
