@@ -6,6 +6,7 @@
 #include "Matrix.h"
 #include "Node.h"
 #include "EdgeData.h"
+#include "Quarter.h"
 #include <vector>
 #include <fstream>
 #include <queue>
@@ -19,7 +20,7 @@ class Matrix
 public:
     int vertices; //Rozmiar macierzy
     vector<vector<EdgeData>> tab; // Macierz s?siedztwa
-    vector<Node> listVertives; // Zawiera informacje o wierzcho?kach
+    vector<Node> listVertices; // Zawiera informacje o wierzcho?kach
 
     // Konstruktory
     Matrix();
@@ -42,6 +43,9 @@ public:
 
     // Wczytywanie pliku wejsciowego w najnowszej postaci
     bool readFileToGraph2(string fileName);
+
+    // Remaster wczytywania autorstwa JK
+    bool readFileToGraph3(string fileName);
 
     //Zmodyfikowany bfs.  Je?eli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
     bool bfs(int x, const vector<vector<EdgeData>>& graf, int t, vector<int>& f);

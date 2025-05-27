@@ -11,34 +11,17 @@
 #include "Node.h"
 using namespace std;
 
-
-// NOTKA:
 // dziala od 7 wierzcholkow
-// dziala rowniez dla wiekszych danych np. 10 000+
-// wspolczynnik liczby wierzcholkow do liczby zestawow skrzyzowan nie moze byc mniejszy niz 2.6
 
-/// nie przesadzaj z liczba zestawow skrzyzowan !!! (cztery sa dodane defaultowo wiec mozesz wpisac 0)
 
-#define MINIMUM_CORRECT_RATIO 2.6   //znalazlem metoda prob i bledow najmniejszy stosunek liczby wierzcholkow do zestawow skrzyzowan ktory wygeneruje "ladna" mape skrzyzowan
-                                    //nie chcemy skrzyzowan do ktorych przykladowo wchodzi milion drog a wychodzi tylko jedna
-
-#define MINIMUM_SECTION_POSITION_N 3.5    //minimalna dopuszczalna ilosc skrzyzowan w zestawie
-
-static bool areSectionsTooClose(int section, set<int>& uniqueSections, int vsRatio)
-{
-    int modifier = 3;
-    if (vsRatio < 6)modifier = 2;
-    if (vsRatio < 4)modifier = 1;
-    for (auto it = uniqueSections.begin(); it != uniqueSections.end(); it++)if (abs(*it - section) <= modifier)return true;
-    return false;
-}
-
-static bool comparator(pair<int, int> s, pair<int, int> a, pair<int, int> b) {
-    //cout << "porownuje wektor " << s.first << " " << s.second << " -> " << a.first << " " << a.second << " z punktem " << b.first << " " << b.second;
-    int det = (a.first * b.second) + (s.first * a.second) + (s.second * b.first) - (a.first * s.second) - (s.first * b.second) - (a.second * b.first);
+// funkcja ta porownuje trzy punkty i stwierdza czy punkt p znajduje sie zgodnie z ruchem wskazowek zegara, czy przeciwnie do nich wzgledem polprostej ab
+// zwraca true w przypadku przeciwnym do ruchu wskazowek zegara
+static bool Comparator(pair<int, int> a, pair<int, int> b, pair<int, int> p) {
+    //cout << "porownuje wektor " << a.first << " " << a.second << " -> " << b.first << " " << b.second << " z punktem " << p.first << " " << p.second;
+    int det = (b.first * p.second) + (a.first * b.second) + (a.second * p.first) - (b.first * a.second) - (a.first * p.second) - (b.second * p.first);
     if (det == 0) {
-        int distA = (a.first - s.first) * (a.first - s.first) + (a.second - s.second) * (a.second - s.second);
-        int distB = (b.first - s.first) * (b.first - s.first) + (b.second - s.second) * (b.second - s.second);
+        int distA = (b.first - a.first) * (b.first - a.first) + (b.second - a.second) * (b.second - a.second);
+        int distB = (p.first - a.first) * (p.first - a.first) + (p.second - a.second) * (p.second - a.second);
         if (distA <= distB) {
             //cout << " dodaje punkt (odleglosc)" << endl;
             return true;
@@ -60,72 +43,77 @@ static bool comparator(pair<int, int> s, pair<int, int> a, pair<int, int> b) {
 
 int main(int argc, char **argv)
 {
-    ///wstep
+    ///---------------wstep---------------
     srand(time(nullptr));
-    int vertN, sectionN, density, fieldN, breweryN, pubN;
+    int vertN, checkpointN, density, fieldN, breweryN, pubN;
+    // vertN - ilosc wszystkich wierzcholkow w sieci residualnej (moze sie roznic w kodzie ze wzgledu na implementacje i wierzcholki abstrakcyjne)
+    // fieldN - ilosc pol
+    // breweryN - ilosc browarow
+    // pubN - ilosc karczm
+    // checkpointN - dlugosc miasta wyznaczona jako najdluzsza ilosc skrzyzowan wymagana do przejscia od startowego do koncowego wierzcholka abstrakcyjnego (tzw. checkpointy)
+    // density - wartosc = {0, 1, 2} wyznaczajaca na szanse na "drogi skroty"
 
-    ///cwiartki (musze posprzatac te spaghetti)
+    ///---------------cwiartki---------------
     int quarterPointN;
-    vector<set<pair<int, int>>> incompleteQuartersSet(4);
-    vector<vector<pair<int, int>>> incompleteQuartersTab(4);
+    vector<set<pair<int, int>>> uniquePointsInSquareSet(4);     // zawiera unikalne punkty dla kazdej z czterech cwiartek
+    vector<vector<pair<int, int>>> uniquePointsInSquareTab(4);  // to samo co uniquePointsInSquareSet, ale w wektorze
+
+    // losowanie punktow do ukladu wspolrzednych dla kazdej z cwiartek
     for (int k = 0; k < 4; k++) {
         quarterPointN = rand() % 18 + 6;
         switch (k) {
         case 0:
-            while (incompleteQuartersSet[k].size() != quarterPointN)incompleteQuartersSet[k].insert(make_pair(rand() % 100+1, rand() % 100+1));
+            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(rand() % 100+1, rand() % 100+1));
             break;
         case 1:
-            while (incompleteQuartersSet[k].size() != quarterPointN)incompleteQuartersSet[k].insert(make_pair(-1 * (rand() % 100+1), rand() % 100+1));
+            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(-1 * (rand() % 100+1), rand() % 100+1));
             break;
         case 2:
-            while (incompleteQuartersSet[k].size() != quarterPointN)incompleteQuartersSet[k].insert(make_pair(-1 * (rand() % 100+1), -1 * (rand() % 100+1)));
+            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(-1 * (rand() % 100+1), -1 * (rand() % 100+1)));
             break;
         case 3:
-            while (incompleteQuartersSet[k].size() != quarterPointN)incompleteQuartersSet[k].insert(make_pair(rand() % 100+1, -1 * (rand() % 100+1)));
+            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(rand() % 100+1, -1 * (rand() % 100+1)));
             break;
         }
     }
-    for (int k = 0; k < 4; k++)for (auto it = incompleteQuartersSet[k].begin(); it != incompleteQuartersSet[k].end(); it++)incompleteQuartersTab[k].emplace_back(it->first,it->second);
+    // przepisanie ze zbioru do wektora
+    for (int k = 0; k < 4; k++)for (auto it = uniquePointsInSquareSet[k].begin(); it != uniquePointsInSquareSet[k].end(); it++)uniquePointsInSquareTab[k].emplace_back(it->first,it->second);
+    
+    // dla kazdej cwiartki wyznaczam najnizszy punkt (wspolrzedna y), a nastepnie sortuje cala tablice za pomoca funkcji Comparator
     for (int k = 0; k < 4; k++) {
-        int lowestYid = 0, lowestY = incompleteQuartersTab[k][0].second;
-        for (int i = 1; i < incompleteQuartersTab[k].size(); i++)if (incompleteQuartersTab[k][i].second < lowestY) {
+        int lowestYid = 0, lowestYValue = uniquePointsInSquareTab[k][0].second;
+        for (int i = 1; i < uniquePointsInSquareTab[k].size(); i++)if (uniquePointsInSquareTab[k][i].second < lowestYValue) {
             lowestYid = i;
-            lowestY = incompleteQuartersTab[k][i].second;
+            lowestYValue = uniquePointsInSquareTab[k][i].second;
         }
-        swap(incompleteQuartersTab[k][0], incompleteQuartersTab[k][lowestYid]);
-        //cout << endl << "pierwszy punkt: " << incompleteQuartersTab[k][0].first << " " << incompleteQuartersTab[k][0].second << endl;
-        sort(incompleteQuartersTab[k].begin(), incompleteQuartersTab[k].end(), [&](pair<int, int> a, pair<int, int> b) {return comparator(incompleteQuartersTab[k][0], a, b); });
-        //cout << endl << "posortowane: " << endl<<endl;
+        swap(uniquePointsInSquareTab[k][0], uniquePointsInSquareTab[k][lowestYid]);
+        sort(uniquePointsInSquareTab[k].begin(), uniquePointsInSquareTab[k].end(), [&](pair<int, int> a, pair<int, int> b) {return Comparator(uniquePointsInSquareTab[k][0], a, b); });
     }
 
-    for (int i = 0; i < incompleteQuartersTab.size(); i++) {
-        //for (int j = 0; j < incompleteQuartersTab[i].size(); j++)cout << incompleteQuartersTab[i][j].first << " " << incompleteQuartersTab[i][j].second << endl;
-        //cout << endl;
-    }
-    //-----------------------------
+    // uzywam wektora quarters jako kolejki, poniewaz potrzebuje dostepu do ostatnich dwoch elementow
+    // wyznaczam na podstawie poprzednich losowo wybranych punktow wynikowy wielokat wypukly
+    // za pomoca algorytmu otoczki wypuklej z wykorzystaniem funkcji Comparator
     vector<vector<pair<int, int>>> quarters(4);
     for (int k = 0; k < 4; k++) {
-        quarters[k].push_back(incompleteQuartersTab[k][0]);
-        quarters[k].push_back(incompleteQuartersTab[k][1]);
+        quarters[k].push_back(uniquePointsInSquareTab[k][0]);
+        quarters[k].push_back(uniquePointsInSquareTab[k][1]);
 
-        for (int i = 2; i < incompleteQuartersTab[k].size(); i++) {
-            if (comparator(quarters[k][quarters[k].size() - 2], quarters[k][quarters[k].size() - 1], incompleteQuartersTab[k][i]))quarters[k].push_back(incompleteQuartersTab[k][i]);
+        for (int i = 2; i < uniquePointsInSquareTab[k].size(); i++) {
+            if (Comparator(quarters[k][quarters[k].size() - 2], quarters[k][quarters[k].size() - 1], uniquePointsInSquareTab[k][i]))quarters[k].push_back(uniquePointsInSquareTab[k][i]);
             else {
                 quarters[k].pop_back();
-                while (!comparator(quarters[k][quarters[k].size() - 2], quarters[k][quarters[k].size() - 1], incompleteQuartersTab[k][i]))quarters[k].pop_back();
-                quarters[k].push_back(incompleteQuartersTab[k][i]);
+                while (!Comparator(quarters[k][quarters[k].size() - 2], quarters[k][quarters[k].size() - 1], uniquePointsInSquareTab[k][i]))quarters[k].pop_back();
+                quarters[k].push_back(uniquePointsInSquareTab[k][i]);
             }
         }
-        quarters[k].push_back(incompleteQuartersTab[k][0]);
-        //for (int i = 0; i < quarters[k].size(); i++)cout << quarters[k][i].first << " " << quarters[k][i].second << endl;
-        //cout << endl;
+        quarters[k].push_back(uniquePointsInSquareTab[k][0]);
     }
 
     //---------------input uzytkownika---------------
-    //z interfejsu
+    // dane z interfejsu (argumenty linii polecen)
     if (argc == 7) {
         vertN = atoi(argv[1])-2;
-        sectionN = atoi(argv[2]) + 4;
+        checkpointN = atoi(argv[2]) + 4;
         density = atoi(argv[3]);
         fieldN = atoi(argv[4]);
         breweryN = atoi(argv[5]);
@@ -136,31 +124,46 @@ int main(int argc, char **argv)
         if (pubN <= 0)pubN = 1;
     }
     else {
-        //recznie
-        cout << "Ile wierzcholkow powinna posiadac siec?: ";     //pola + skrzyzowania + browary + karczmy + punkty startu i konca
+        // recznie + obsluga niepoprawnych danych
+        // liczba wierzcholkow
+        cout << "Ile wierzcholkow powinna posiadac siec?: ";
         cin >> vertN;
         vertN -= 2;     //2 wierzcholki abstrakcyjne
+        if (vertN < 6) {
+            cout << "Podano za malo wierzcholkow" << endl;
+            return 0;
+        }
 
-        cout << "Podaj liczbe pol (rekomendowana wartosc == "<<round((vertN+2)*0.15)<<"): ";
+        // liczba pol (wejście uwzglednia wierzcholki abstrakcyjne)
+        cout << "Podaj liczbe pol (rekomendowana wartosc == "<<round((vertN+2)*0.12)<<"): ";
         cin >> fieldN;
         if (fieldN <= 0)fieldN = 1;
+
+        // liczba browarow
         cout << "Podaj liczbe browarow (rekomendowana wartosc == " << round((vertN + 2) * 0.24) << "): ";
         cin >> breweryN;
         if (breweryN <= 0)breweryN = 1;
-        cout << "Podaj liczbe karczm (rekomendowana wartosc == " << round((vertN + 2) * 0.15) << "): ";
+
+        // liczba karczm
+        cout << "Podaj liczbe karczm (rekomendowana wartosc == " << round((vertN + 2) * 0.14) << "): ";
         cin >> pubN;
         if (pubN <= 0)pubN = 1;
+
+        // sprawdzenie, czy w miescie znajduje sie wystarczajaco miejsc na browary
         if (breweryN > vertN - fieldN - pubN) {
             cout << "Podano wiecej browarow niz dostepnych wierzcholkow" << endl;
             return 0;
         }
 
-        if (round((float)(vertN-fieldN-pubN)/5)< 0)cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == 0): ";     //przedzialow zawierajacych same skrzyzowania
-        else cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == " << round((float)(vertN - fieldN - pubN) / 5) << "): ";     //przedzialow zawierajacych same skrzyzowania
-        cin >> sectionN;
-        sectionN += 4;      //dwa dla wierzcholkow abstrakcyjnych i dwa dla przynajmniej jednego zestawu skrzyzowan
+        // liczba checkpointow (wejscie nie uwzglednia 4 dodatkowych checkpointow niezbednych do stworzenia jakiegokolwiek miasta)
+        if ((vertN-fieldN-pubN)/5< 0)cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == 0): ";
+        else cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == " << (vertN - fieldN - pubN) / 5 << "): ";
+        cin >> checkpointN;
+        checkpointN += 4;      //dwa dla wierzcholkow abstrakcyjnych i dwa dla przynajmniej jednego checkpointu
         
-        if ((vertN - fieldN - pubN) / 3 <= sectionN - 4)
+        // liczba checkpointow nie moze byc zbyt duza (to znaczy miasto nie moze byc zbyt dlugie) wowczas powstanie bardzo waskie miasto z mala iloscia drog
+        // od poczatku do konca; ponizszy if zapobiega takim danym
+        if ((vertN - fieldN - pubN) / 3 <= checkpointN - 4)
         {
             cout << "Blad danych wejsciowych (mozliwe problemy):" << endl << "1. Podano zbyt duzo pol i/lub karczm, aby poprawnie wygenerowac siec"
                 << endl << "2. Stosunek liczby wierzcholkow do liczby zestawow skrzyzowan jest zbyt maly, aby poprawnie wygenerowac pola i karczmy"
@@ -168,72 +171,70 @@ int main(int argc, char **argv)
             return 0;
         }
         
-        cout << "Jak duza ma byc szansa na drogi-skroty? (0 - normalna, 1 - wieksza, 2 - wieksza++): ";       //szansa na wylosowanie drogi skrotu
-        //im wieksza szansa tym tez wiecej wierzcholkow
+        // szansa na drogi skroty
+        cout << "Jak duza ma byc szansa na drogi-skroty? (0 - normalna, 1 - wieksza, 2 - wieksza++): ";
         cin >> density;
     }
     //---------------przygotowanie struktur danych---------------
-    vector<int> sectionTab(sectionN);
-    sectionTab[0] = 0;
-    sectionTab[sectionN - 1] = vertN + 1;
+    vector<int> checkpointTab;      // wektor zawierajacy indeksy checkpointow
 
-    vector<Node *> vertTab(vertN + 1);
+    vector<Node *> vertTab(vertN + 1);          // wektor zawierajacy wskazniki na klasy Node reprezentujace dany punkt grafu
     for (int i = 0; i <= vertN; i++)vertTab[i] = new Node(i, vertN);
     vertTab[0]->coordinates = make_pair(-130, 0);
 
-
     ///---------------losowanie przedzialow---------------
+    // modifier sluzy do okreslenia czy miasto jest zbalansowane (2), czy bardziej dlugie (1)
+    // (dlugie miasta maja inne zalozenia losowania indeksow checkpointow)
+    // modifier ustala ze kazdy checkpoint jest w odleglosci przynajmniej <wartosc modifier> wierzcholkow od innych checkpointow
     int modifier = 2;
-    if ((vertN - fieldN - pubN) / (sectionN - 2) < 4.5)modifier = 1;
-    vector<int> intervalIndexTab(vertN-fieldN-pubN);    //kandydaci na przedzialy
-    vector<int> values(2 * modifier + 1);               //sasiednie wartosci do usuniecia z wektora kandydatow
-    set<int> uniqueSections;
-    uniqueSections.insert(fieldN+1);
-    uniqueSections.insert(vertN + 1 - pubN);
-    for (int i = 0; i < intervalIndexTab.size(); i++)intervalIndexTab[i] = i + fieldN + 1;
-    while (uniqueSections.size() != sectionN - 2)
-    {
-        //for (auto it = uniqueSections.begin(); it != uniqueSections.end(); it++)cout << *it << " ";
-        //cout << endl;
-        int section = rand() % intervalIndexTab.size();
-        uniqueSections.insert(intervalIndexTab[section]);
-        if (section < modifier + 1) {
-            intervalIndexTab.erase(intervalIndexTab.begin(), intervalIndexTab.begin() + section);
-            if (intervalIndexTab.size() >= modifier + 1)intervalIndexTab.erase(intervalIndexTab.begin(), intervalIndexTab.begin() + modifier);
-            continue;
-        }
-        if (intervalIndexTab.size() - section < modifier + 1) {
-            intervalIndexTab.erase(intervalIndexTab.begin() + section, intervalIndexTab.end());
-            if (intervalIndexTab.size() >= modifier + 1)intervalIndexTab.erase(intervalIndexTab.end() - modifier, intervalIndexTab.end());
-            continue;
-        }
-        int j = 2 * modifier + 1;
-        for (int i = 0; i < j; i++)values[i] = intervalIndexTab[section] - modifier + i;
-        for (int i = 0, k = 0; i < j; i++, k++)if (intervalIndexTab[section - modifier + i] == values[k]) {
-            intervalIndexTab.erase(intervalIndexTab.begin() + section - modifier + i);
-            i--;
-            j--;
-        }
-    }
+    if ((vertN - fieldN - pubN) / (checkpointN - 2) <3)modifier = 1;
+    cout << endl<< "Modifier: " << modifier << " Ratio: " << (vertN - fieldN - pubN) / (checkpointN - 2) << endl;
 
-    int i = 1;
-    for (auto it = uniqueSections.begin(); it != uniqueSections.end(); it++)
+    // wektor indeksow sposrod ktorych beda losowane indeksy checkpointow; w trakcie wyznaczania sa z niego usuwane sasiednie wartosci kandydatow na checkpointy
+    vector<int> checkpointCandidateTab(vertN - fieldN - pubN - modifier - 2);
+    for (int i = 0; i < checkpointCandidateTab.size(); i++)checkpointCandidateTab[i] = i + fieldN + modifier + 2;
+    cout << "Zakres losowanych indeksow skrzyzowan: " << checkpointCandidateTab[0] << " - " << checkpointCandidateTab[checkpointCandidateTab.size() - 1] << endl;
+
+    //  wstepne wartosci indeksow checkpointow (pewniaczki)
+    checkpointTab.push_back(0);                     // startowy wierzcholek abstrakcyjny
+    checkpointTab.push_back(vertN + 1);             // koncowy wierzcholek abstrakcyjny
+    checkpointTab.push_back(fieldN + 1);            // indeks wskazujacy koniec pol + 1
+    checkpointTab.push_back(vertN + 1 - pubN);      // indeks wskazujacy poczatek karczm
+
+    // dodawanie kolejnych losowo wybranych checkpointow
+    while (checkpointTab.size() != checkpointN)
     {
-        sectionTab[i] = *it;
-        i++;
+        int section = rand() % checkpointCandidateTab.size();
+        checkpointTab.push_back(checkpointCandidateTab[section]);
+        //cout << "Wybrano: " << checkpointCandidateTab[section] << " "<<endl;
+        int startIndex = max(0, section - modifier);
+        int endIndex = min(static_cast<int>(checkpointCandidateTab.size()), section + modifier + 1);
+        vector<int> values(endIndex - startIndex);      // wartosci sasiednych indeksow do porownania, czy nalezy je wyrzucic z wektora, czy nie
+        for (int i = 0; i < values.size(); i++)values[i] = checkpointCandidateTab[section] - (section - startIndex) + i;
+        for (int i = startIndex, k = 0; i < endIndex; i++, k++) {
+            //cout << checkpointCandidateTab[i] << " " << values[k] << " ";
+            if (checkpointCandidateTab[i] == values[k]) {
+                //cout << "Usuwam: " << checkpointCandidateTab[i] << endl;
+                checkpointCandidateTab.erase(checkpointCandidateTab.begin() + i);
+                i--;
+                endIndex--;
+            }
+        }
     }
-    cout << endl << "tablica sectionTab: " << endl;
-    for (int i = 0; i < sectionTab.size(); i++)cout << sectionTab[i] << " ";
+    sort(checkpointTab.begin(), checkpointTab.end(), [](int a, int b){return a < b;});
+
+    cout << endl << "tablica checkpointTab: " << endl;
+    for (int i = 0; i < checkpointTab.size(); i++)cout << checkpointTab[i] << " ";
     cout << endl << "--------------------------------" << endl << "Podsumowanie:" << endl;
 
-
     ///---------------losowanie wspolrzednych pol---------------
-    set<pair<int, int>> fieldCoordinatesSet;
-    fieldCoordinatesSet.clear();
-    int quarterIndex;
-    bool isPointValid;
-    int fieldCoordinatesSetSize = 0;
-    pair<int, int> point;
+    set<pair<int, int>> fieldCoordinatesSet;    // zbior unikalnych wspolrzednych punktow na plaszczyznie cwiartek
+    int quarterIndex;                           // indeks cwiartki = {0, 1, 2, 3}
+    bool isPointValid;                          // true jesli punkt nalezy do cwiartki, false jesli nie
+    int fieldCoordinatesSetSize = 0;            // ostatni zapisany rozmiar zbioru; sprawdza czy nie bylo juz identycznego punktu w zbiorze
+    pair<int, int> point;                       // punkt o losowych wspolrzednych w danej cwiartce
+
+    // kazde kolejne pole trafia do kolejnej cwiartki
     for (int i = 1; i <= fieldN; i++) {
         quarterIndex = (i-1) % 4;
         isPointValid = true;
@@ -252,172 +253,197 @@ int main(int argc, char **argv)
             break;
         }
 
+        // sprawdzenie czy pole w ogole znajduje sie w cwiartce
         for (int j = 0; j < quarters[quarterIndex].size()-1; j++) {
-            if (!comparator(quarters[quarterIndex][j], quarters[quarterIndex][j+1], point))isPointValid = false;
+            if (!Comparator(quarters[quarterIndex][j], quarters[quarterIndex][j+1], point))isPointValid = false;
         }
+
+        // jesli tak, to jest dodawane, jesli nie to losowanie odbywa sie jeszcze raz
         fieldCoordinatesSetSize = fieldCoordinatesSet.size();
         fieldCoordinatesSet.insert(point);
         if (isPointValid && fieldCoordinatesSetSize!=fieldCoordinatesSet.size())vertTab[i]->coordinates = point;
         else i--;
     }
 
+    ///---------------wyznaczanie wspolrzednych pozostalych punktow---------------
     int x=0;
     int y=0;
-    ///---------------losowanie wspolrzednych pozostalych punktow---------------
-    for (int j = 1; j < sectionN - 1; j++)for (int i = sectionTab[j]; i < sectionTab[j + 1]; i++) {
+
+    // pozostale punkty sa ustawiane na wschod od cwiartek rzedami zgodnie z wylosowanymi checkpointami
+    for (int j = 1; j < checkpointN - 1; j++)for (int i = checkpointTab[j]; i < checkpointTab[j + 1]; i++) {
         x = 100+(30 * j);
         int y;
-        int nodesInSection = sectionTab[j + 1] - sectionTab[j];
+        int nodesInSection = checkpointTab[j + 1] - checkpointTab[j];
         //cout << i <<" "<<j << endl;
-        if (nodesInSection % 2)y = (nodesInSection / 2 - 1) * 15 + 8 - ((i - sectionTab[j]) * 15);
-        else y = nodesInSection / 2 * 15 - ((i - sectionTab[j]) * 15);
+        if (nodesInSection % 2)y = (nodesInSection / 2 - 1) * 15 + 8 - ((i - checkpointTab[j]) * 15);
+        else y = nodesInSection / 2 * 15 - ((i - checkpointTab[j]) * 15);
         vertTab[i]->coordinates = make_pair(x, y);
     }
     x += 30;
     y = 0;
+
     ///---------------losowanie browarow---------------
+    // browary sa losowane sposrod wierzcholkow ktorym nie przypisano zadnej roli (skrzyzowan)
     set<int> uniqueBreweries;
     uniqueBreweries.clear();
-    while (uniqueBreweries.size() != breweryN)uniqueBreweries.insert(rand() % (sectionTab[sectionN-2] -1 - sectionTab[1]) + sectionTab[1]);
+    while (uniqueBreweries.size() != breweryN)uniqueBreweries.insert(rand() % (checkpointTab[checkpointN-2] -1 - checkpointTab[1]) + checkpointTab[1]);
     for (auto it = uniqueBreweries.begin(); it != uniqueBreweries.end(); it++)vertTab[*it]->amIBrewery = true;
 
-    ///---------------wierzcholek startowy---------------
-    for (int i = 1; i < sectionTab[1]; i++)vertTab[0]->to.emplace_back(i, 99);
+    ///---------------wierzcholek startowy---------------   !!! DO ZMIANY - WARTOSCI POWINNY ODPOWIADAC PRODUKCJI POL !!!
+    for (int i = 1; i < checkpointTab[1]; i++)vertTab[0]->to.emplace_back(i, 99);
 
-    cout << "Liczba pol: " << sectionTab[1] - 1 << endl;
+    cout << "Liczba pol: " << checkpointTab[1] - 1 << endl;
 
     ///---------------drogi-skroty---------------
-    int localConnectionN;
-    int localConnectionInfo = 0;
-    int localConnectionNChance;
-    for (int j = 1; j < sectionN - 2; j++)for (int i = sectionTab[j - 1]; i < sectionTab[j]; i++)
+    int connectionN;            // oznacza ilosc polaczen wychodzacych 
+    int connectionInfo = 0;     // zlicza ilosc "drog-skrotow" do podsumowania
+    int connectionChance;       // okresla szanse od ktorej zalezy ile z danego wierzcholka wyjdzie drog skrotow
+
+    for (int j = 1; j < checkpointN - 2; j++)for (int i = checkpointTab[j - 1]; i < checkpointTab[j]; i++)
     {
-        localConnectionN = 0;
-        localConnectionNChance = rand() % 10;
+        connectionN = 0;
+        connectionChance = rand() % 10;
         if (i == 0)continue;
         switch (density)
         {
         case 0:
-            if (localConnectionNChance > 6)localConnectionN = 1;
+            if (connectionChance > 6)connectionN = 1;
             break;
         case 1:
-            if (localConnectionNChance > 3)localConnectionN = 1;
+            if (connectionChance > 4)connectionN = 1;
             break;
         case 2:
-            if (localConnectionNChance > 5 && pubN>1)localConnectionN = 2;
-            else if (localConnectionNChance < 2)localConnectionN = 1;
+            if (connectionChance > 6 && pubN>1)connectionN = 2;
+            else if (connectionChance < 3)connectionN = 1;
             break;
         }
-        if (localConnectionN==0)continue;
+        if (connectionN==0)continue;
 
-        localConnectionInfo += localConnectionN;
+        connectionInfo += connectionN;
 
         set<int> uniqueConnections;
         uniqueConnections.clear();
-        while (uniqueConnections.size() != localConnectionN)uniqueConnections.insert(rand() % (sectionTab[sectionN-1] - sectionTab[j + 1]) + sectionTab[j + 1]);
+
+        // losujemy unikalne indeksy "drog-skrotow" do skutku
+        while (uniqueConnections.size() != connectionN)uniqueConnections.insert(rand() % (checkpointTab[checkpointN-1] - checkpointTab[j + 1]) + checkpointTab[j + 1]);
         for (auto it = uniqueConnections.begin(); it != uniqueConnections.end(); it++) {
-            //cout << "zdalne polaczenie: " << i << " -> " << *it << " w sekcji " << j << " w liczbie : " << localConnectionN << endl;
+            //cout << "zdalne polaczenie: " << i << " -> " << *it << " w sekcji " << j << " w liczbie : " << connectionN << endl;
             vertTab[i]->to.emplace_back(*it, rand() % 17 + 5);
             vertTab[*it]->amIConnected = true;
         }
     }
-    cout << "Liczba drog-skrotow: " << localConnectionInfo << endl;
-    localConnectionInfo = 0;
 
-    ///---------------tworzenie polaczen miedzy sasiednimi przedzialami---------------
-    for (int j = 1; j < sectionN-1; j++)for (int i = sectionTab[j - 1]; i < sectionTab[j]; i++)
+    cout << "Liczba drog-skrotow: " << connectionInfo << endl;
+    connectionInfo = 0;
+
+    ///---------------tworzenie polaczen miedzy sasiednimi przedzialami---------------      !!! DO ZMIANY - MOZLIWOSC ZMIANY GESTOSCI POLACZEN !!!
+    for (int j = 1; j < checkpointN-1; j++)for (int i = checkpointTab[j - 1]; i < checkpointTab[j]; i++)
     {
         if (i == 0)continue;
-        //localConnectionN = 0;
-
+        //connectionN = 0;
+        
         /*     !!! FUNKCJA WYLACZONA DO ODWOLANIA PRZEPRASZAMY ZA PROBLEMY TECHNICZNE !!!
         switch (density)
         {
         case 0:
-            localConnectionN = 1;
+            connectionN = 1;
             break;
         case 1:
-            if (rand() % 4 == 0)localConnectionN = 2;
-            else localConnectionN = 1;
+            if (rand() % 4 == 0)connectionN = 2;
+            else connectionN = 1;
             break;
         case 2:
-            if (sectionTab[j + 1] - sectionTab[j] <= 4)localConnectionN = rand() % 1 + 1;
-            else localConnectionN = rand() % 2 + 1;
+            if (checkpointTab[j + 1] - checkpointTab[j] <= 4)connectionN = rand() % 1 + 1;
+            else connectionN = rand() % 2 + 1;
             break;
         }
         */
-        localConnectionN = 1;
-        //cout<<"liczba kolejnych polaczen: "<<localConnectionN<<endl;
-
+        
+        int connectionChance = rand() % 10;
+        if (connectionChance > 6)connectionN = 2;
+        else connectionN = 1;
+        //cout<<"liczba kolejnych polaczen: "<<connectionN<<endl;
+        
         ///zobaczymy czy sie przyjmie
-        localConnectionN -= vertTab[i]->to.size();
-        if (localConnectionN < 1)continue;
-        localConnectionInfo += localConnectionN;
+        if (connectionN > checkpointTab[j + 1] - checkpointTab[j])connectionN = checkpointTab[j + 1] - checkpointTab[j];
+        connectionN -= vertTab[i]->to.size();
+        if (connectionN < 1)continue;
+        connectionInfo += connectionN;
 
         set<int> uniqueConnections;
-        while (uniqueConnections.size() < localConnectionN)uniqueConnections.insert(rand() % (sectionTab[j + 1] - sectionTab[j]) + sectionTab[j]);
+        while (uniqueConnections.size() < connectionN)uniqueConnections.insert(rand() % (checkpointTab[j + 1] - checkpointTab[j]) + checkpointTab[j]);
         for (auto it = uniqueConnections.begin(); it != uniqueConnections.end(); it++) {
             vertTab[i]->to.emplace_back(*it, rand() % 17 + 5);
             vertTab[*it]->amIConnected = true;
             //cout << "sasiednie polaczenie: " << i << " -> "<<*it<<" w sekcji " << j << " dotychczasowe polaczenia: " << vertTab[i]->to.size() << " " << endl;
         }
     }
-    cout << "Liczba drog laczacych sasiednie skrzyzowania: " << localConnectionInfo << endl;
-    localConnectionInfo = 0;
+    cout << "Liczba drog laczacych sasiednie skrzyzowania: " << connectionInfo << endl;
+    connectionInfo = 0;
 
-    ///---------------koncowy wierzcholek---------------
-    for (int i = sectionTab[sectionN - 2]; i < vertN + 1; i++)vertTab[i]->to.emplace_back(vertN + 1, 99);
-    //for(int i=sectionTab[sectionN-1];i<vertN+1;i++)vertTab[i].emplace_back(vertN+1,INT_MAX);
+    ///---------------koncowy wierzcholek---------------        !!! DO ZMIANY - WARTOSC KONCOWYCH POLACZEN DO USTALENIA !!!
+    for (int i = checkpointTab[checkpointN - 2]; i < vertN + 1; i++)vertTab[i]->to.emplace_back(vertN + 1, 99);
+    //for(int i=checkpointTab[checkpointN-1];i<vertN+1;i++)vertTab[i].emplace_back(vertN+1,INT_MAX);
 
     ///---------------korekty---------------
-    for (int j = 1; j < sectionN-1; j++)for (int i = sectionTab[j]; i < sectionTab[j + 1]; i++)
+    // korekty polaczen zapewniaja, ze do kazdego wierzcholka nie bedacego startowym wchodzi przynajmniej jedna droga
+    for (int j = 1; j < checkpointN-1; j++)for (int i = checkpointTab[j]; i < checkpointTab[j + 1]; i++)
     {
         if (!vertTab[i]->amIConnected)
         {
+            // postanowilem wyrownac ilosc polaczen-korekt, poniewaz siec jest wtedy "ladniejsza"
+            // z drugiej jednak strony psuje to losowosc - w koncu polaczenie nie jest losowo wybierane tylko ustalone      !!! DO ROZKMINIENIA - LOSOWANIE SPOSROD ZBIORU CZY STARY SYSTEM LOSOWANIA
+            // aktualnie jesli do wierzcholka nie wchodzi zadna droga, to wybierany wierzcholek-poprzednik jest pierwszy z brzegu pod wzgledem najmniejszej ilosc wychodzacych polaczen
             int minimumConnectionNValue;
             int minimumConnectionNIndex;
-
-            if (j == 1) minimumConnectionNIndex = sectionTab[j - 1] + 1;
-            else minimumConnectionNIndex = sectionTab[j - 1];
-
+            minimumConnectionNIndex = checkpointTab[j - 1];
+            if (minimumConnectionNIndex == 0)minimumConnectionNIndex++;
             minimumConnectionNValue = vertTab[minimumConnectionNIndex]->to.size();
 
-            for (int k = sectionTab[j - 1] + 1; k < sectionTab[j] - 1; k++)if (vertTab[k]->to.size() < minimumConnectionNValue)
-            {
-                minimumConnectionNValue = vertTab[k]->to.size();
-                minimumConnectionNIndex = k;
+            for (int k = minimumConnectionNIndex; k < checkpointTab[j]; k++) {
+                if (vertTab[k]->to.size() < minimumConnectionNValue)
+                {
+                    minimumConnectionNValue = vertTab[k]->to.size();
+                    minimumConnectionNIndex = k;
+                }
             }
+
+            // glowna czesc korekty
             //cout<<"korekta: "<<minimumConnectionNIndex<<" -> "<<i << " w sekcji " << j << endl;
-            localConnectionInfo++;
+            connectionInfo++;
             vertTab[minimumConnectionNIndex]->to.emplace_back(i, rand() % 17 + 5);
             vertTab[i]->amIConnected = true;
         }
     }
-    cout << "Liczba korekt drog: " << localConnectionInfo << endl;
-    cout << "Liczba karczm: " << sectionTab[sectionN-1] - sectionTab[sectionN - 2] << endl;
-    int connectionN = 0;
-    for (int i = 0; i <= vertN; i++)connectionN += vertTab[i]->to.size();
+
+    cout << "Liczba korekt drog: " << connectionInfo << endl;
+    cout << "Liczba karczm: " << checkpointTab[checkpointN-1] - checkpointTab[checkpointN - 2] << endl;
+    int globalConnectionN = 0;
+    for (int i = 0; i <= vertN; i++)globalConnectionN += vertTab[i]->to.size();
 
     ///---------------wypisanie wyniku---------------
+    // wersja visualgo
     ofstream file("daneZwagami.txt");
-    file << vertN + 2 << " " << connectionN;
+    file << vertN + 2 << " " << globalConnectionN;
     for (int i = 0; i <= vertN; i++)for (int j = 0; j < vertTab[i]->to.size(); j++)file << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second;
     file.close();
 
+    // wersja oficjalna zgodna z szablonem danych wejsciowych ZAWIERA DROGI DWUKIERUNKOWE
     ofstream experimentalFile("daneEksperymentalne.txt");
     experimentalFile << "KONWERSJA" << endl << static_cast <float>(rand()) / static_cast <float>(RAND_MAX) << endl<<"PUNKTY"<<endl;
-    experimentalFile <<"0 "<< vertTab[0]->coordinates.first << " " << vertTab[0]->coordinates.second << " punkt_abstrakcyjny" << endl;
-    for (int i = 1; i < sectionTab[1]; i++)experimentalFile << i << " "<<vertTab[i]->coordinates.first<<" "<<vertTab[i]->coordinates.second<<" pole" << endl;
-    for (int i = sectionTab[1]; i < sectionTab[sectionN - 2]; i++) {
+    //experimentalFile <<"0 "<< vertTab[0]->coordinates.first << " " << vertTab[0]->coordinates.second << " brak" << endl;
+    for (int i = 1; i < checkpointTab[1]; i++)experimentalFile << i << " "<<vertTab[i]->coordinates.first<<" "<<vertTab[i]->coordinates.second<<" pole" << endl;
+    for (int i = checkpointTab[1]; i < checkpointTab[checkpointN - 2]; i++) {
         if (vertTab[i]->amIBrewery)experimentalFile << i <<" "<< vertTab[i]->coordinates.first << " " << vertTab[i]->coordinates.second << " browar" << endl;
         else experimentalFile << i << " "<<vertTab[i]->coordinates.first << " " << vertTab[i]->coordinates.second << " brak" << endl;
     }
-    for (int i = sectionTab[sectionN - 2]; i < sectionTab[sectionN - 1]; i++)experimentalFile << i<<" "<<vertTab[i]->coordinates.first<<" "<<vertTab[i]->coordinates.second<<" karczma" << endl;
-    experimentalFile << vertN+1<<" "<< x << " " << y << " punkt_abstrakcyjny" << endl << "DROGI";
+    for (int i = checkpointTab[checkpointN - 2]; i < checkpointTab[checkpointN - 1]; i++)experimentalFile << i<<" "<<vertTab[i]->coordinates.first<<" "<<vertTab[i]->coordinates.second<<" karczma" << endl;
+    //experimentalFile << vertN+1<<" "<< x << " " << y << " brak" << endl << "DROGI";
+    experimentalFile << "DROGI";
     for (int i = 0; i <= vertN; i++)for (int j = 0; j < vertTab[i]->to.size(); j++) {
         float roadCost = static_cast <float>(rand()) / static_cast <float>(RAND_MAX) + rand() % 100;
         experimentalFile << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second << " " << roadCost;
-        if (i != 0 && i != vertN)experimentalFile << endl << vertTab[i]->to[j].first << " " << i << " " << vertTab[i]->to[j].second << " " << roadCost;
+        //if (i != 0 && i != vertN)experimentalFile << endl << vertTab[i]->to[j].first << " " << i << " " << vertTab[i]->to[j].second << " " << roadCost;
     }
     experimentalFile << endl << "CWIARTKI";
     for (int k = 0; k < 4; k++) {
@@ -427,10 +453,13 @@ int main(int argc, char **argv)
     }
     experimentalFile.close();
 
-    cout << endl <<"Liczba wszystkich wierzcholkow: "<<vertN + 2 << endl << "Liczba wszystkich polaczen: "<<connectionN << endl;
+    // debug log na standardowe wyjscie
+    cout << endl <<"Liczba wszystkich wierzcholkow: "<<vertN + 2 << endl << "Liczba wszystkich polaczen: "<<globalConnectionN << endl;
     for (int i = 0; i <= vertN; i++)for (int j = 0; j < vertTab[i]->to.size(); j++)cout << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second;
+    
+    // otwieram katalog z wynikami
     system("explorer .");
-    //zwolnienie pamieci
+
     for (int i = 0; i <= vertN; i++)delete vertTab[i];
 
     return 0;

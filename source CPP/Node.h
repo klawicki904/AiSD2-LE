@@ -25,9 +25,10 @@ public:
     };
 
     int id;
-    int x;
-    int y;
+    double x;       //podmienilem x i y na double
+    double y;
     double capacity = -1;
+    static double breweryEfficiencyMultiplier;
     NodeType type = NodeType::None;
 
     Node();

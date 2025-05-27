@@ -47,7 +47,7 @@ int main()
         return -1;
     }
 
-    if (!matrix2.readFileToGraph2("./plikZDanymi.txt"))
+    if (!matrix2.readFileToGraph3("./daneEksperymentalne.txt"))
     {
         return -1;
     }
@@ -59,6 +59,6 @@ int main()
    // graphMatrix.maxFlowMinCost();
    // matrix2.maxFlowAlgorithm();
 
-    matrix2.maxFlowMinCost2();
+    matrix2.edmondsKarp();
     return 0;
 }

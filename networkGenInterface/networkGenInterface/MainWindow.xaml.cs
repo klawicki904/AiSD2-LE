@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -205,6 +206,41 @@ namespace networkGenInterface
                 while (!generatorProcess.StandardOutput.EndOfStream)debugLogFile.WriteLine(generatorProcess.StandardOutput.ReadLine());
             }
             generatorProcess.WaitForExit();
+        }
+
+        private void FillRecommendedData(object sender, RoutedEventArgs e)
+        {
+            if (!int.TryParse(vertNBox.Text, out int vertN))
+            {
+                generalInfoLabel.Content = "Najpierw podaj liczbę wierzchołków";
+                return;
+            }
+            if (vertN < 7)
+            {
+                generalInfoLabel.Content = "Podano za mało wierzchołków";
+                return;
+            }
+            fieldNBox.Text = Math.Round(int.Parse(vertNBox.Text) * 0.12).ToString();
+            breweryNBox.Text = Math.Round(int.Parse(vertNBox.Text) * 0.24).ToString();
+            pubNBox.Text = Math.Round(int.Parse(vertNBox.Text) * 0.14).ToString();
+            int fieldN = int.Parse(fieldNBox.Text);
+            int pubN = int.Parse(pubNBox.Text);
+            sectionNBox.Text = Math.Round((double)((vertN - fieldN - pubN - 2) / 5)).ToString();
+            densityList.SelectedIndex = 1;
+
+            breweryNBox.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+            pubNBox.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+            sectionNBox.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+            densityBackground.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+            densityList.Foreground = Brushes.AntiqueWhite;
+            breweryNLabel.Foreground = Brushes.AntiqueWhite;
+            pubNLabel.Foreground = Brushes.AntiqueWhite;
+            sectionNLabel.Foreground = Brushes.AntiqueWhite;
+            densityLabel.Foreground = Brushes.AntiqueWhite;
+            breweryNBox.IsEnabled = true;
+            pubNBox.IsEnabled = true;
+            sectionNBox.IsEnabled = true;
+            densityList.IsEnabled = true;
         }
     }
 }

@@ -5,6 +5,8 @@
 
 using namespace std;
 
+double Node::breweryEfficiencyMultiplier = 0.0;
+
 // parameter-less constructor needed for inheritance
 Node::Node()
     : x(0), y(0), capacity(-1), type(NodeType::None) {}

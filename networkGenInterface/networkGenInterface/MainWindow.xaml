@@ -21,7 +21,29 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Rectangle Grid.Row="0" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="3" Panel.ZIndex="-1" Fill="#FF1A0A2B"/>
-        <Image Source="/Resources/Images/gsrIkona.ico" Width="210" Height="125" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        <Button Name="logoButton"
+            Style="{DynamicResource ButtonStyle1}"
+            Grid.Row="0"
+            Grid.Column="0"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            Background="Transparent"
+            BorderBrush="Transparent"
+            Click="FillRecommendedData"
+            ToolTip="Uzupełnij wszystkie pola wartościami rekomendowanymi"
+            ToolTipService.InitialShowDelay="100"
+        />
+        <Image
+            Source="/Resources/Images/gsrIkona.ico"
+            Width="210"
+            Height="125"
+            Grid.Row="0"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            IsHitTestVisible="False"
+            
+        />
         <Label Name="generalInfoLabel"
             Grid.Row="0"
             Grid.Column="1"

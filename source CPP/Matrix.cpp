@@ -13,7 +13,7 @@ Matrix::Matrix() : vertices(0) {
 
 Matrix::Matrix(int n) : vertices(n) {
     tab.resize(n, vector<EdgeData>(n));  // Inicjalizuje macierz o rozmiarze n x n, wype?nion? zerami
-    listVertives.resize(n - 2);
+    listVertices.resize(n - 2);
 }
 
 void Matrix::init(int n) {
@@ -47,7 +47,7 @@ void Matrix::addEdge(int u, int v, double weight, double cost) {
 
 //Dodaje info o Node
 void Matrix::addNode(const Node& node) {
-    listVertives.push_back(node);
+    listVertices.push_back(node);
 }
 
 // Medota wypisuje graf
@@ -182,8 +182,159 @@ bool Matrix::readFileToGraph2(string fileName) {
 
         addEdge(u, v, maxFlow, cost);
     }
+    
     //CWIARTKI POWINNY BYC WCZYTYWANE W INNEJ KLASIE (PUNKTY PEWNIE TEZ)
 
+    plik.close();
+    return true;
+}
+
+// Remaster wczytywania autorstwa JK
+bool Matrix::readFileToGraph3(string fileName) {
+    ifstream plik(fileName);
+    int vertices=0; // ilosc wierzcholkow
+    int u, v;// u , v (u --> v), przepustowosc
+    double maxFlow, x, y, capacity, cost = 0.0;
+    string line;
+    string fieldType;
+    int nodeId;
+    capacity = 0;
+    if (!plik.is_open()) {
+        cerr << "Nie mo?na otworzy? pliku!: " << fileName << endl;
+        return false;
+    }
+
+    // Pomijamy lini? "KONWERSJA"
+    getline(plik, line);
+    if (line != "KONWERSJA") {
+        cerr << "Blad skladniowy na poczatku wczytywania pliku" << endl;
+        return false;
+    }
+
+    //Wczytuje ilosc wierzcholkow, ilosc krawedzi
+    plik >> Node::breweryEfficiencyMultiplier;
+
+    plik.ignore();
+    getline(plik, line);
+
+    if (line != "PUNKTY") {
+        cerr << "Blad skladniowy we wczytywaniu sekcji KONWERSJA" << endl;
+        return false;
+    }
+
+    // Wczytywanie Node'w (bez oznaczania s i t)
+    while (true) {
+        getline(plik, line);
+        istringstream iss(line);
+        if (iss >> nodeId >> x >> y >> fieldType) {
+            Node::NodeType type = Node::NodeType::None;
+            if (fieldType == "pole") type = Node::NodeType::Field;
+            else if (fieldType == "browar") type = Node::NodeType::Brewery;
+            else if (fieldType == "karczma") type = Node::NodeType::Pub;
+            else if (fieldType == "brak") type = Node::NodeType::None;
+
+            vertices++;
+            Node tmpNode(nodeId, x, y, capacity, type);
+            addNode(tmpNode);
+        }else break;
+    }
+    if (line != "DROGI") {
+        cerr << "Blad skladniowy we wczytywaniu sekcji PUNKTY" << endl;
+        return false;
+    }
+    //inicjalizuje macierz
+    vertices += 2;             // abstrakcyjne
+    this->init(vertices);
+
+    // Wczytywanie kraw?dzi
+    while(true){
+        getline(plik, line);
+        istringstream iss(line);
+        if (iss >> u >> v >> maxFlow >> cost)addEdge(u, v, maxFlow, cost);
+        else break;
+    }
+    if (line != "CWIARTKI") {
+        cerr << "Blad skladniowy we wczytywaniu sekcji DROGI" << endl;
+        return false;
+    }
+    // Wczytywanie punktow oraz mnoznikow cwiartek
+    vector<Quarter> initialQuarters(4);
+    double efficiency;                  // dzielone przez tysiac, aby zrobic mnoznik
+    for (int i = 0; i < 4; i++) {
+        getline(plik, line);
+        istringstream iss(line);
+        iss >> efficiency;
+        efficiency /= 1000;
+        initialQuarters[i].efficiencyMultiplier = efficiency;
+        while (iss >> x >> y)initialQuarters[i].pointTab.push_back(make_pair(x, y));
+    }
+
+    //sortowanie punktow wzgledem wspolrzednej katowej
+    for (int i = 0; i < 4; i++)initialQuarters[i].sort();
+
+    //szczerze nie warto bylo przepisywac cwiartki do klasy bo tu jest syf
+    //w generatorze jest porzadeczek :D
+    
+    //algorytm otoczki wypuklej w celu ustalenia wielokata wypuklego
+    vector<Quarter> quarters(4);
+    for (int k = 0; k < 4; k++) {
+        quarters[k].efficiencyMultiplier = initialQuarters[k].efficiencyMultiplier;
+        quarters[k].pointTab.push_back(initialQuarters[k].pointTab[0]);
+        quarters[k].pointTab.push_back(initialQuarters[k].pointTab[1]);
+
+        for (int i = 2; i < initialQuarters[k].pointTab.size(); i++) {
+            if (Quarter::comparator(quarters[k].pointTab[quarters[k].pointTab.size() - 2], quarters[k].pointTab[quarters[k].pointTab.size() - 1], initialQuarters[k].pointTab[i]))quarters[k].pointTab.push_back(initialQuarters[k].pointTab[i]);
+            else {
+                quarters[k].pointTab.pop_back();
+                while (!Quarter::comparator(quarters[k].pointTab[quarters[k].pointTab.size() - 2], quarters[k].pointTab[quarters[k].pointTab.size() - 1], initialQuarters[k].pointTab[i]))quarters[k].pointTab.pop_back();
+                quarters[k].pointTab.push_back(initialQuarters[k].pointTab[i]);
+            }
+        }
+        quarters[k].pointTab.push_back(initialQuarters[k].pointTab[0]);
+    }
+
+    //czy to na pewno wielokat?
+    for (int i = 0; i < 4; i++)if (quarters[i].pointTab.size() < 3) {
+        cerr << "Wielokat " << i + 1 << " nie jest wielokatem, bo ma za malo bokow";
+        return false;
+    }
+
+    //zmieniamy efektywnosc produkcji zboza przez pola w zaleznosci od tego w jakiej cwiartce sie znajduje
+    bool isFieldValid;
+    for(int i=0;i<listVertices.size();i++)if(listVertices[i].type==Node::NodeType::Field){
+        pair<double, double> fieldCoordinates = make_pair(listVertices[i].x, listVertices[i].y);
+        for (int quarterIndex = 0; quarterIndex < 4; quarterIndex++) {
+            isFieldValid = true;
+            for (int j = 0; j < quarters[quarterIndex].pointTab.size() - 1; j++) {
+                if (!Quarter::comparator(quarters[quarterIndex].pointTab[j], quarters[quarterIndex].pointTab[j + 1], fieldCoordinates)) {
+                    isFieldValid = false;
+                    break;
+                }
+            }
+            if (isFieldValid) {
+                tab[0][i+1].flow *= quarters[quarterIndex].efficiencyMultiplier;
+                break;
+            }
+            else if(!isFieldValid && quarterIndex==3){
+                cerr << "Pole z indeksem: " << i + 1 << " nie nalezy do zadnego wielokata" << endl;
+                return false;
+            }
+        }
+    }
+
+    //UZYWAC JAKBY CWIARTKI NIE DZIALALY
+    //for (int i = 0; i < listVertices.size(); i++)if (listVertices[i].type == Node::NodeType::Field)cout << tab[0][i+1].flow << " "<<i<<"->" << tab[0][i+1].v << endl;
+    /*
+    for (int i = 0; i < 4; i++) {
+        for (auto it = quarters[i].pointTab.begin(); it != quarters[i].pointTab.end(); it++)cout << it->first << " " << it->second << endl;
+        cout << endl;
+    }
+    */
+
+    if (!plik.eof()){
+        cerr << "Blad skladniowy we wczytywaniu sekcji CWIARTKI" << endl;
+        return false;
+    }
     plik.close();
     return true;
 }
@@ -429,7 +580,7 @@ double Matrix::maxFlowMinCost2() {
     this->init(vertices + 1);
 
 
-    for (Node i : listVertives) {
+    for (Node i : listVertices) {
 
         if (i.GetType() == Node::NodeType::Brewery) {
             tab[i.GetId()][midT].remainingFlow = numeric_limits<double>::max();
@@ -568,7 +719,7 @@ double Matrix::maxFlowAlgorithm() {
     }
 
     // Od kazdego wierzcholka ktory jest browarem. Tworzy nowa krawedz do midT
-    for (Node i : listVertives) {
+    for (Node i : listVertices) {
         if (i.GetType() == Node::NodeType::Brewery) {
             siecResidualna.tab[i.GetId()][midT].remainingFlow = INF;
         }
@@ -577,7 +728,7 @@ double Matrix::maxFlowAlgorithm() {
     vector<int> f2(vertices + 1); //tablica ojcow dla 2 przeplywu
 
     maxFlow = edmondsKarpClassic(s, siecResidualna.tab, midT, f);;
-    for (Node i : listVertives) {
+    for (Node i : listVertices) {
 
         if (i.GetType() == Node::NodeType::Brewery) {
             // siecResidualna.tab[i.GetId()][midT].remainingFlow = 999;
