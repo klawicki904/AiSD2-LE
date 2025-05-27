@@ -1,0 +1,66 @@
+Changelog 09.04.2025:
+Created basic graph system, allowing to add nodes, arrows and change their data.
+
+Changelog 16.04.2025 (v0.3):
+The graph area has been re-made in world space instead of UI, allowing for easier positioning and near-endless space.
+
+Changelog 23.04.2025 (v0.4):
+Added Input to Graph conversion system. Arrows are now random-colored. The UI now scales properly, matching any screen size.
+
+Changelog 07.05.2025 (v0.5):
+- mouse scroll wheel button (middle mouse button) now moves the graph view
+- Files with graph data can be opened in standalone builds and converted to a graph
+- Remade the file<=>graph conversion system; both input fields and the graph automatically synchronize
+- added a loading screen while clearing and generating a graph, only camera movement is allowed while graph is loading
+- clearing or generating a graph no longer freezes the program
+- graph generation can be cancelled
+- added special actions menu in the graph tab: 
+	• clearing the graph, 
+	• moving to world's center position (X = 0, Y = 0)
+	• show entire graph - adjusts the camera to contain all the nodes in its view, regardless of the max zoom setting
+- nodes can be selected by dragging in a rectangle area
+- arrows' values can be updated at any time, automatic flow updates can be disabled in settings
+
+Changelog 21.05.2025 (v0.6):
+- fixed a bug where cancelling graph generation while it's deleting nodes prevents next generating attempts
+- program no longer freezes when switching tabs while a huge graph is loaded
+- added quarters' visualisation support, added a special action button to toggle adding border points" mode; quarters' edges change color to red when not convex or overlap other quarters
+- added breweries conversion rate support to special actions
+- updated input and output files to support quarters and conversion rate
+- if two or more nodes are in the exact same position, they become red;
+- added a confirmation menu before saving a graph with incorrect input (red nodes or quarters)
+- added "Graph Elements Size" slider
+- added tooltips for buttons in the File tab and in the Special Actions menu
+- added a confirmation screen before saving a file containing incorrectly placed elements
+- left-clicking UI elements no longer interacts with the graph at the same time
+- UI aesthetic improvements
+- field nodes now display their yield above the node, breweries display their capacity
+- added output file (file with problem solution) visualization in the "Simulate" tab; the Simulate tab is not empty anymore
+- added undo and redo features (holding CTRL-Z or CTRL-Y repeats the actions)
+- arrows now show an outline when selected or in a simulation step
+- nodes become transparent while overlapping other nodes
+- arrows now change color depending on the node type they start from; the color types can be changed in the settings
+
+Changelog 22.05.2025 (v0.7)
+- fixed simulation visualizer updating nodes' values incorrectly
+- added quarter support for simulation visualizer
+- fields outside quarters are red (not allowed)
+- added Polish language option
+- settings are saved upon exiting and loaded on startup (file: settings.json)
+
+Changelog 04.06.2025 (v0.8)
+- fixed a bug where settings were saved only when exiting while settings panel was open (now they save no matter what tab is currently open
+- dots (.) are replaced with commas (,) in opened or copy-pasted input (the decimal separator in Unity is comma, while in C++ it's a dot)
+- operation status area in the File tab shows more information about encountered errors
+- fixed quarter areas not updating their color under specific conditions
+- added Undo-Redo actions for updating elements' values (position, type, capacity, flow, repair cost) in UI
+- added copy (CTRL-C), paste (CTRL-V), cut (CTRL-X) and duplicate (CTRL-D) actions
+- added buttons in special actions menu: undo, redo, copy, paste, duplicate, cut, delete selected; replaced letter labels with icons
+- "Help" tab now contains instructions on how to use the program
+- Simulation resets when graph is modified
+- added external path analyzer support (the external algorithm is hardcoded)
+- prepared buttons in File tab for string search, compression and decompression
+- fixed a bug where "Save file" window would re-open after file was saved by pressing Enter
+- added String Search external algorithm support (the external algorithm only works with naive method)
+- added Compression-Decompression external algorithm support (the external algorithm is hardcoded)
+- 
