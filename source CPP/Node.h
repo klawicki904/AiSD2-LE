@@ -41,6 +41,15 @@ public:
     NodeType GetType() const;
     //const double& GetYield() const;
 
+    std::wstring TypeAsWString() const {
+        switch (type) {
+            case NodeType::Field: return L"pole";
+            case NodeType::Brewery: return L"browar";
+            case NodeType::Pub: return L"karczma";
+            default: return L"punkt";
+        }
+    }
+
 };
 
 #endif // NODE_H
