@@ -11,7 +11,7 @@
 
 using namespace std;
 
-int main(int argc, char* argv[])
+int wmain(int argc, wchar_t* argv[])
 {
     if (argc < 4)
     {
@@ -19,33 +19,26 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    string inputPath = argv[2]; // path of the file to read
+    wstring inputPath = argv[2]; // path of the file to read
     ifstream file(inputPath);
     if (!file.is_open())
     {
-        cerr << "Cannot open file: " << inputPath << endl;
+        wcerr << "Cannot open file: " << inputPath << endl;
         return 2;
     }
 
-    ifstream patternFile(argv[3]); // path to the file with pattern
-    if (!patternFile.is_open())
-    {
-        return 3;
-    }
-    string pattern;
-    patternFile >> pattern; // save file with pattern to string
-    if (pattern == "") // return normally when pattern empty
+    wstring wpattern = argv[3];
+    if (wpattern == L"") // return normally when pattern empty
     {
         return 0;
     }
     
-    wstring_convert<codecvt_utf8<wchar_t>> converter; // converter to wstring
-    wstring wpattern = converter.from_bytes(pattern); // pattern in wide string
     int pattern_len = wpattern.length();
 
     string line;
     int line_number = 0;
 
+    wstring_convert<codecvt_utf8<wchar_t>> converter; // converter to wstring
     while (getline(file, line))
     {
         line_number++;
