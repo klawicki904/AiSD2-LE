@@ -1,0 +1,1 @@
+aplikacja jest w: ./networkGenInterface/bin/Debug/

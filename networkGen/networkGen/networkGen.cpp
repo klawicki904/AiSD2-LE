@@ -53,62 +53,7 @@ int main(int argc, char **argv)
     // checkpointN - dlugosc miasta wyznaczona jako najdluzsza ilosc skrzyzowan wymagana do przejscia od startowego do koncowego wierzcholka abstrakcyjnego (tzw. checkpointy)
     // density - wartosc = {0, 1, 2} wyznaczajaca na szanse na "drogi skroty"
 
-    ///---------------cwiartki---------------
-    int quarterPointN;
-    vector<set<pair<int, int>>> uniquePointsInSquareSet(4);     // zawiera unikalne punkty dla kazdej z czterech cwiartek
-    vector<vector<pair<int, int>>> uniquePointsInSquareTab(4);  // to samo co uniquePointsInSquareSet, ale w wektorze
-
-    // losowanie punktow do ukladu wspolrzednych dla kazdej z cwiartek
-    for (int k = 0; k < 4; k++) {
-        quarterPointN = rand() % 18 + 6;
-        switch (k) {
-        case 0:
-            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(rand() % 100+1, rand() % 100+1));
-            break;
-        case 1:
-            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(-1 * (rand() % 100+1), rand() % 100+1));
-            break;
-        case 2:
-            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(-1 * (rand() % 100+1), -1 * (rand() % 100+1)));
-            break;
-        case 3:
-            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(rand() % 100+1, -1 * (rand() % 100+1)));
-            break;
-        }
-    }
-    // przepisanie ze zbioru do wektora
-    for (int k = 0; k < 4; k++)for (auto it = uniquePointsInSquareSet[k].begin(); it != uniquePointsInSquareSet[k].end(); it++)uniquePointsInSquareTab[k].emplace_back(it->first,it->second);
-    
-    // dla kazdej cwiartki wyznaczam najnizszy punkt (wspolrzedna y), a nastepnie sortuje cala tablice za pomoca funkcji Comparator
-    for (int k = 0; k < 4; k++) {
-        int lowestYid = 0, lowestYValue = uniquePointsInSquareTab[k][0].second;
-        for (int i = 1; i < uniquePointsInSquareTab[k].size(); i++)if (uniquePointsInSquareTab[k][i].second < lowestYValue) {
-            lowestYid = i;
-            lowestYValue = uniquePointsInSquareTab[k][i].second;
-        }
-        swap(uniquePointsInSquareTab[k][0], uniquePointsInSquareTab[k][lowestYid]);
-        sort(uniquePointsInSquareTab[k].begin(), uniquePointsInSquareTab[k].end(), [&](pair<int, int> a, pair<int, int> b) {return Comparator(uniquePointsInSquareTab[k][0], a, b); });
-    }
-
-    // uzywam wektora quarters jako kolejki, poniewaz potrzebuje dostepu do ostatnich dwoch elementow
-    // wyznaczam na podstawie poprzednich losowo wybranych punktow wynikowy wielokat wypukly
-    // za pomoca algorytmu otoczki wypuklej z wykorzystaniem funkcji Comparator
-    vector<vector<pair<int, int>>> quarters(4);
-    for (int k = 0; k < 4; k++) {
-        quarters[k].push_back(uniquePointsInSquareTab[k][0]);
-        quarters[k].push_back(uniquePointsInSquareTab[k][1]);
-
-        for (int i = 2; i < uniquePointsInSquareTab[k].size(); i++) {
-            if (Comparator(quarters[k][quarters[k].size() - 2], quarters[k][quarters[k].size() - 1], uniquePointsInSquareTab[k][i]))quarters[k].push_back(uniquePointsInSquareTab[k][i]);
-            else {
-                quarters[k].pop_back();
-                while (!Comparator(quarters[k][quarters[k].size() - 2], quarters[k][quarters[k].size() - 1], uniquePointsInSquareTab[k][i]))quarters[k].pop_back();
-                quarters[k].push_back(uniquePointsInSquareTab[k][i]);
-            }
-        }
-        quarters[k].push_back(uniquePointsInSquareTab[k][0]);
-    }
-
+   
     //---------------input uzytkownika---------------
     // dane z interfejsu (argumenty linii polecen)
     if (argc == 7) {
@@ -175,12 +120,70 @@ int main(int argc, char **argv)
         cout << "Jak duza ma byc szansa na drogi-skroty? (0 - normalna, 1 - wieksza, 2 - wieksza++): ";
         cin >> density;
     }
+
+    ///---------------cwiartki---------------
+    int quarterPointN;
+    vector<set<pair<int, int>>> uniquePointsInSquareSet(4);     // zawiera unikalne punkty dla kazdej z czterech cwiartek
+    vector<vector<pair<int, int>>> uniquePointsInSquareTab(4);  // to samo co uniquePointsInSquareSet, ale w wektorze
+    int squareArea = sqrt(fieldN) + 10;
+    // losowanie punktow do ukladu wspolrzednych dla kazdej z cwiartek
+    for (int k = 0; k < 4; k++) {
+        quarterPointN = rand() % 15 + 10;
+        int counter = 0;
+        switch (k) {
+        case 0:
+            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(rand() % squareArea + 1 , rand() % squareArea + 1));
+            break;
+        case 1:
+            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(-1 * (rand() % squareArea + 1), rand() % squareArea + 1));
+            break;
+        case 2:
+            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(-1 * (rand() % squareArea + 1), -1 * (rand() % squareArea + 1)));
+            break;
+        case 3:
+            while (uniquePointsInSquareSet[k].size() != quarterPointN)uniquePointsInSquareSet[k].insert(make_pair(rand() % squareArea + 1, -1 * (rand() % squareArea + 1)));
+            break;
+        }
+    }
+    // przepisanie ze zbioru do wektora
+    for (int k = 0; k < 4; k++)for (auto it = uniquePointsInSquareSet[k].begin(); it != uniquePointsInSquareSet[k].end(); it++)uniquePointsInSquareTab[k].emplace_back(it->first, it->second);
+
+    // dla kazdej cwiartki wyznaczam najnizszy punkt (wspolrzedna y), a nastepnie sortuje cala tablice za pomoca funkcji Comparator
+    for (int k = 0; k < 4; k++) {
+        int lowestYid = 0;
+        int lowestYValue = uniquePointsInSquareTab[k][0].second;
+        for (int i = 1; i < uniquePointsInSquareTab[k].size(); i++)if (uniquePointsInSquareTab[k][i].second < lowestYValue) {
+            lowestYid = i;
+            lowestYValue = uniquePointsInSquareTab[k][i].second;
+        }
+        swap(uniquePointsInSquareTab[k][0], uniquePointsInSquareTab[k][lowestYid]);
+        sort(uniquePointsInSquareTab[k].begin(), uniquePointsInSquareTab[k].end(), [&](pair<int, int> a, pair<int, int> b) {return Comparator(uniquePointsInSquareTab[k][0], a, b); });
+    }
+    // uzywam wektora quarters jako kolejki, poniewaz potrzebuje dostepu do ostatnich dwoch elementow
+    // wyznaczam na podstawie poprzednich losowo wybranych punktow wynikowy wielokat wypukly
+    // za pomoca algorytmu otoczki wypuklej z wykorzystaniem funkcji Comparator
+    vector<vector<pair<int, int>>> quarters(4);
+    for (int k = 0; k < 4; k++) {
+        quarters[k].push_back(uniquePointsInSquareTab[k][0]);
+        quarters[k].push_back(uniquePointsInSquareTab[k][1]);
+
+        for (int i = 2; i < uniquePointsInSquareTab[k].size(); i++) {
+            if (Comparator(quarters[k][quarters[k].size() - 2], quarters[k][quarters[k].size() - 1], uniquePointsInSquareTab[k][i]))quarters[k].push_back(uniquePointsInSquareTab[k][i]);
+            else {
+                quarters[k].pop_back();
+                while (!Comparator(quarters[k][quarters[k].size() - 2], quarters[k][quarters[k].size() - 1], uniquePointsInSquareTab[k][i]))quarters[k].pop_back();
+                quarters[k].push_back(uniquePointsInSquareTab[k][i]);
+            }
+        }
+        quarters[k].push_back(uniquePointsInSquareTab[k][0]);
+    }
+
     //---------------przygotowanie struktur danych---------------
     vector<int> checkpointTab;      // wektor zawierajacy indeksy checkpointow
 
     vector<Node *> vertTab(vertN + 1);          // wektor zawierajacy wskazniki na klasy Node reprezentujace dany punkt grafu
     for (int i = 0; i <= vertN; i++)vertTab[i] = new Node(i, vertN);
-    vertTab[0]->coordinates = make_pair(-130, 0);
+    vertTab[0]->coordinates = make_pair(-130, 0);       //FIXME
 
     ///---------------losowanie przedzialow---------------
     // modifier sluzy do okreslenia czy miasto jest zbalansowane (2), czy bardziej dlugie (1)
@@ -228,28 +231,27 @@ int main(int argc, char **argv)
     cout << endl << "--------------------------------" << endl << "Podsumowanie:" << endl;
 
     ///---------------losowanie wspolrzednych pol---------------
-    set<pair<int, int>> fieldCoordinatesSet;    // zbior unikalnych wspolrzednych punktow na plaszczyznie cwiartek
+    set<pair<int,int>> fieldCoordinatesSet;    // zbior unikalnych wspolrzednych punktow na plaszczyznie cwiartek
     int quarterIndex;                           // indeks cwiartki = {0, 1, 2, 3}
     bool isPointValid;                          // true jesli punkt nalezy do cwiartki, false jesli nie
     int fieldCoordinatesSetSize = 0;            // ostatni zapisany rozmiar zbioru; sprawdza czy nie bylo juz identycznego punktu w zbiorze
-    pair<int, int> point;                       // punkt o losowych wspolrzednych w danej cwiartce
-
+    pair<int,int> point;                       // punkt o losowych wspolrzednych w danej cwiartce
     // kazde kolejne pole trafia do kolejnej cwiartki
     for (int i = 1; i <= fieldN; i++) {
         quarterIndex = (i-1) % 4;
         isPointValid = true;
         switch (quarterIndex) {
         case 0:
-            point=make_pair(rand() % 100 + 1, rand() % 100 + 1);
+            point=make_pair(rand() % squareArea + 1, rand() % squareArea + 1);
             break;
         case 1:
-            point=make_pair(-1 * (rand() % 100 + 1), rand() % 100 + 1);
+            point = make_pair(-1 * (rand() % squareArea + 1), rand() % squareArea + 1);
             break;
         case 2:
-            point=make_pair(-1 * (rand() % 100 + 1), -1 * (rand() % 100 + 1));
+            point=make_pair(-1 * (rand() % squareArea +1), -1 * (rand() % squareArea +1));
             break;
         case 3:
-            point=make_pair(rand() % 100 + 1, -1 * (rand() % 100 + 1));
+            point=make_pair(rand() % squareArea + 1, -1 * (rand() % squareArea +1));
             break;
         }
 
@@ -271,15 +273,14 @@ int main(int argc, char **argv)
 
     // pozostale punkty sa ustawiane na wschod od cwiartek rzedami zgodnie z wylosowanymi checkpointami
     for (int j = 1; j < checkpointN - 1; j++)for (int i = checkpointTab[j]; i < checkpointTab[j + 1]; i++) {
-        x = 100+(30 * j);
+        x = squareArea+4*j;
         int y;
         int nodesInSection = checkpointTab[j + 1] - checkpointTab[j];
         //cout << i <<" "<<j << endl;
-        if (nodesInSection % 2)y = (nodesInSection / 2 - 1) * 15 + 8 - ((i - checkpointTab[j]) * 15);
-        else y = nodesInSection / 2 * 15 - ((i - checkpointTab[j]) * 15);
+        y = nodesInSection - 1 - ((i - checkpointTab[j]) * 2);
         vertTab[i]->coordinates = make_pair(x, y);
     }
-    x += 30;
+    x += 4;
     y = 0;
 
     ///---------------losowanie browarow---------------
@@ -429,19 +430,22 @@ int main(int argc, char **argv)
     file.close();
 
     // wersja oficjalna zgodna z szablonem danych wejsciowych ZAWIERA DROGI DWUKIERUNKOWE
+    float roadCost;
     ofstream experimentalFile("daneEksperymentalne.txt");
     experimentalFile << "KONWERSJA" << endl << static_cast <float>(rand()) / static_cast <float>(RAND_MAX) << endl<<"PUNKTY"<<endl;
-    //experimentalFile <<"0 "<< vertTab[0]->coordinates.first << " " << vertTab[0]->coordinates.second << " brak" << endl;
+    experimentalFile <<"0 "<< vertTab[0]->coordinates.first << " " << vertTab[0]->coordinates.second << " brak" << endl;
     for (int i = 1; i < checkpointTab[1]; i++)experimentalFile << i << " "<<vertTab[i]->coordinates.first<<" "<<vertTab[i]->coordinates.second<<" pole" << endl;
     for (int i = checkpointTab[1]; i < checkpointTab[checkpointN - 2]; i++) {
-        if (vertTab[i]->amIBrewery)experimentalFile << i <<" "<< vertTab[i]->coordinates.first << " " << vertTab[i]->coordinates.second << " browar" << endl;
+        if (vertTab[i]->amIBrewery)experimentalFile << i <<" "<< vertTab[i]->coordinates.first << " " << vertTab[i]->coordinates.second << " browar " << 
+            static_cast <float>(rand()) / static_cast <float>(RAND_MAX) + 20 + rand() % 12 <<endl;
         else experimentalFile << i << " "<<vertTab[i]->coordinates.first << " " << vertTab[i]->coordinates.second << " brak" << endl;
     }
     for (int i = checkpointTab[checkpointN - 2]; i < checkpointTab[checkpointN - 1]; i++)experimentalFile << i<<" "<<vertTab[i]->coordinates.first<<" "<<vertTab[i]->coordinates.second<<" karczma" << endl;
-    //experimentalFile << vertN+1<<" "<< x << " " << y << " brak" << endl << "DROGI";
-    experimentalFile << "DROGI";
+    experimentalFile << vertN+1<<" "<< x << " " << y << " brak" << endl << "DROGI";
+    //experimentalFile << "DROGI";
     for (int i = 0; i <= vertN; i++)for (int j = 0; j < vertTab[i]->to.size(); j++) {
-        float roadCost = static_cast <float>(rand()) / static_cast <float>(RAND_MAX) + rand() % 100;
+        if (rand() % 4 == 0)roadCost = static_cast <float>(rand()) / static_cast <float>(RAND_MAX) + rand() % 70;
+        else roadCost = 0;
         experimentalFile << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second << " " << roadCost;
         //if (i != 0 && i != vertN)experimentalFile << endl << vertTab[i]->to[j].first << " " << i << " " << vertTab[i]->to[j].second << " " << roadCost;
     }

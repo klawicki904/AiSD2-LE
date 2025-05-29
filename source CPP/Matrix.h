@@ -41,8 +41,8 @@ public:
     //Czyta dane z pliku i inicjalizuje macierz
     bool readFileToGraph(string fileName);
 
-    // Wczytywanie pliku wejsciowego w najnowszej postaci
-    bool readFileToGraph2(string fileName);
+    // Wczytywanie pliku wejsciowego przed "cwiartki update"
+    //bool readFileToGraph2(string fileName);
 
     // Remaster wczytywania autorstwa JK
     bool readFileToGraph3(string fileName);

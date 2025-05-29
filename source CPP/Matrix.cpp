@@ -60,6 +60,7 @@ void Matrix::printGraph() const {
     }
 }
 
+
 //Czyta dane z pliku i inicjalizuje macierz
 bool Matrix::readFileToGraph(string fileName) {
     ifstream plik(fileName);
@@ -115,7 +116,8 @@ bool Matrix::readFileToGraph(string fileName) {
     plik.close();
     return true;
 }
-
+// !!!STARE WCZYTYWANIE NIE WIEM CZY SIE JESZCZE DO CZEGOS PRZYDA!!!
+/*
 // Wczytywanie pliku wejsciowego w najnowszej postaci
 bool Matrix::readFileToGraph2(string fileName) {
     ifstream plik(fileName);
@@ -188,6 +190,7 @@ bool Matrix::readFileToGraph2(string fileName) {
     plik.close();
     return true;
 }
+*/
 
 // Remaster wczytywania autorstwa JK
 bool Matrix::readFileToGraph3(string fileName) {
@@ -198,7 +201,6 @@ bool Matrix::readFileToGraph3(string fileName) {
     string line;
     string fieldType;
     int nodeId;
-    capacity = 0;
     if (!plik.is_open()) {
         cerr << "Nie mo?na otworzy? pliku!: " << fileName << endl;
         return false;
@@ -222,26 +224,36 @@ bool Matrix::readFileToGraph3(string fileName) {
         return false;
     }
 
-    // Wczytywanie Node'w (bez oznaczania s i t)
-    while (true) {
+    // Wczytywanie Node'w
+    // troche zabawy bo wierzcholek startowy i koncowy pomijamy we wczytywaniu
+    getline(plik, line);    //pominiecie wierzcholka startowego
+    getline(plik, line);    //wczytanie pierwszego pola
+    istringstream iss(line);
+    iss >> nodeId >> x >> y >> fieldType;
+    do{
         getline(plik, line);
-        istringstream iss(line);
-        if (iss >> nodeId >> x >> y >> fieldType) {
-            Node::NodeType type = Node::NodeType::None;
-            if (fieldType == "pole") type = Node::NodeType::Field;
-            else if (fieldType == "browar") type = Node::NodeType::Brewery;
-            else if (fieldType == "karczma") type = Node::NodeType::Pub;
-            else if (fieldType == "brak") type = Node::NodeType::None;
+        if (line == "DROGI")break;
+        capacity = -1;
+        Node::NodeType type;
+        if (fieldType == "pole") type = Node::NodeType::Field;
+        else if (fieldType == "browar") {
+            type = Node::NodeType::Brewery;
+            iss >> capacity;
+        }
+        else if (fieldType == "karczma")type = Node::NodeType::Pub;
+        else if (fieldType == "brak")type = Node::NodeType::None;
+        vertices++;
+        Node tmpNode(nodeId, x, y, capacity, type);
+        addNode(tmpNode);
+        iss.str(line);
+        iss.clear();
+    }while(iss >> nodeId >> x >> y >> fieldType);
 
-            vertices++;
-            Node tmpNode(nodeId, x, y, capacity, type);
-            addNode(tmpNode);
-        }else break;
-    }
     if (line != "DROGI") {
         cerr << "Blad skladniowy we wczytywaniu sekcji PUNKTY" << endl;
         return false;
     }
+
     //inicjalizuje macierz
     vertices += 2;             // abstrakcyjne
     this->init(vertices);
