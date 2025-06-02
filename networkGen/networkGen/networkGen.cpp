@@ -11,7 +11,10 @@
 #include "Node.h"
 using namespace std;
 
-// dziala od 7 wierzcholkow
+// dziala od 8 wierzcholkow
+// dajemy gwarancje dzialania generatora do 40 000 wierzcholkow
+// swoja droga pekin posiada okolo 12 000 skrzyzowan
+// po co komukolwiek wieksza liczba skrzyzowan ???
 
 
 // funkcja ta porownuje trzy punkty i stwierdza czy punkt p znajduje sie zgodnie z ruchem wskazowek zegara, czy przeciwnie do nich wzgledem polprostej ab
@@ -101,15 +104,16 @@ int main(int argc, char **argv)
         }
 
         // liczba checkpointow (wejscie nie uwzglednia 4 dodatkowych checkpointow niezbednych do stworzenia jakiegokolwiek miasta)
-        if ((vertN-fieldN-pubN)/5< 0)cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == 0): ";
-        else cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == " << (vertN - fieldN - pubN) / 5 << "): ";
+        // wzor wykresu funkcji odpowiadajacy moim zdaniem najbardziej optymalnemu rozlozeniu checkpointow w miescie: y=0.16*vertN^(0.8)
+        cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == " <<round(0.16*pow(vertN,0.8)) << "): ";
         cin >> checkpointN;
         checkpointN += 4;      //dwa dla wierzcholkow abstrakcyjnych i dwa dla przynajmniej jednego checkpointu
         
         // liczba checkpointow nie moze byc zbyt duza (to znaczy miasto nie moze byc zbyt dlugie) wowczas powstanie bardzo waskie miasto z mala iloscia drog
         // od poczatku do konca; ponizszy if zapobiega takim danym
-        if ((vertN - fieldN - pubN) / 3 <= checkpointN - 4)
+        if ((vertN - fieldN - pubN - 5) / 3 + 1 < checkpointN - 4)
         {
+            cout << (vertN - fieldN - pubN - 5) / 3 + 1 << " " << checkpointN - 4 << endl;
             cout << "Blad danych wejsciowych (mozliwe problemy):" << endl << "1. Podano zbyt duzo pol i/lub karczm, aby poprawnie wygenerowac siec"
                 << endl << "2. Stosunek liczby wierzcholkow do liczby zestawow skrzyzowan jest zbyt maly, aby poprawnie wygenerowac pola i karczmy"
                 << endl << "3. Stosunek liczby wierzcholkow do liczby zestawow skrzyzowan jest zbyt maly, aby poprawnie wygenerowac skrzyzowania" << endl;
@@ -183,22 +187,41 @@ int main(int argc, char **argv)
 
     vector<Node *> vertTab(vertN + 1);          // wektor zawierajacy wskazniki na klasy Node reprezentujace dany punkt grafu
     for (int i = 0; i <= vertN; i++)vertTab[i] = new Node(i, vertN);
-    vertTab[0]->coordinates = make_pair(-130, 0);       //FIXME
+    vertTab[0]->coordinates = make_pair(-squareArea-5, 0);
 
     ///---------------losowanie przedzialow---------------
-    // modifier sluzy do okreslenia czy miasto jest zbalansowane (2), czy bardziej dlugie (1)
-    // (dlugie miasta maja inne zalozenia losowania indeksow checkpointow)
+    // byla to najtrudniejsza czesc projektu do zaimplementowania
     // modifier ustala ze kazdy checkpoint jest w odleglosci przynajmniej <wartosc modifier> wierzcholkow od innych checkpointow
-    int modifier = 2;
-    if ((vertN - fieldN - pubN) / (checkpointN - 2) <3)modifier = 1;
-    cout << endl<< "Modifier: " << modifier << " Ratio: " << (vertN - fieldN - pubN) / (checkpointN - 2) << endl;
+    // odleglosc ta automatycznie sie skaluje, wiec jesli jest za malo miejsca to odleglosci sa mniejsze
+    // priorytezujemy duze odleglosci w celu zbalansowania wizualnego miasta (zobaczymy czy ten model sie nadaje w praktyce) (spoiler: powinien sie nadawac)
+
+    int modifier = checkpointN;
+
+    // na podstawie wolnego miejsca obliczamy pesymistyczny przypadek wylosowania checkpointow, tak aby dobrac odpowiedni modifier
+    // uwaga duzo matematyki
+    for (int i = modifier-1; i >=0; i--) {
+        modifier--;
+        if ((vertN - fieldN - pubN - 3 * i - 2) < 1)continue;
+        if ((vertN - fieldN - pubN - 3 * i - 2) / (2 * i + 1) + 1 >= checkpointN - 4)break;
+    }
+    if ((vertN - fieldN - pubN - 5) / 3 <= 0)modifier = 1;
+
+
+    cout << endl << "Modifier: " << modifier <<" Minimum w sekcji: "<<modifier+1<< endl;
+    cout << "Maksymalna dozwolona ilosc checkpointow: " << (vertN - fieldN - pubN - 5) / 3 + 1 << endl;
+    cout << "Rozmiar wektora kandydatow: " << vertN - fieldN - pubN - 2*modifier-1  << endl;
+    cout << "Ilosc checkpointow: " << checkpointN - 4 << endl;
+    if (modifier == 0) {
+        cout << "Jesli to widzisz to znaczy ze nie powinienes tego widziec, sprobuj wiecej wierzcholkow lub mniej zestawow nwm..." << endl;
+        return 0;
+    }
 
     // wektor indeksow sposrod ktorych beda losowane indeksy checkpointow; w trakcie wyznaczania sa z niego usuwane sasiednie wartosci kandydatow na checkpointy
-    vector<int> checkpointCandidateTab(vertN - fieldN - pubN - modifier - 2);
+    vector<int> checkpointCandidateTab(vertN - fieldN - pubN - 2*modifier-1);
     for (int i = 0; i < checkpointCandidateTab.size(); i++)checkpointCandidateTab[i] = i + fieldN + modifier + 2;
     cout << "Zakres losowanych indeksow skrzyzowan: " << checkpointCandidateTab[0] << " - " << checkpointCandidateTab[checkpointCandidateTab.size() - 1] << endl;
 
-    //  wstepne wartosci indeksow checkpointow (pewniaczki)
+    // wstepne wartosci indeksow checkpointow (pewniaczki)
     checkpointTab.push_back(0);                     // startowy wierzcholek abstrakcyjny
     checkpointTab.push_back(vertN + 1);             // koncowy wierzcholek abstrakcyjny
     checkpointTab.push_back(fieldN + 1);            // indeks wskazujacy koniec pol + 1

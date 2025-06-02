@@ -118,7 +118,7 @@ namespace networkGenInterface
                 if (!int.TryParse(vertNBox.Text, out int vertN)) return;
                 if(!int.TryParse(fieldNBox.Text, out int fieldN))return;
                 if(!int.TryParse(pubNBox.Text, out int pubN))return;
-                double recommendedValue = Math.Round((double)((vertN - fieldN - pubN - 2) / 5));
+                double recommendedValue = Math.Round(0.16 * Math.Pow(vertN, 0.8));
                 if (!RatioCheck()) generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue + "\nPodano zbyt mało wierzchołków\nlub zbyt dużo zestawów wierzchołków!";
                 else generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue;
             }
@@ -156,7 +156,7 @@ namespace networkGenInterface
                     if (!int.TryParse(vertNBox.Text, out int vertN)) return;
                     if (!int.TryParse(fieldNBox.Text, out int fieldN)) return;
                     if (!int.TryParse(pubNBox.Text, out int pubN)) return;
-                    double recommendedValue = Math.Round((double)((vertN - fieldN - pubN - 2) / 5));
+                    double recommendedValue = Math.Round(0.16*Math.Pow(vertN,0.8));
                     if (!BreweryNCheck()) generalInfoLabel.Content = "Brak miejsca dla browarów!";
                     else if (!RatioCheck()) generalInfoLabel.Content = "Rekomendowana wartość = "+recommendedValue+"\nPodano zbyt mało wierzchołków\nlub zbyt dużo zestawów wierzchołków!";
                     else generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue;
@@ -174,7 +174,7 @@ namespace networkGenInterface
             if (!int.TryParse(fieldNBox.Text, out int fieldN)) return false;
             if (!int.TryParse(pubNBox.Text, out int pubN)) return false;
             if (vertN < 7) return false;
-            return Math.Round((float)(vertN -fieldN-pubN-2) / 3) > sectionN;
+            return (vertN-fieldN-pubN-7)/3+1 >= sectionN;
         }
         private bool BreweryNCheck()
         {
@@ -225,7 +225,7 @@ namespace networkGenInterface
             pubNBox.Text = Math.Round(int.Parse(vertNBox.Text) * 0.14).ToString();
             int fieldN = int.Parse(fieldNBox.Text);
             int pubN = int.Parse(pubNBox.Text);
-            sectionNBox.Text = Math.Round((double)((vertN - fieldN - pubN - 2) / 5)).ToString();
+            sectionNBox.Text = Math.Round(0.16 * Math.Pow(vertN, 0.8)).ToString();
             densityList.SelectedIndex = 1;
 
             breweryNBox.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
