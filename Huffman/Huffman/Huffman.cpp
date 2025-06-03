@@ -2,7 +2,6 @@
 #include <queue>
 #include <map>
 #include <fstream>
-#include <bitset>
 #include <cmath>
 #include <sstream>
 using namespace std;
@@ -29,6 +28,7 @@ public:
     }
 };
 
+// zewnetrzny destruktor klasy LetterFrequency
 void deleteNode(LetterFrequency* node) {
     if (node->left != nullptr) {
         LetterFrequency* temp = node->left;
@@ -44,6 +44,7 @@ void deleteNode(LetterFrequency* node) {
     delete node;
 }
 
+// przejscie po drzewie huffmana budujace kod
 string findPathToRoot(LetterFrequency* currentLetter, LetterFrequency* previousLetter) {
     bool isThisLastLetter = false;
     if (currentLetter == previousLetter)return findPathToRoot(currentLetter->parent, currentLetter);
@@ -54,10 +55,12 @@ string findPathToRoot(LetterFrequency* currentLetter, LetterFrequency* previousL
     if (currentLetter->right == previousLetter)return findPathToRoot(currentLetter->parent, currentLetter) + "1";
 }
 
+// tworzymy kod na podstawie drzewa kodow huffmana
 string createCode(map<char, pair<unsigned int, LetterFrequency*>>& characterMap, char letter) {
     return findPathToRoot(characterMap[letter].second, characterMap[letter].second);
 }
 
+// sluzy do budowy drzewa kodow huffmana ze stringa
 LetterFrequency* readToTreeFromText(map<char, pair<unsigned int, LetterFrequency*>>& characterMap, string& text) {
     for (int i = 0; i < text.length(); i++)characterMap[text[i]].first++;
     priority_queue<LetterFrequency*, vector<LetterFrequency*>, Comparator> kolejka;
@@ -80,35 +83,59 @@ LetterFrequency* readToTreeFromText(map<char, pair<unsigned int, LetterFrequency
     return kolejka.top();
 }
 
-int countBytesToWrite(map<char, pair<unsigned int, LetterFrequency*>>& characterMap, string& text) {
+// zamiana z dziesietnego do ciagu znakow reprezentujacego zapis binarny
+string decToBin(unsigned int code, short codeLength) {
+    string result = "";
+    for (int i = codeLength-1; i >= 0; i--) {
+        if ((code >> i) & 1)result += "1";
+        else result += "0";
+    }
+    return result;
+}
+
+// zamiana z ciagu znakow reprezentujacego zapis binarny do dziesietnego
+unsigned int binToDec(string code){
+    unsigned int result = 0;
+    for (int i = 0; i < code.length(); i++) {
+        result=result << 1;
+        if(code[i]=='1')result=result|1;
+    }
+    return result;
+}
+
+// funckja ta zwraca ilosc bitow w w kodach huffmana potrzebnych do zapisania tekstu
+int countBitsToWrite(map<char, pair<unsigned int, LetterFrequency*>>& characterMap, string& text) {
     int result=0;
     for (int i = 0; i < text.size(); i++)result += createCode(characterMap, text[i]).size();
     return result;
 }
 
-void writeToFile(string filename, map<char, pair<unsigned int, LetterFrequency*>>& characterMap, string& text) {
+void compression(string filename, map<char, pair<unsigned int, LetterFrequency*>>& characterMap, string& text){
     ofstream outputFile(filename, ios::binary);
 
-    // liczba wszystkich liter
+    // zapisuje liczbe wszystkich unikalnych znakow
     unsigned short letterN = characterMap.size();
     outputFile.write(reinterpret_cast<char*>(&letterN), sizeof(letterN));
 
     for (auto it = characterMap.begin(); it != characterMap.end(); it++) {
-        // tworze kod dla odpowiedniej litery
-        string code = createCode(characterMap, it->first);
-        // zapisuje litere w pliku
+        // zapisuje znak w pliku
         outputFile.put(it->first);
-        // zapisuje dlugosc kodu znaku
-        uint8_t codeLength = code.size();
+        // tworze kod dla odpowiedniego znaku
+        string code = createCode(characterMap, it->first);
+        // zapisuje dlugosc kodu dla danego znaku
+        short codeLength = code.length();
         outputFile.put(codeLength);
         // zapisuje kod znaku do pliku
-        unsigned int codeBits = bitset<32>(code).to_ulong();
+        unsigned int codeBits = binToDec(code);
         outputFile.write(reinterpret_cast<char*>(&codeBits), sizeof(unsigned int));
     }
-    unsigned int bytesToWrite = countBytesToWrite(characterMap, text);
+    // sprawdzam ile bajtow tekstu zapisze, aby moc poprawnie odczytac ostatni zapisany bajt
+    unsigned int bytesToWrite = countBitsToWrite(characterMap, text);
     if (bytesToWrite % 8 == 0)bytesToWrite /= 8;
     else bytesToWrite = ceil((float)bytesToWrite / 8);
     outputFile.write(reinterpret_cast<char*>(&bytesToWrite), sizeof(bytesToWrite));
+
+    // kompresja, staram sie upchac jak najwiecej bitow do bajta
     int k = 0;
     int letterCount = 0;
     unsigned char letter = 0;
@@ -128,6 +155,7 @@ void writeToFile(string filename, map<char, pair<unsigned int, LetterFrequency*>
             }
         }
     }
+    // zapis ostatniego niedokonczonego bajta
     if (k % 8 != 0) {
         outputFile.put(letter);
         outputFile.put(k % 8);
@@ -136,25 +164,32 @@ void writeToFile(string filename, map<char, pair<unsigned int, LetterFrequency*>
     outputFile.close();
 }
 
-map<string, char> readFromFile(const string& filename) {
+// funkcja ta nie korzysta juz z klasy LetterFrequency
+// zakladam ze sluzy tylko do odczytywania wiec nie ma sensu bawic sie w liczenie wystapien wszystkich znakow
+// oraz budowanie drzewa huffmana na nowo
+// interesuje nas tylko zkompresowana tresc
+map<string,char> decompression(const string& filename) {
     ifstream inputFile(filename, ios::binary);
     if (!inputFile) {
         cerr << "Problem z otwieraniem pliku wejsciowego" << endl;
         return {};
     }
+    map<string,char> codeMap;
 
-    map<string, char> codeMap;
-    short letterN;
+    // analogicznie jak w funkcji kompresujacej odczytuje kolejne pola metadanych
+    // czytam ilosc unikalnych liter
+    unsigned short letterN;
     inputFile.read(reinterpret_cast<char*>(&letterN), sizeof(letterN));
 
-    for (size_t i = 0; i < letterN; ++i) {
+    // w tej petli czytam znak, dlugosc jego kodu huffmana a nastepnie mapuje odczytany kod i zamieniam na stringa
+    for (int i = 0; i < letterN; i++) {
         char character = inputFile.get();
-        uint8_t codeLength = inputFile.get();
+        short codeLength = inputFile.get();
         unsigned int codeBits;
         inputFile.read(reinterpret_cast<char*>(&codeBits), sizeof(unsigned int));
-        bitset<32> bits(codeBits);
-        codeMap[bits.to_string().substr(32 - codeLength)] = character;
+        codeMap[decToBin(codeBits, codeLength)] = character;
     }
+
     string compressedText;
     char offsetChar;
     int offset;
@@ -164,17 +199,29 @@ map<string, char> readFromFile(const string& filename) {
     string result;
     unsigned int bytesToRead;
     bool isItLastLetter = false;
-    inputFile.read(reinterpret_cast<char*>(&bytesToRead), sizeof(bytesToRead));
     int i;
+
+    // czytam ilosc bajtow do odczytania
+    inputFile.read(reinterpret_cast<char*>(&bytesToRead), sizeof(bytesToRead));
+
+    // czytanie pliku
+    // z jakiegos powodu byte nie moze byc unsigned (???)
     while (inputFile.get(byte)) {
+        // sprawdzam czy to ostatni bajt, aby go poprawnie odczytac
+        // ostatni bajt moze byc wypelniony zerami (zero-padding) co psuje odczyt danych i czytane sa niepoprawne kody (zera)
+        // aby tego uniknac odczytuje offset, czyli ile interesujacych nas bitow zawiera ostatni bajt
         bytesToRead--;
         if (bytesToRead == 0) {
             inputFile.get(offsetChar);
             offset = (int)offsetChar;
         }
-        uByte = byte;
         if (bytesToRead == 0)i = offset - 1;
         else i = 7;
+
+        // tak jak pisalem byte nie moze byc unsigned podczas czytania wiec go tu zamieniam
+        uByte = byte;
+
+        // dekompresja bajta, czytam bity i tworze z nich kody, jesli powstanie kod, to dodaje do result odpowiednia litere znajdujaca sie w mapie
         for (; i >= 0; i--) {
             if (uByte & (1 << i))readByte += "1";
             else readByte += "0";
@@ -186,11 +233,14 @@ map<string, char> readFromFile(const string& filename) {
     }
 
     inputFile.close();
+    cout << endl<<"Odczytany tekst: ";
     cout << result << endl;
     return codeMap;
 }
 
 int main() {
+
+    // czytanie z pliku surowego tekstu
     ifstream file("dane.txt");
     if (!file.is_open()) {
         cerr << "Problem z otwieraniem pliku wejsciowego" << endl;
@@ -201,13 +251,19 @@ int main() {
     string text = buffer.str();
     file.close();
 
+    // tworzenie drzewa huffmana do kompresji
     map<char, pair<unsigned int, LetterFrequency*>> characterMap;
     LetterFrequency* letterTree = readToTreeFromText(characterMap, text);
+    cout << "kody huffmana znakow: " << endl;
+    for (auto it = characterMap.begin(); it != characterMap.end(); it++) {
+        cout << it->first << " " << createCode(characterMap, it->first) << endl;
+    }
+    compression("output.txt", characterMap, text);
 
-    writeToFile("output.txt", characterMap, text);
-    map<string, char> result = readFromFile("output.txt");
+    // odczyt i dekompresja
+    map<string, char> result = decompression("output.txt");
 
+    // zwolnienie pamieci
     deleteNode(letterTree);
-
     return 0;
 }
