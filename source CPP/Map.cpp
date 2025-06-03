@@ -42,7 +42,7 @@ int main()
         return -1;
     }*/
    
-    if (!graphMatrix.readFileToGraph("./daneZwagami.txt"))
+    if (!graphMatrix.readFileToGraph3("./daneZeWszystkim.txt"))
     {
         return -1;
     }
@@ -52,13 +52,8 @@ int main()
         return -1;
     }
 
-   // cout << nList.edmonsKarp() << endl;
-    //cout << graphMatrix.edmonsKarp() << endl;
-   //cout << graphMatrix.edmonsKarp();
-   // matrix2.printGraph();
-   // graphMatrix.maxFlowMinCost();
-   // matrix2.maxFlowAlgorithm();
 
-    matrix2.edmondsKarp();
+    graphMatrix.maxFlowMinCost2();
+    matrix2.maxFlowMinCost2();
     return 0;
 }

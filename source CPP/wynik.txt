@@ -1,0 +1,49 @@
+Punkty:
+Punkt 1: typ: pole; pozycja x = 8, y = 8; wydajno??: 515.295000 ton.
+Punkt 2: typ: pole; pozycja x = -6, y = 6; wydajno??: 278.091000 ton.
+Punkt 3: typ: browar; pozycja x = 15, y = 4; pojemno??: 25.511000 ton.
+Punkt 4: typ: skrzy?owanie; pozycja x = 15, y = 2.
+Punkt 5: typ: skrzy?owanie; pozycja x = 15, y = 0.
+Punkt 6: typ: browar; pozycja x = 15, y = -2; pojemno??: 30.855900 ton.
+Punkt 7: typ: browar; pozycja x = 15, y = -4; pojemno??: 26.386500 ton.
+Punkt 8: typ: skrzy?owanie; pozycja x = 19, y = 4.
+Punkt 9: typ: skrzy?owanie; pozycja x = 19, y = 2.
+Punkt 10: typ: browar; pozycja x = 19, y = 0; pojemno??: 31.600900 ton.
+Punkt 11: typ: skrzy?owanie; pozycja x = 19, y = -2.
+Punkt 12: typ: skrzy?owanie; pozycja x = 19, y = -4.
+Punkt 13: typ: browar; pozycja x = 23, y = 2; pojemno??: 23.865700 ton.
+Punkt 14: typ: skrzy?owanie; pozycja x = 23, y = 0.
+Punkt 15: typ: skrzy?owanie; pozycja x = 23, y = -2.
+Punkt 16: typ: karczma; pozycja x = 27, y = 2.
+Punkt 17: typ: karczma; pozycja x = 27, y = 0.
+Punkt 18: typ: karczma; pozycja x = 27, y = -2.
+
+Drogi: 
+Droga 1: z pola [1] na pozycji (8, 8) do browaru [3] na pozycji (15, 15) : przepustowo??: 14 ton; koszt naprawy 0 srebrnych pensów.
+Droga 2: z pola [1] na pozycji (8, 8) do browaru [6] na pozycji (15, 15) : przepustowo??: 9 ton; koszt naprawy 0 srebrnych pensów.
+Droga 3: z pola [1] na pozycji (8, 8) do skrzy?owania [5] na pozycji (15, 15) do browaru [10] na pozycji (19, 19) : przepustowo??: 17 ton; koszt naprawy 0 srebrnych pensów.
+Droga 4: z pola [2] na pozycji (-6, -6) do browaru [7] na pozycji (15, 15) : przepustowo??: 6 ton; koszt naprawy 8.40425 srebrnych pensów.
+Droga 5: z pola [2] na pozycji (-6, -6) do skrzy?owania [4] na pozycji (15, 15) do skrzy?owania [12] na pozycji (19, 19) do browaru [13] na pozycji (23, 23) : przepustowo??: 10 ton; koszt naprawy 8.40425 srebrnych pensów.
+Droga 6: z pola [1] na pozycji (8, 8) do skrzy?owania [5] na pozycji (15, 15) do skrzy?owania [9] na pozycji (19, 19) do browaru [13] na pozycji (23, 23) : przepustowo??: 3 ton; koszt naprawy 66.1127 srebrnych pensów.
+Droga 7: z browaru [13] na pozycji (23, 23) do karczmy [16] na pozycji (27, 27): przepustowo??: 9 ton; koszt naprawy 0 srebrnych pensów.
+Droga 8: z browaru [3] na pozycji (15, 15) do karczmy [18] na pozycji (27, 27): przepustowo??: 5 ton; koszt naprawy 0 srebrnych pensów.
+Droga 9: z browaru [10] na pozycji (19, 19) do karczmy [18] na pozycji (27, 27): przepustowo??: 11 ton; koszt naprawy 0 srebrnych pensów.
+Droga 10: z browaru [3] na pozycji (15, 15) do skrzy?owania [9] na pozycji (19, 19) do skrzy?owania [15] na pozycji (23, 23) do karczmy [18] na pozycji (27, 27): przepustowo??: 9 ton; koszt naprawy 0.286721 srebrnych pensów.
+Droga 11: z browaru [7] na pozycji (15, 15) do skrzy?owania [9] na pozycji (19, 19) do skrzy?owania [15] na pozycji (23, 23) do karczmy [18] na pozycji (27, 27): przepustowo??: 6 ton; koszt naprawy 0.286721 srebrnych pensów.
+Droga 12: z browaru [6] na pozycji (15, 15) do skrzy?owania [11] na pozycji (19, 19) do karczmy [17] na pozycji (27, 27): przepustowo??: 5 ton; koszt naprawy 9.00888 srebrnych pensów.
+
+Rozwi?zanie:
+Maksymalna ilo?? piwa, któr? mo?na przetransportowa? : 45 ton
+Przebieg trasy: 
+Trasa nr 1:
+Z pola [1] na pozycji (8, 8) 5 ton z browaru [3] na pozycji (15, 15) 5 ton z karczmy [18] na pozycji (27, 27) 5 ton 
+Trasa nr 2:
+Z pola [1] na pozycji (8, 8) 9 ton z browaru [3] na pozycji (15, 15) 9 ton z skrzy?owania [9] na pozycji (19, 19) 9 ton z skrzy?owania [15] na pozycji (23, 23) 9 ton z karczmy [18] na pozycji (27, 27) 9 ton 
+Trasa nr 3:
+Z pola [1] na pozycji (8, 8) 5 ton z browaru [6] na pozycji (15, 15) 5 ton z skrzy?owania [11] na pozycji (19, 19) 5 ton z karczmy [17] na pozycji (27, 27) 5 ton 
+Trasa nr 4:
+Z pola [1] na pozycji (8, 8) 11 ton z skrzy?owania [5] na pozycji (15, 15) 11 ton z browaru [10] na pozycji (19, 19) 11 ton z karczmy [18] na pozycji (27, 27) 11 ton 
+Trasa nr 5:
+Z pola [2] na pozycji (-6, -6) 6 ton z browaru [7] na pozycji (15, 15) 6 ton z skrzy?owania [9] na pozycji (19, 19) 6 ton z skrzy?owania [15] na pozycji (23, 23) 6 ton z karczmy [18] na pozycji (27, 27) 6 ton 
+Trasa nr 6:
+Z pola [2] na pozycji (-6, -6) 9 ton z skrzy?owania [4] na pozycji (15, 15) 9 ton z skrzy?owania [12] na pozycji (19, 19) 9 ton z browaru [13] na pozycji (23, 23) 9 ton z karczmy [16] na pozycji (27, 27) 9 ton 

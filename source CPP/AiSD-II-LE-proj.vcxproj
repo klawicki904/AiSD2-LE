@@ -134,6 +134,7 @@
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Node.cpp" />
+    <ClCompile Include="Path.cpp" />
     <ClCompile Include="Quarter.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +143,7 @@
     <ClInclude Include="Field.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="Path.h" />
     <ClInclude Include="Quarter.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

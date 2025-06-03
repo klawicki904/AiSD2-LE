@@ -1,6 +1,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+
 #include <iostream>
 #include <functional>
 #include "Matrix.h"
@@ -11,6 +12,12 @@
 #include <fstream>
 #include <queue>
 #include <limits>
+#include "Path.h"
+#include <unordered_map> //do wypisania wynikow
+#include <locale>
+#include <codecvt>
+#include <io.h>
+#include <fcntl.h>
 
 
 using namespace std;
@@ -62,7 +69,7 @@ public:
     //Algorytm Busackera_Gowena wyznacza najta?szy przep?yw w sieci dla docelowego przep?ywu F.
     // Nie tworze w nim sieci residualnej. Dzia?a na orginale. Zatem uruchomienie dwukrotnie tej metody nie da dobrych wynikow
     // Nalezalo by po wywolaniu tej metody. naprawic siec (np. ponownie wczytac z pliku) by uruchomic j? po raz kolejny
-    double BusackerGowen2(double const maxFlow, int s, int t,
+    double BusackerGowen2(double const maxFlow, int s, int t, vector<Path>& roads,
         bool (Matrix::* shortestPathFunc)(int, int, double&, vector<int>&, const vector<vector<EdgeData>>&));
 
     //Klasyczna metoda wyliczaj?ca maksymalny przep?yw bez przekazywania argumentow
@@ -77,8 +84,15 @@ public:
     // rozwiazanie problemu. tj liczenie maksymalnego przeplywu i minimalnego kosztu. Dla problemu s->Browary->Puby
     double maxFlowMinCost2();
 
+
     //Stary "edmonsKarp2()". Liczy maksymalny przeplyw dla naszego problemu.
-    double maxFlowAlgorithm();
+    pair<double, double> maxFlowAlgorithm();
+
+    //wypisuje lub zapisuje do pliku
+    void printToFileSolution(double maxFlow, vector<Path> first, vector<Path> second);
+
+      
+  
 };
 
 #endif	

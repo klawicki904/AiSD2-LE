@@ -1,3 +1,6 @@
 C:\Users\nowyn\Desktop\repo\AiSD2-LE\source CPP\x64\Debug\gtest.pdb
 C:\Users\nowyn\Desktop\repo\AiSD2-LE\source CPP\x64\Debug\gtest_main.pdb
 C:\Users\nowyn\Desktop\repo\AiSD2-LE\source CPP\AiSD-II-LE-proj\x64\Debug\AiSD-II-.83AE3877.Up2Date
+G:\Dokumenty\ProjektAktualny\source CPP\x64\Debug\gtest.pdb
+G:\Dokumenty\ProjektAktualny\source CPP\x64\Debug\gtest_main.pdb
+G:\Dokumenty\ProjektAktualny\source CPP\AiSD-II-LE-proj\x64\Debug\AiSD-II-.83AE3877.Up2Date
