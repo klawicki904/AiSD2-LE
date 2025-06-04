@@ -118,7 +118,7 @@ namespace networkGenInterface
                 if (!int.TryParse(vertNBox.Text, out int vertN)) return;
                 if(!int.TryParse(fieldNBox.Text, out int fieldN))return;
                 if(!int.TryParse(pubNBox.Text, out int pubN))return;
-                double recommendedValue = Math.Round(0.16 * Math.Pow(vertN, 0.8));
+                double recommendedValue = Math.Round(0.16 * Math.Pow(vertN-2, 0.8));
                 if (!RatioCheck()) generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue + "\nPodano zbyt mało wierzchołków\nlub zbyt dużo zestawów wierzchołków!";
                 else generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue;
             }
@@ -156,7 +156,7 @@ namespace networkGenInterface
                     if (!int.TryParse(vertNBox.Text, out int vertN)) return;
                     if (!int.TryParse(fieldNBox.Text, out int fieldN)) return;
                     if (!int.TryParse(pubNBox.Text, out int pubN)) return;
-                    double recommendedValue = Math.Round(0.16*Math.Pow(vertN,0.8));
+                    double recommendedValue = Math.Round(0.16*Math.Pow(vertN-2,0.8));
                     if (!BreweryNCheck()) generalInfoLabel.Content = "Brak miejsca dla browarów!";
                     else if (!RatioCheck()) generalInfoLabel.Content = "Rekomendowana wartość = "+recommendedValue+"\nPodano zbyt mało wierzchołków\nlub zbyt dużo zestawów wierzchołków!";
                     else generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue;
@@ -173,7 +173,7 @@ namespace networkGenInterface
             if (!int.TryParse(sectionNBox.Text, out int sectionN)) return false;
             if (!int.TryParse(fieldNBox.Text, out int fieldN)) return false;
             if (!int.TryParse(pubNBox.Text, out int pubN)) return false;
-            if (vertN < 7) return false;
+            if (vertN < 8) return false;
             return (vertN-fieldN-pubN-7)/3+1 >= sectionN;
         }
         private bool BreweryNCheck()
@@ -186,7 +186,15 @@ namespace networkGenInterface
         }
         private void ExecuteGenerator()
         {
-            string arguments = int.Parse(vertNBox.Text)+" "+int.Parse(sectionNBox.Text)+" "+densityList.SelectedIndex+" "
+            bool doWriteDebugData = true;
+            string dataPath = "./generated_map.txt";
+            string[] commandLineArgs = Environment.GetCommandLineArgs();
+            if (commandLineArgs.Length == 2)
+            {
+                dataPath = commandLineArgs[1];
+                doWriteDebugData = false;
+            }
+            string arguments = dataPath+" "+int.Parse(vertNBox.Text)+" "+int.Parse(sectionNBox.Text)+" "+densityList.SelectedIndex+" "
                 +int.Parse(fieldNBox.Text)+" "+int.Parse(breweryNBox.Text)+" "+int.Parse(pubNBox.Text);
             var generatorProcess = new Process
             {
@@ -200,12 +208,17 @@ namespace networkGenInterface
                 }
             };
             generatorProcess.Start();
-            using (StreamWriter debugLogFile = new StreamWriter("../Saves/gen_debug_log.txt"))
+            doWriteDebugData = true;
+            if (doWriteDebugData)
             {
-                debugLogFile.Write("networkGen debug log:");
-                while (!generatorProcess.StandardOutput.EndOfStream)debugLogFile.WriteLine(generatorProcess.StandardOutput.ReadLine());
+                using (StreamWriter debugLogFile = new StreamWriter("./gen_debug_log.txt"))
+                {
+                    debugLogFile.Write("networkGen debug log:");
+                    while (!generatorProcess.StandardOutput.EndOfStream) debugLogFile.WriteLine(generatorProcess.StandardOutput.ReadLine());
+                }
             }
             generatorProcess.WaitForExit();
+
         }
 
         private void FillRecommendedData(object sender, RoutedEventArgs e)
@@ -215,7 +228,7 @@ namespace networkGenInterface
                 generalInfoLabel.Content = "Najpierw podaj liczbę wierzchołków";
                 return;
             }
-            if (vertN < 7)
+            if (vertN < 8)
             {
                 generalInfoLabel.Content = "Podano za mało wierzchołków";
                 return;
@@ -225,7 +238,7 @@ namespace networkGenInterface
             pubNBox.Text = Math.Round(int.Parse(vertNBox.Text) * 0.14).ToString();
             int fieldN = int.Parse(fieldNBox.Text);
             int pubN = int.Parse(pubNBox.Text);
-            sectionNBox.Text = Math.Round(0.16 * Math.Pow(vertN, 0.8)).ToString();
+            sectionNBox.Text = Math.Round(0.16 * Math.Pow(vertN-2, 0.8)).ToString();
             densityList.SelectedIndex = 1;
 
             breweryNBox.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));

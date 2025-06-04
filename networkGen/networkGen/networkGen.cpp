@@ -49,6 +49,7 @@ int main(int argc, char **argv)
     ///---------------wstep---------------
     srand(time(nullptr));
     int vertN, checkpointN, density, fieldN, breweryN, pubN;
+    string path;
     // vertN - ilosc wszystkich wierzcholkow w sieci residualnej (moze sie roznic w kodzie ze wzgledu na implementacje i wierzcholki abstrakcyjne)
     // fieldN - ilosc pol
     // breweryN - ilosc browarow
@@ -59,19 +60,21 @@ int main(int argc, char **argv)
    
     //---------------input uzytkownika---------------
     // dane z interfejsu (argumenty linii polecen)
-    if (argc == 7) {
-        vertN = atoi(argv[1])-2;
-        checkpointN = atoi(argv[2]) + 4;
-        density = atoi(argv[3]);
-        fieldN = atoi(argv[4]);
-        breweryN = atoi(argv[5]);
-        pubN = atoi(argv[6]);
-        if (vertN < 7)vertN = 10;
+    if (argc == 8) {
+        path = argv[1];
+        vertN = atoi(argv[2])-2;
+        checkpointN = atoi(argv[3]) + 4;
+        density = atoi(argv[4]);
+        fieldN = atoi(argv[5]);
+        breweryN = atoi(argv[6]);
+        pubN = atoi(argv[7]);
+        if (vertN < 6)return 0;
         if (fieldN <= 0)fieldN = 1;
         if (breweryN <= 0)breweryN = 1;
         if (pubN <= 0)pubN = 1;
     }
     else {
+        path = "./generated_map.txt";
         // recznie + obsluga niepoprawnych danych
         // liczba wierzcholkow
         cout << "Ile wierzcholkow powinna posiadac siec?: ";
@@ -83,7 +86,7 @@ int main(int argc, char **argv)
         }
 
         // liczba pol (wejście uwzglednia wierzcholki abstrakcyjne)
-        cout << "Podaj liczbe pol (rekomendowana wartosc == "<<round((vertN+2)*0.12)<<"): ";
+        cout << "Podaj liczbe pol (rekomendowana wartosc == " << round((vertN + 2) * 0.12) << "): ";
         cin >> fieldN;
         if (fieldN <= 0)fieldN = 1;
 
@@ -105,10 +108,10 @@ int main(int argc, char **argv)
 
         // liczba checkpointow (wejscie nie uwzglednia 4 dodatkowych checkpointow niezbednych do stworzenia jakiegokolwiek miasta)
         // wzor wykresu funkcji odpowiadajacy moim zdaniem najbardziej optymalnemu rozlozeniu checkpointow w miescie: y=0.16*vertN^(0.8)
-        cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == " <<round(0.16*pow(vertN,0.8)) << "): ";
+        cout << "Ile zestawow skrzyzowan powinna liczyc siec? (rekomendowana wartosc == " << round(0.16 * pow(vertN, 0.8)) << "): ";
         cin >> checkpointN;
         checkpointN += 4;      //dwa dla wierzcholkow abstrakcyjnych i dwa dla przynajmniej jednego checkpointu
-        
+
         // liczba checkpointow nie moze byc zbyt duza (to znaczy miasto nie moze byc zbyt dlugie) wowczas powstanie bardzo waskie miasto z mala iloscia drog
         // od poczatku do konca; ponizszy if zapobiega takim danym
         if ((vertN - fieldN - pubN - 5) / 3 + 1 < checkpointN - 4)
@@ -119,12 +122,11 @@ int main(int argc, char **argv)
                 << endl << "3. Stosunek liczby wierzcholkow do liczby zestawow skrzyzowan jest zbyt maly, aby poprawnie wygenerowac skrzyzowania" << endl;
             return 0;
         }
-        
+
         // szansa na drogi skroty
         cout << "Jak duza ma byc szansa na drogi-skroty? (0 - normalna, 1 - wieksza, 2 - wieksza++): ";
         cin >> density;
     }
-
     ///---------------cwiartki---------------
     int quarterPointN;
     vector<set<pair<int, int>>> uniquePointsInSquareSet(4);     // zawiera unikalne punkty dla kazdej z czterech cwiartek
@@ -454,7 +456,7 @@ int main(int argc, char **argv)
 
     // wersja oficjalna zgodna z szablonem danych wejsciowych ZAWIERA DROGI DWUKIERUNKOWE
     float roadCost;
-    ofstream experimentalFile("../Saves/generated_map.txt");
+    ofstream experimentalFile(path);
     experimentalFile << "KONWERSJA" << endl << static_cast <float>(rand()) / static_cast <float>(RAND_MAX) << endl<<"PUNKTY"<<endl;
     experimentalFile <<"0 "<< vertTab[0]->coordinates.first << " " << vertTab[0]->coordinates.second << " brak" << endl;
     for (int i = 1; i < checkpointTab[1]; i++)experimentalFile << i << " "<<vertTab[i]->coordinates.first<<" "<<vertTab[i]->coordinates.second<<" pole" << endl;
