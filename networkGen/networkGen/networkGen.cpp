@@ -447,14 +447,14 @@ int main(int argc, char **argv)
 
     ///---------------wypisanie wyniku---------------
     // wersja visualgo
-    ofstream file("daneZwagami.txt");
-    file << vertN + 2 << " " << globalConnectionN;
-    for (int i = 0; i <= vertN; i++)for (int j = 0; j < vertTab[i]->to.size(); j++)file << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second;
-    file.close();
+    //ofstream file("daneZwagami.txt");
+    //file << vertN + 2 << " " << globalConnectionN;
+    //for (int i = 0; i <= vertN; i++)for (int j = 0; j < vertTab[i]->to.size(); j++)file << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second;
+    //file.close();
 
     // wersja oficjalna zgodna z szablonem danych wejsciowych ZAWIERA DROGI DWUKIERUNKOWE
     float roadCost;
-    ofstream experimentalFile("daneEksperymentalne.txt");
+    ofstream experimentalFile("../Saves/generated_map.txt");
     experimentalFile << "KONWERSJA" << endl << static_cast <float>(rand()) / static_cast <float>(RAND_MAX) << endl<<"PUNKTY"<<endl;
     experimentalFile <<"0 "<< vertTab[0]->coordinates.first << " " << vertTab[0]->coordinates.second << " brak" << endl;
     for (int i = 1; i < checkpointTab[1]; i++)experimentalFile << i << " "<<vertTab[i]->coordinates.first<<" "<<vertTab[i]->coordinates.second<<" pole" << endl;
@@ -485,7 +485,7 @@ int main(int argc, char **argv)
     for (int i = 0; i <= vertN; i++)for (int j = 0; j < vertTab[i]->to.size(); j++)cout << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second;
     
     // otwieram katalog z wynikami
-    system("explorer .");
+    //system("explorer .");
 
     for (int i = 0; i <= vertN; i++)delete vertTab[i];
 

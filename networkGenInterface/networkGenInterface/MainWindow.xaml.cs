@@ -200,7 +200,7 @@ namespace networkGenInterface
                 }
             };
             generatorProcess.Start();
-            using (StreamWriter debugLogFile = new StreamWriter("networkGenDebugLog.txt"))
+            using (StreamWriter debugLogFile = new StreamWriter("../Saves/gen_debug_log.txt"))
             {
                 debugLogFile.Write("networkGen debug log:");
                 while (!generatorProcess.StandardOutput.EndOfStream)debugLogFile.WriteLine(generatorProcess.StandardOutput.ReadLine());
