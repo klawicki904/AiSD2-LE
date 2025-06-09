@@ -13,7 +13,9 @@ Matrix::Matrix() : vertices(0) {
 
 Matrix::Matrix(int n) : vertices(n) {
     tab.resize(n, vector<EdgeData>(n));  // Inicjalizuje macierz o rozmiarze n x n, wype?nion? zerami
-    listVertices.resize(n - 2);
+    listVertices.resize(n);
+    source = 0; // Inicjalizuje ?ród?o
+    target = n - 1; // Inicjalizuje uj?cie
 }
 
 void Matrix::init(int n) {
@@ -43,6 +45,8 @@ void Matrix::init(int n) {
             tab[i][j].remainingFlow = tab[i][j].flow;
         }
     }
+    source = 0; // Inicjalizuje ?ród?o
+    target = n - 1; // Inicjalizuje uj?cie
 }
 
 // Funkcja do dodawania kraw?dzi (u, v) z wag? 'weight'
@@ -121,81 +125,6 @@ bool Matrix::readFileToGraph(string fileName) {
     plik.close();
     return true;
 }
-// !!!STARE WCZYTYWANIE NIE WIEM CZY SIE JESZCZE DO CZEGOS PRZYDA!!!
-/*
-// Wczytywanie pliku wejsciowego w najnowszej postaci
-bool Matrix::readFileToGraph2(string fileName) {
-    ifstream plik(fileName);
-    int vertices; // ilosc wierzcholkow
-    int u, v, edges;// u , v (u --> v), przepustowosc, ilosc krawedzi 
-    double maxFlow, x, y, capacity, cost = 0.0;
-    string line;
-    int nodeId;
-
-    if (!plik.is_open()) {
-        cerr << "Nie mo?na otworzy? pliku!: " << fileName << endl;
-        return false;
-    }
-
-    // Pomijamy lini? "KONWERSJA"
-    getline(plik, line);
-
-    //Wczytuje ilosc wierzcholkow, ilosc krawedzi
-    plik >> vertices >> edges;;
-
-    //inicjalizuje macierz
-    this->init(vertices);
-
-    plik.ignore();
-    // Pomijamy lini? "PUNKTY"
-    getline(plik, line);
-
-
-    // Wczytywanie Node'w (bez oznaczania s i t)
-    for (int i = 0; i < vertices -2; i++) {
-        plik >> nodeId >> x >> y >> line >> capacity;
-        Node::NodeType type = Node::NodeType::None;
-
-        if (line == "Field") type = Node::NodeType::Field;
-        else if (line == "Brewery") type = Node::NodeType::Brewery;
-        else if (line == "Pub") type = Node::NodeType::Pub;
-        else if (line == "None") type = Node::NodeType::None;
-
-        Node tmpNode(nodeId, x, y, capacity, type);
-        addNode(tmpNode);
-    }
-    // Pomijamy lini? "DROGI"
-    getline(plik, line);
-    plik.ignore(numeric_limits<streamsize>::max(), '\n');
-
-    // Wczytywanie kraw?dzi
-    for (int i = 0; i < edges; i++) {
-        getline(plik, line);
-        if (line.empty()) {
-            i--; // ignoruj puste linie
-            continue;
-        }
-
-        istringstream iss(line);
-
-        if (!(iss >> u >> v >> maxFlow)) {
-            std::cerr << "B??d podczas wczytywania kraw?dzi w linii: " << line << std::endl;
-            continue;
-        }
-
-        if (!(iss >> cost)) {
-            cost = 0.0; // Je?li brak kosztu, przypisz domy?lnie
-        }
-
-        addEdge(u, v, maxFlow, cost);
-    }
-    
-    //CWIARTKI POWINNY BYC WCZYTYWANE W INNEJ KLASIE (PUNKTY PEWNIE TEZ)
-
-    plik.close();
-    return true;
-}
-*/
 
 // Remaster wczytywania autorstwa JK
 bool Matrix::readFileToGraph3(string fileName) {
@@ -230,14 +159,12 @@ bool Matrix::readFileToGraph3(string fileName) {
     }
 
     // Wczytywanie Node'w
-    // troche zabawy bo wierzcholek startowy i koncowy pomijamy we wczytywaniu
-    getline(plik, line);    //pominiecie wierzcholka startowego
-    getline(plik, line);    //wczytanie pierwszego pola
-    istringstream iss(line);
-    iss >> nodeId >> x >> y >> fieldType;
-    do{
-        getline(plik, line);
-        if (line == "DROGI")break;
+    while (getline(plik, line)) {
+        if (line == "DROGI") break;
+
+        istringstream iss(line);
+        iss >> nodeId >> x >> y >> fieldType;
+
         capacity = -1;
         Node::NodeType type;
         if (fieldType == "pole") type = Node::NodeType::Field;
@@ -245,14 +172,13 @@ bool Matrix::readFileToGraph3(string fileName) {
             type = Node::NodeType::Brewery;
             iss >> capacity;
         }
-        else if (fieldType == "karczma")type = Node::NodeType::Pub;
-        else if (fieldType == "brak")type = Node::NodeType::None;
+        else if (fieldType == "karczma") type = Node::NodeType::Pub;
+        else if (fieldType == "brak") type = Node::NodeType::None;
+
         vertices++;
         Node tmpNode(nodeId, x, y, capacity, type);
         addNode(tmpNode);
-        iss.str(line);
-        iss.clear();
-    }while(iss >> nodeId >> x >> y >> fieldType);
+    }
 
     if (line != "DROGI") {
         cerr << "Blad skladniowy we wczytywaniu sekcji PUNKTY" << endl;
@@ -330,6 +256,7 @@ bool Matrix::readFileToGraph3(string fileName) {
             }
             if (isFieldValid) {
                 tab[0][i+1].flow *= quarters[quarterIndex].efficiencyMultiplier;
+                tab[0][i + 1].remainingFlow *= quarters[quarterIndex].efficiencyMultiplier;
                 break;
             }
             else if(!isFieldValid && quarterIndex==3){
@@ -353,6 +280,16 @@ bool Matrix::readFileToGraph3(string fileName) {
         return false;
     }
     plik.close();
+
+
+    // tworzy krawedzie od pub do ujscia
+    const double INF = numeric_limits<double>::max();
+    for (Node i : listVertices) {
+        if (i.GetType() == Node::NodeType::Pub) {
+            tab[i.GetId()][target].flow = INF;
+            tab[i.GetId()][target].remainingFlow = INF;
+        }
+    }
     return true;
 }
 
@@ -805,7 +742,6 @@ double Matrix::edmondsKarp() {
 
         }
     }
-    //siecResidualna.printMatrix();
     vector<int> f(vertices); //tablica ojcow
 
     while (bfs(s, siecResidualna.tab, t, f))

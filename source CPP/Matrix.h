@@ -25,9 +25,12 @@ using namespace std;
 class Matrix
 {
 public:
-    int vertices; //Rozmiar macierzy
+    int vertices; // Rozmiar macierzy
+    int source; // ?ród?o
+    int target; // Uj?cie
     vector<vector<EdgeData>> tab; // Macierz s?siedztwa
     vector<Node> listVertices; // Zawiera informacje o wierzcho?kach
+
 
     // Konstruktory
     Matrix();

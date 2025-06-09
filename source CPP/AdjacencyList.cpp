@@ -10,7 +10,6 @@ AdjacencyList::AdjacencyList(int n) {
     nList.resize(n);
 }
 
-
 void AdjacencyList::addEdge(int u, int v, double value) {
 	nList[u].push_back(EdgeData(v, value));
 }
@@ -82,16 +81,16 @@ double AdjacencyList::edmonsKarp()
     while (true) // wykonuje, a¿ nie znajdzie œcie¿ki powiêkszaj¹cej
     {
         /// wyswietla stan listy sasiedztwa
-        cout << "\aLista sasiedztwa: z: ( do, pozostaly ):\n";
-        for (size_t i = 0; i < this->vertices - 1; i++)
-        {
-            cout << i << ": \t";
-            for (size_t j = 0; j < this->nList[i].size(); j++)
-            {
-                cout << "( " << this->nList[i][j].v << ", " << this->nList[i][j].remainingFlow << " )\t";
-            }
-            cout << endl;
-        }
+        //cout << "\aLista sasiedztwa: z: ( do, pozostaly ):\n";
+        //for (size_t i = 0; i < this->vertices - 1; i++)
+        //{
+        //    cout << i << ": \t";
+        //    for (size_t j = 0; j < this->nList[i].size(); j++)
+        //    {
+        //        cout << "( " << this->nList[i][j].v << ", " << this->nList[i][j].remainingFlow << " )\t";
+        //    }
+        //    cout << endl;
+        //}
         // BFS
         int start = 0; // indeks wêz³a startowego
         vector<int> parents(this->vertices, -1); // poprzedniki, na pocz¹tku wszystkie -1
@@ -100,17 +99,17 @@ double AdjacencyList::edmonsKarp()
         bfsFlow(this->nList, parents, flows, 0); // BFS
 
         // wypisuje tablicê poprzedników
-        cout << "\nparents:\n";
-        for (size_t i = 0; i < parents.size(); i++)
-        {
-            cout << i << ": " << parents[i] << "\n";
-        }
-        // wypisuje tablicê przep³ywów
-        cout << "\nflows:\n";
-        for (size_t i = 0; i < flows.size(); i++)
-        {
-            cout << i << ": " << flows[i] << "\n";
-        }
+        //cout << "\nparents:\n";
+        //for (size_t i = 0; i < parents.size(); i++)
+        //{
+        //    cout << i << ": " << parents[i] << "\n";
+        //}
+        //// wypisuje tablicê przep³ywów
+        //cout << "\nflows:\n";
+        //for (size_t i = 0; i < flows.size(); i++)
+        //{
+        //    cout << i << ": " << flows[i] << "\n";
+        //}
 
         int finish = this->vertices - 1;
         /// nie znaleziono sciezki do ujœcia, koniec algorytmu FF
@@ -118,7 +117,7 @@ double AdjacencyList::edmonsKarp()
 
         // zapisz œcie¿kê powiêkszaj¹c¹ na podstawie tablicy poprzedników
         vector<int> shortestPath; // tutaj bêdzie zapisywana œcie¿ka
-        cout << "\nShortest path:\n";
+ /*       cout << "\nShortest path:\n";*/
 
         while (finish != start)
         {
@@ -131,13 +130,13 @@ double AdjacencyList::edmonsKarp()
         reverse(shortestPath.begin(), shortestPath.end());
 
         // wymieñ wierzcho³ki tworz¹ce œcie¿kê powiêkszaj¹c¹
-        for (size_t i = 0; i < shortestPath.size(); i++)
+ /*       for (size_t i = 0; i < shortestPath.size(); i++)
         {
             cout << shortestPath[i] << ", ";
         }
         cout << endl;
 
-        cout << "Max Flow In This Path: " << flows[finish] << endl;
+        cout << "Max Flow In This Path: " << flows[finish] << endl;*/
         totalFlow += flows[finish];
 
         // zaktualizuj przep³yw w liœcie s¹siedztwa

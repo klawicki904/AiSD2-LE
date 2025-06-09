@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <queue>
+#include "Node.h"
 
 using namespace std;
 
@@ -14,6 +15,9 @@ class AdjacencyList
 public:
 	vector<vector<EdgeData>> nList;
 	int vertices;
+	int source; // ?ród?o
+	int target; // Uj?cie
+	vector<Node> listVertices; // Zawiera informacje o wierzcho?kach
 
 	AdjacencyList();
 	AdjacencyList(int n);

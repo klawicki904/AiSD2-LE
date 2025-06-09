@@ -37,10 +37,10 @@ int main()
 {
     AdjacencyList nList;
     Matrix graphMatrix , matrix2;
-   /* if (!nList.readFileToGraph("./daneZwagami2.txt"))
+    if (!nList.readFileToGraph("./daneZwagami.txt"))
     {
         return -1;
-    }*/
+    }
    
     if (!graphMatrix.readFileToGraph3("./daneZeWszystkim.txt"))
     {
@@ -51,9 +51,14 @@ int main()
     {
         return -1;
     }
-
+    graphMatrix.printGraph();
+    matrix2.printGraph();
 
     graphMatrix.maxFlowMinCost2();
     matrix2.maxFlowMinCost2();
+
+    cout <<nList.edmonsKarp();
+    
+
     return 0;
 }
