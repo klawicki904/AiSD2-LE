@@ -50,6 +50,7 @@ int main(int argc, char **argv)
     srand(time(nullptr));
     int vertN, checkpointN, density, fieldN, breweryN, pubN;
     string path;
+    bool isTwoWay;
     // vertN - ilosc wszystkich wierzcholkow w sieci residualnej (moze sie roznic w kodzie ze wzgledu na implementacje i wierzcholki abstrakcyjne)
     // fieldN - ilosc pol
     // breweryN - ilosc browarow
@@ -60,7 +61,7 @@ int main(int argc, char **argv)
    
     //---------------input uzytkownika---------------
     // dane z interfejsu (argumenty linii polecen)
-    if (argc == 8) {
+    if (argc == 9) {
         path = argv[1];
         vertN = atoi(argv[2])-2;
         checkpointN = atoi(argv[3]) + 4;
@@ -68,6 +69,7 @@ int main(int argc, char **argv)
         fieldN = atoi(argv[5]);
         breweryN = atoi(argv[6]);
         pubN = atoi(argv[7]);
+        isTwoWay = (bool)atoi(argv[8]);
         if (vertN < 6)return 0;
         if (fieldN <= 0)fieldN = 1;
         if (breweryN <= 0)breweryN = 1;
@@ -126,6 +128,9 @@ int main(int argc, char **argv)
         // szansa na drogi skroty
         cout << "Jak duza ma byc szansa na drogi-skroty? (0 - normalna, 1 - wieksza, 2 - wieksza++): ";
         cin >> density;
+
+        cout << "Czy drogi maja byc dwukierunkowe? (0 - nie, 1 - tak): ";
+        cin >> isTwoWay;
     }
     ///---------------cwiartki---------------
     int quarterPointN;
@@ -472,7 +477,7 @@ int main(int argc, char **argv)
         if (rand() % 4 == 0)roadCost = static_cast <float>(rand()) / static_cast <float>(RAND_MAX) + rand() % 70;
         else roadCost = 0;
         experimentalFile << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second << " " << roadCost;
-        //if (i != 0 && i != vertN)experimentalFile << endl << vertTab[i]->to[j].first << " " << i << " " << vertTab[i]->to[j].second << " " << roadCost;
+        if (i != 0 && i != vertN && isTwoWay)experimentalFile << endl << vertTab[i]->to[j].first << " " << i << " " << vertTab[i]->to[j].second << " " << roadCost;
     }
     experimentalFile << endl << "CWIARTKI";
     for (int k = 0; k < 4; k++) {
