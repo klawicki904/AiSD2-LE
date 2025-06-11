@@ -477,7 +477,7 @@ int main(int argc, char **argv)
         if (rand() % 4 == 0)roadCost = static_cast <float>(rand()) / static_cast <float>(RAND_MAX) + rand() % 70;
         else roadCost = 0;
         experimentalFile << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second << " " << roadCost;
-        if (i != 0 && i != vertN && isTwoWay)experimentalFile << endl << vertTab[i]->to[j].first << " " << i << " " << vertTab[i]->to[j].second << " " << roadCost;
+        if (i != 0 && i <= vertN-pubN && isTwoWay)experimentalFile << endl << vertTab[i]->to[j].first << " " << i << " " << vertTab[i]->to[j].second << " " << roadCost;
     }
     experimentalFile << endl << "CWIARTKI";
     for (int k = 0; k < 4; k++) {
