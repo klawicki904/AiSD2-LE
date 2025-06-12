@@ -22,6 +22,9 @@
 #include <codecvt>
 #include <io.h>
 #include <fcntl.h>
+#define NOMINMAX
+#include <windows.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -33,7 +36,7 @@ public:
     int target; // Uj?cie
     vector<vector<EdgeData>> tab; // Macierz s?siedztwa
     vector<Node> listVertices; // Zawiera informacje o wierzcho?kach
-
+    vector<Quarter> initialQuarters;
 
     // Konstruktory
     Matrix();
@@ -92,9 +95,10 @@ public:
     pair<double, double> maxFlowAlgorithm();
 
     //wypisuje lub zapisuje do pliku
-    //void printToFileSolution(double maxFlow, vector<Path> combined);
+    void printToFileSolution(double maxFlow, vector<Path> combined);
 
-    void printToFileSolution(double maxFlow, vector<Path> firstRoads, vector<Path> secondRoads);
+    //void printToFileSolution(double maxFlow);
+    void printToFileSolution2(double resultFlow, vector<Path>  combined);
 
       
   

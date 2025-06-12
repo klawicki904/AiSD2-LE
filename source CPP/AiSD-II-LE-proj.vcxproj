@@ -136,6 +136,8 @@
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="Quarter.cpp" />
+	<ClCompile Include="printNodesRoads.cpp" />
+	<ClCompile Include="printRoutes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdjacencyList.h" />
@@ -146,6 +148,8 @@
     <ClInclude Include="Path.h" />
     <ClInclude Include="Quarter.h" />
     <ClInclude Include="resource.h" />
+	<ClInclude Include="printNodesRoads.h" />
+	<ClInclude Include="printRoutes.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AiSD-II-LE-proj.rc" />

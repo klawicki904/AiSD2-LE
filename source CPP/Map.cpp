@@ -20,12 +20,9 @@ int main()
     }
 
     
-
-    graphMatrix.maxFlowMinCost2();
     matrix2.maxFlowMinCost2();
-
-
-
+    graphMatrix.maxFlowMinCost2();
+    
 
 
     //if (!nList.readFileToGraph("./daneMinCost.txt"))
