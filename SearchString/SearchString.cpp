@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -26,7 +26,7 @@ enum SearchAlgorithm
     rabin_karp,
     kmp,
     boyer_moore,
-    //trie
+    trie
 };
 
 //pomocnicze
@@ -125,7 +125,7 @@ void kmpSearch(const wstring& text, const wstring& pattern, int lineNumber) {
 // --------------------- BOYER-MOORE -----------------------------
 /*Porownuje wzorzec od konca.
 Jesli wystapi niedopasowanie, przesuwa wzorzec bardziej inteligentnie niz o 1 znak.
-Uzywa tablicy Bad Character Heuristic, czyli: jak daleko mo�na przesunac wzorzec w zaleznosci od niedopasowanego znaku.*/
+Uzywa tablicy Bad Character Heuristic, czyli: jak daleko mo¿na przesunac wzorzec w zaleznosci od niedopasowanego znaku.*/
 vector<int> preprocessBadChar(const wstring& pattern) {
     vector<int> badChar(65536, -1);             //wchar_t ma taki range
     for (int i = 0; i < pattern.size(); i++) {
@@ -138,9 +138,9 @@ void boyerMoore(const wstring& text, const wstring& pattern, int lineNumber) {
     int n = text.size(), m = pattern.size();
     if (m > n) return;
     vector<int> badChar = preprocessBadChar(pattern);
-    
+
     int shift = 0;
-    
+
     while (shift <= (n - m)) {
         int j = m - 1;
         while (j >= 0 && pattern[j] == text[shift + j])
@@ -157,47 +157,84 @@ void boyerMoore(const wstring& text, const wstring& pattern, int lineNumber) {
 
 // ------------------------- TRIE -----------------------------
 // Przeszukiwanie odbywa sie znak po znaku w strukturze drzewa.
-//struct TrieNode {
-//    bool isEnd = false;
-//    unordered_map<wchar_t, TrieNode*> children;
-//};
-//
-//class Trie {
-//public:
-//    TrieNode* root = new TrieNode();
-//    unordered_map<wstring, vector<size_t>> wordPositions;
-//
-//    void insert(const wstring& word, size_t position) {
-//        TrieNode* node = root;
-//        for (wchar_t c : word) {
-//            if (!node->children[c]) node->children[c] = new TrieNode();
-//            node = node->children[c];
-//        }
-//        node->isEnd = true;
-//        wordPositions[word].push_back(position);
-//    }
-//
-//    vector<size_t> search(const wstring& word) {
-//        TrieNode* node = root;
-//        for (wchar_t c : word) {
-//            if (!node->children[c]) return {};
-//            node = node->children[c];
-//        }
-//        if (node->isEnd) return wordPositions[word];
-//        return {};
-//    }
-//};
+// (jeden wezel triea to taka galaz w drzewie znakow)
+struct TrieNode {
+    unordered_map<wchar_t, TrieNode*> children; //mapowanie znakow na kolejne wezly
+    vector<int> positions; //lista pozycji w linii, gdzie konczy sie wzorzec
+};
+
+class Trie {
+public:
+    TrieNode* root = new TrieNode(); //korzen trie
+
+    wstring pattern; // nasz wzorzec ktory chcemy wyszukiwac
+
+    //dodajemy cala linie tekstu do drzewa ale tylko podciagi o dlugosci takiej jak wzorzec
+    void insert(const wstring& text, int lineNumber) {
+        for (size_t i = 0; i <= text.size() - pattern.size(); ++i) {
+            TrieNode* node = root;
+
+            //dla każdego znaku wzorca tworzymy sciezke w drzewie
+            for (size_t j = 0; j < pattern.size(); ++j) {
+                wchar_t c = text[i + j];
+                if (!node->children[c])
+                    node->children[c] = new TrieNode();
+                node = node->children[c];
+            }
+
+            //zapisujemy pozycje (indeks startu wzorca w linii)
+            node->positions.push_back(i + 1); // +1 bo chcemy indeksy od 1, nie od 0
+        }
+    }
+
+    //szuka wzorca w drzewie i wypisuje wszystkie zapisane pozycje
+    void search(const wstring& pattern, int lineNumber) const {
+        TrieNode* node = root;
+
+        //przechodzimy przez wezly drzewa zgodnie ze znakami wzorca
+        for (wchar_t c : pattern) {
+            if (!node->children.count(c))
+                return; //brak ścieżki czyli brak wzorca
+            node = node->children.at(c);
+        }
+
+        //wypisujemy wszystkie znalezione pozycje wzorca w tej linii
+        for (int pos : node->positions) {
+            wcout << lineNumber << " " << pos << endl;
+        }
+    }
+
+    //usuwanie wszystkich wezlow drzewa
+    void clear(TrieNode* node = nullptr) {
+        if (!node)
+            node = root;
+        for (auto& p : node->children) {
+            clear(p.second);
+            delete p.second;
+        }
+        node->children.clear();
+    }
+
+    //usuwanie drzewa
+    ~Trie() {
+        clear();
+        delete root;
+    }
+};
+
+
+
 
 // --------------------- MAIN -----------------------------
 int wmain(int argc, wchar_t* argv[]) {
     //ustawiamy domyslne kodowanie systemu operacyjnego
     //konwertuje char na wchat_t zgodnie z lokalna tablica kodowania (czyli np utf-8)
-    // CZYLI NIE WYPISUJE KRZACZK�W LUB ?
+    // CZYLI NIE WYPISUJE KRZACZKÓW LUB ?
     setlocale(LC_ALL, ""); //ustawia obsluge polskich znakow w konsoli
 
     if (argc < 4)
     {
-        wcout << "Brakuje parametr�w \n";
+        wcout << "Brakuje parametrów \n";
         wcout << "Uzycie: <algorytm> <sciezka do pliku> <wzorzec> \n";
         return 1;
     }
@@ -205,7 +242,7 @@ int wmain(int argc, wchar_t* argv[]) {
     wstring option = argv[1], pattern = argv[3];
     wstring fileName = argv[2];
 
-    if (option == L"-i") // sprawdza, czy pierwszy (opcjonalny) argument wyst�puje
+    if (option == L"-i") // sprawdza, czy pierwszy (opcjonalny) argument wystepuje
     {
         ignoreCase = true;
         option = argv[2]; fileName = argv[3]; pattern = argv[4];
@@ -238,9 +275,9 @@ int wmain(int argc, wchar_t* argv[]) {
     else if (option == L"boyer-moore") {
         selectedAlgorithm = boyer_moore;
     }
-    /*else if (option == L"trie") {
+    else if (option == L"trie") {
         selectedAlgorithm = trie;
-    }*/
+    }
     else {
         wcout << L"Nieznana opcja dla wyboru algorytmu." << endl;
         return 1;
@@ -250,89 +287,91 @@ int wmain(int argc, wchar_t* argv[]) {
     wstring_convert<codecvt_utf8<wchar_t>> converter;
     switch (selectedAlgorithm)
     {
-    case unknown:
-    {
-        return 3;
-    }
-    case naive:
-    {
-        while (getline(file, line))
+        case unknown:
         {
-            if (ignoreCase)
+            return 3;
+        }
+        case naive:
+        {
+            while (getline(file, line))
             {
-                naiveSearch(toLower(line), pattern, lineNumber++);
-            }
-            else
-            {
+                if (ignoreCase)
+                {
+                    naiveSearch(toLower(line), pattern, lineNumber++);
+                }
+                else
+                {
                 naiveSearch(line, pattern, lineNumber++);
+                }
             }
+            break;
         }
-        break;
-    }
-    case rabin_karp:
-    {
-        while (getline(file, line))
+        case rabin_karp:
         {
-            if (ignoreCase)
+            while (getline(file, line))
             {
-                rabinKarp(toLower(line), pattern, lineNumber++);
+                if (ignoreCase)
+                {
+                    rabinKarp(toLower(line), pattern, lineNumber++);
+                }
+                else
+                {
+                    rabinKarp(line, pattern, lineNumber++);
+                }
             }
-            else
-            {
-                rabinKarp(line, pattern, lineNumber++);
-            }
+            break;
         }
-        break;
-    }
-    case kmp:
-    {
-        while (getline(file, line))
+        case kmp:
         {
-            if (ignoreCase)
+            while (getline(file, line))
             {
-                kmpSearch(toLower(line), pattern, lineNumber++);
+                if (ignoreCase)
+                {
+                    kmpSearch(toLower(line), pattern, lineNumber++);
+                }
+                else
+                {
+                    kmpSearch(line, pattern, lineNumber++);
+                }
             }
-            else
-            {
-                kmpSearch(line, pattern, lineNumber++);
-            }
+            break;
         }
-        break;
-    }
-    case boyer_moore:
-    {
-        while (getline(file, line))
+        case boyer_moore:
         {
-            if (ignoreCase)
+            while (getline(file, line))
             {
-                boyerMoore(toLower(line), pattern, lineNumber++);
+                if (ignoreCase)
+                {
+                    boyerMoore(toLower(line), pattern, lineNumber++);
+                }
+                else
+                {
+                    boyerMoore(line, pattern, lineNumber++);
+                }
             }
-            else
-            {
-                boyerMoore(line, pattern, lineNumber++);
-            }
+            break;
         }
-        break;
-    }
-    /*case trie:
-    {
-        wstringstream bufor;
-        bufor << file.rdbuf();
-        wstring text = bufor.str();
-        Trie trie;
-        wistringstream ss(text);
-        wstring word;
-        size_t pos = 0;
+        case trie:
+        {
+            Trie trie;
+            trie.pattern = pattern; //ustawiamy wzorzec bo bedziemy wycinac slowa o odpowiedniej długosci
 
-        while (ss >> word) {
-            size_t found = text.find(word, pos);
-            if (found != wstring::npos) {
-                trie.insert(word, found);
-                pos = found + word.length();
+            while (getline(file, line)) {
+                //przetwarzamy linie:
+                wstring lineToUse = ignoreCase ? toLower(line) : line;
+
+                //dodajemy wszystkie mozliwe slowa o długości wzorca z tej linii do drzewa
+                trie.insert(lineToUse, lineNumber);
+
+                //szukamy wystapien wzorca w tej linii i wypisujemy gdzie jest
+                trie.search(ignoreCase ? toLower(pattern) : pattern, lineNumber);
+
+                lineNumber++; //przechodzimy do nastepnej linii
             }
+            break;
         }
-        break;
-    }*/
     }
+
+
     return 0;
 }

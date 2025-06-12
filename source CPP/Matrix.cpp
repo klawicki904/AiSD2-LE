@@ -2,6 +2,17 @@
 #include "gtest/gtest.h"
 #include "Matrix.h"
 
+#include "printNodesRoads.h"
+#include "printRoutes.h"
+
+#include <string>
+#include <sstream>
+#include <functional>
+
+#include <fstream>
+#include <locale>
+
+using namespace std;
 
 // Konstruktor
 Matrix::Matrix() : vertices(0) {
@@ -565,11 +576,14 @@ double Matrix::maxFlowMinCost2() {
     cout << "-------------------------------------------------" << endl;
     cout << endl;
 
-    printToFileSolution(resultFlow , combined);
+    /*printToFileSolution(resultFlow , combined);*/
+    printToFileSolution(min(maxFlow.first, maxFlow.second), goodRoads1, goodRoads2);
 
     return result1 + result2;
 }
 
+//stara wersja printToFileSolution
+/*
 //Zapisuje wynik do pliku i wypisuje
 void Matrix::printToFileSolution(double maxFlow, vector<Path> combined) {
 
@@ -717,10 +731,84 @@ void Matrix::printToFileSolution(double maxFlow, vector<Path> combined) {
     //            if (i == 0) out << stringPole;
     //        }
 
-    //    }
-    //    countRoads++;
-    //}
-    //out.close();
+    // Po??czenie dróg
+//    vector<Path> combined = Path::combineRoads(firstRoads, secondRoads, this->tab);
+//    // Wypisanie trasy ko?cowej
+//    out << L"Przebieg trasy: " << endl;
+//    countRoads = 1;
+//    for (const Path& p : combined) {
+//        out << L"Trasa nr " << countRoads << L":" << endl;
+//        out << L"Z pola ";
+//        const vector<int>& path = p.getPath();
+//        for (size_t i = 0; i < path.size(); ++i) {
+//            int node = path[i];
+//            if (i == 0) {
+//                out << L"[" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") " << p.getFlow() << L" ton ";
+//            }
+//            else {
+//                out << L"z " << tab[node] << L" [" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") " << p.getFlow() << L" ton ";
+//            }
+//        }
+//        countRoads++;
+//        out << "\n";
+//    }
+//    out.close();
+//    //WYPISYWANIE
+//    wifstream file(L"wynik.txt");
+//    file.imbue(locale(file.getloc(), new codecvt_utf8<wchar_t>()));
+//    if (!file.is_open()) {
+//        wcerr << L"Nie mo?na otworzy? pliku wynik.txt" << endl;
+//    }
+//    else {
+//        wstring line;
+//
+//        while (getline(file, line)) {
+//            wcout << line << L"\n";
+//        }
+//
+//        file.close();
+//    }
+//}
+//*/
+
+
+
+
+//Zapisuje wynik do pliku i wypisuje
+void Matrix::printToFileSolution(double maxFlow, vector<Path> firstRoads, vector<Path> secondRoads) {
+
+    wofstream out("wynik.txt", ios::binary);
+    out.imbue(locale(out.getloc(),
+        new codecvt_utf8<wchar_t>));  // ustawienie UTF-8
+
+    if (!out.is_open()) {
+        wcerr << "Nie mozna otworzyc pliku wynik.txt do zapisu." << endl;
+        return;
+    }
+    // out << (wchar_t)0xFEFF;
+
+
+    //wypisanie punktów
+    printNodes(out, listVertices);
+
+
+    //wypisanie dróg
+    printRoads(out, tab, listVertices);
+
+
+
+
+
+    out << endl;
+    out << L"Rozwi¹zanie:" << endl;
+    out << L"Maksymalna iloœæ piwa, któr¹ mo¿na przetransportowaæ: " << maxFlow << L" ton;" << endl;
+    out << L" koszt naprawy: " << endl;                                                     ///////// !!
+
+
+
+    out.close();
+
+
     //WYPISYWANIE
     wifstream file(L"wynik.txt");
     file.imbue(locale(file.getloc(), new codecvt_utf8<wchar_t>()));
@@ -738,6 +826,7 @@ void Matrix::printToFileSolution(double maxFlow, vector<Path> combined) {
     }
     cout << endl;
 }
+
 
 // Klasyczny algorytm Edmondsa-Karpa
 double Matrix::edmondsKarp() {

@@ -36,8 +36,8 @@ namespace networkGenInterface
 
         private void NumberCheck(object sender, TextCompositionEventArgs e)
         {
-            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox,densityList};
-            var labels = new Label[] { vertNLabel, fieldNLabel, breweryNLabel, pubNLabel, sectionNLabel, densityLabel};
+            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox,densityList,twoWayCheckbox};
+            var labels = new Label[] { vertNLabel, fieldNLabel, breweryNLabel, pubNLabel, sectionNLabel, densityLabel,twoWayLabel};
             GetControlIndex(ref sender, ref controls, out int controlIndex);
             e.Handled = !Regex.IsMatch(e.Text, @"^\d+$");
             if (!e.Handled && controlIndex!=controls.Length-1)
@@ -48,8 +48,10 @@ namespace networkGenInterface
                     (controls[5] as ComboBox).Foreground = Brushes.AntiqueWhite;
                     (controls[5] as ComboBox).SelectedIndex = 0;
                     (controls[5] as ComboBox).IsEnabled = true;
-                    labels[1].Foreground = Brushes.AntiqueWhite;
                     densityBackground.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+                    (controls[6] as CheckBox).Visibility = Visibility.Visible;
+                    labels[6].Foreground= Brushes.AntiqueWhite;
+                    twoWayBackground.Background= new SolidColorBrush(Color.FromRgb(68, 26, 112));
                 }
                 else
                 {
@@ -78,8 +80,8 @@ namespace networkGenInterface
 
         private void InputDataCheck(object sender, TextChangedEventArgs e)
         {
-            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox, densityList };
-            var labels = new Label[] { vertNLabel, fieldNLabel, breweryNLabel, pubNLabel, sectionNLabel, densityLabel};
+            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox, densityList,twoWayCheckbox };
+            var labels = new Label[] { vertNLabel, fieldNLabel, breweryNLabel, pubNLabel, sectionNLabel, densityLabel,twoWayLabel};
             GetControlIndex(ref sender, ref controls, out int controlIndex);
             if ((sender as TextBox).Text.Length == 0)
             {
@@ -91,6 +93,11 @@ namespace networkGenInterface
                         (controls[i] as ComboBox).Foreground = Brushes.Transparent;
                         (controls[i] as ComboBox).IsEnabled = false;
                         densityBackground.Background = Brushes.Transparent;
+                    }
+                    else if (i == 6)
+                    {
+                        (controls[i] as CheckBox).Visibility = Visibility.Hidden;
+                        twoWayBackground.Background = Brushes.Transparent;
                     }
                     else
                     {
@@ -194,8 +201,10 @@ namespace networkGenInterface
                 dataPath = commandLineArgs[1];
                 doWriteDebugData = false;
             }
-            string arguments = dataPath+" "+int.Parse(vertNBox.Text)+" "+int.Parse(sectionNBox.Text)+" "+densityList.SelectedIndex+" "
-                +int.Parse(fieldNBox.Text)+" "+int.Parse(breweryNBox.Text)+" "+int.Parse(pubNBox.Text);
+            string isTwoWay = twoWayCheckbox.IsChecked.GetValueOrDefault() ? "1" : "0";
+            string arguments = "\""+dataPath + "\" " + int.Parse(vertNBox.Text)+" "+int.Parse(sectionNBox.Text)+" "+densityList.SelectedIndex+" "
+                +int.Parse(fieldNBox.Text)+" "+int.Parse(breweryNBox.Text)+" "+int.Parse(pubNBox.Text)+" "+isTwoWay;
+            Console.WriteLine(arguments);
             var generatorProcess = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -208,7 +217,6 @@ namespace networkGenInterface
                 }
             };
             generatorProcess.Start();
-            doWriteDebugData = true;
             if (doWriteDebugData)
             {
                 using (StreamWriter debugLogFile = new StreamWriter("./gen_debug_log.txt"))
@@ -254,6 +262,9 @@ namespace networkGenInterface
             pubNBox.IsEnabled = true;
             sectionNBox.IsEnabled = true;
             densityList.IsEnabled = true;
+            twoWayCheckbox.Visibility = Visibility.Visible;
+            twoWayLabel.Foreground = Brushes.AntiqueWhite;
+            twoWayBackground.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
         }
     }
 }

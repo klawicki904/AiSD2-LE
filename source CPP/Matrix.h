@@ -4,22 +4,24 @@
 
 #include <iostream>
 #include <functional>
+#include "Matrix.h"
 #include "Node.h"
 #include "EdgeData.h"
 #include "Quarter.h"
+
+#include "printNodesRoads.h"
+#include "printRoutes.h"
+
 #include <vector>
 #include <fstream>
 #include <queue>
 #include <limits>
+#include "Path.h"
 #include <unordered_map> //do wypisania wynikow
 #include <locale>
 #include <codecvt>
 #include <io.h>
 #include <fcntl.h>
-#include "Path.h"
-#include <string>
-#include <sstream>
-
 
 using namespace std;
 
@@ -90,7 +92,9 @@ public:
     pair<double, double> maxFlowAlgorithm();
 
     //wypisuje lub zapisuje do pliku
-    void printToFileSolution(double maxFlow, vector<Path> combined);
+    //void printToFileSolution(double maxFlow, vector<Path> combined);
+
+    void printToFileSolution(double maxFlow, vector<Path> firstRoads, vector<Path> secondRoads);
 
       
   

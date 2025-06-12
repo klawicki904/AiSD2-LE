@@ -1,0 +1,1 @@
+generated_map1.txt - połączenia jednokierunkowe, ale przy wypisywaniu ścieżek indeksy prawdopodobnie się nie zgadzają (te ostatnie mają zbyt dużą wartość)
