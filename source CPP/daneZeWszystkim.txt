@@ -1,7 +1,7 @@
 KONWERSJA
 0.639851
 PUNKTY
-1 5 6 pole
+1 5.555 6 pole
 2 7 8 pole
 3 15 4 karczma
 4 15 2 brak
@@ -15,9 +15,7 @@ PUNKTY
 12 15 0 brak
 13 15 -2 brak
 DROGI
-0 1 7 0
-0 2 6 0
-1 5 4 5
+1 5 4.4 5
 1 7 5 4
 2 6 3 1
 2 7 2 1

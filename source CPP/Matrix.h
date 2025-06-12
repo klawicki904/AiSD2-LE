@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <functional>
-#include "Matrix.h"
 #include "Node.h"
 #include "EdgeData.h"
 #include "Quarter.h"
@@ -12,12 +11,14 @@
 #include <fstream>
 #include <queue>
 #include <limits>
-#include "Path.h"
 #include <unordered_map> //do wypisania wynikow
 #include <locale>
 #include <codecvt>
 #include <io.h>
 #include <fcntl.h>
+#include "Path.h"
+#include <string>
+#include <sstream>
 
 
 using namespace std;
@@ -60,9 +61,6 @@ public:
     //Zmodyfikowany bfs.  Je?eli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
     bool bfs(int x, const vector<vector<EdgeData>>& graf, int t, vector<int>& f);
 
-    //algorytm znajdowania najkrotszych sciezek.
-    void dijkstra(int source);
-
     //algorytm znajdowania najkrotszych sciezek. Zmodyfikowany pod nasz problem
     bool dijkstraModify(int source,  int target, double& cost, vector<int>& parents, const vector<vector<EdgeData>>& graf);
 
@@ -92,7 +90,7 @@ public:
     pair<double, double> maxFlowAlgorithm();
 
     //wypisuje lub zapisuje do pliku
-    void printToFileSolution(double maxFlow, vector<Path> first, vector<Path> second);
+    void printToFileSolution(double maxFlow, vector<Path> combined);
 
       
   

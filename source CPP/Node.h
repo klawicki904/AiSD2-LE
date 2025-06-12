@@ -32,12 +32,13 @@ public:
     NodeType type = NodeType::None;
 
     Node();
-    Node(const int& _id, const int& _x, const int& _y, const double& _cap, NodeType _type = NodeType::None);
+    Node(const int& _id, const double& _x, const double& _y, const double& _cap, NodeType _type = NodeType::None);
 
+    void setCapacity(double capacity);
     const int& GetId() const;
-    const int& GetX() const;
-    const int& GetY() const;
-    const double& GetCapacity() const;
+    const double& GetX() const;
+    const double& GetY() const;
+    double GetCapacity() const;
     NodeType GetType() const;
     //const double& GetYield() const;
 

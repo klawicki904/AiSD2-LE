@@ -1,5 +1,5 @@
 #include "Path.h"
-
+#include "Matrix.h"
 
 Path::Path() : flow(0), cost(0) {}
 
@@ -23,6 +23,10 @@ void Path::setCost(double newCost) {
     cost = newCost;
 }
 
+void Path::setConnectedPoint(int number) {
+   connectedPoint = number;
+}
+
 const vector<int>& Path::getPath() const {
     return path;
 }
@@ -33,6 +37,9 @@ double Path::getFlow() const {
 
 double Path::getCost() const {
     return cost;
+}
+int Path::getConnectedPoint() const {
+    return connectedPoint;
 }
 
 
@@ -109,7 +116,6 @@ vector<Path> Path::combineRoads(
     while (madeMatch) {
         madeMatch = false;
 
-        // Przechodzimy po ka?dej kombinacji i?j, a? znajdziemy takie, które da si? po??czy?
         for (size_t i = 0; i < temp1.size() && !madeMatch; ++i) {
             const Path& Apath = temp1[i];
             const vector<int>& A_nodes = Apath.getPath();
@@ -122,55 +128,79 @@ vector<Path> Path::combineRoads(
                 if (B_nodes.empty()) continue;
                 int startB = B_nodes.front();
 
-                // je?li A.back() != B.front(), to nie da si? ??czy?
                 if (endA != startB) continue;
 
-                // Zapisujemy wszystkie potrzebne parametry _PRZED_ erasure:
                 double flowA = Apath.getFlow();
                 double flowB = Bpath.getFlow();
                 double costA = Apath.getCost();
                 double costB = Bpath.getCost();
-                const vector<int> pathA = A_nodes;  // kopia wektora wierzcho?ków
+                const vector<int> pathA = A_nodes;
                 const vector<int> pathB = B_nodes;
 
-                // Ile przep?ywu realnie skonsumujemy w po??czeniu:
                 double f = min(flowA, flowB);
 
-                // Tworzymy scalon? ?cie?k? (A+B) – tu u?ywamy mergePaths():
                 Path merged = mergePaths(Apath, Bpath);
+                // Ustawiamy punkt ??cz?cy ?cie?ki:
+                merged.setConnectedPoint(endA);
                 merged.setFlow(f);
                 merged.setCost(costA + costB);
 
-                // Usuwamy „stare” elementy z temp1[i] i temp2[j]:
                 temp1.erase(temp1.begin() + i);
                 temp2.erase(temp2.begin() + j);
 
-                // Je?li w A zosta?o jeszcze co? (flowA - f > 0), dodajemy „resztkow?” cz???:
                 double remFlowA = flowA - f;
                 if (remFlowA > 1e-9) {
-                    // Koszt przypadaj?cy na jednostk? w A:
-                    double costPerUnitA = costA / flowA;
-                    double remCostA = costPerUnitA * remFlowA;
-                    Path leftoverA(pathA, remFlowA, remCostA);
+
+                    Path leftoverA(pathA, remFlowA, remFlowA);
                     temp1.insert(temp1.begin() + i, leftoverA);
                 }
-                // Podobnie B:
                 double remFlowB = flowB - f;
                 if (remFlowB > 1e-9) {
-                    double costPerUnitB = costB / flowB;
-                    double remCostB = costPerUnitB * remFlowB;
-                    Path leftoverB(pathB, remFlowB, remCostB);
+                    Path leftoverB(pathB, remFlowB, remFlowB);
                     temp2.insert(temp2.begin() + j, leftoverB);
                 }
 
-                // Dodajemy scalon? cz??? do result:
                 result.push_back(merged);
-
                 madeMatch = true;
             }
         }
     }
     return result;
+}
+
+// Funkcja licz?ca sum? kosztów unikatowych kraw?dzi:
+double Path::sumUniqueEdgesCost(const std::vector<Path>& paths, const vector<vector<EdgeData>>& graf) {
+    // zbiór odwiedzonych kraw?dzi (u?v)
+    std::set<std::pair<int, int>> seen;
+    double total = 0.0;
+
+    for (const auto& path : paths) {
+        const auto& verts = path.path;
+        if (verts.size() < 2) continue;
+
+        for (size_t i = 1; i < verts.size(); ++i) {
+            int u = verts[i - 1];
+            int v = verts[i];
+            auto edge = std::make_pair(u, v);
+            // je?li jeszcze nie liczyli?my tej kraw?dzi
+            if (seen.insert(edge).second) {
+                total += graf[u][v].cost;
+            }
+        }
+    }
+
+    return total;
+}
+
+// Funkcja licz?ca sum? przep?ywu:
+double Path::sumFlow(const std::vector<Path>& paths) {
+    double total = 0.0;
+
+    for (const auto& path : paths) {
+        total += path.flow;
+    }
+
+    return total;
 }
 
 vector<Path> realPaths;

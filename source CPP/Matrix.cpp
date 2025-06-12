@@ -1,10 +1,6 @@
 
 #include "gtest/gtest.h"
 #include "Matrix.h"
-#include <string>
-#include <sstream>
-#include <functional>
-
 
 
 // Konstruktor
@@ -255,8 +251,10 @@ bool Matrix::readFileToGraph3(string fileName) {
                 }
             }
             if (isFieldValid) {
-                tab[0][i+1].flow *= quarters[quarterIndex].efficiencyMultiplier;
-                tab[0][i + 1].remainingFlow *= quarters[quarterIndex].efficiencyMultiplier;
+                tab[0][i+1].flow += quarters[quarterIndex].efficiencyMultiplier;
+                tab[0][i + 1].remainingFlow += quarters[quarterIndex].efficiencyMultiplier;
+                tab[0][i + 1].cost = 0;
+                //this->listVertices[i + 1].capacity += quarters[quarterIndex].efficiencyMultiplier;
                 break;
             }
             else if(!isFieldValid && quarterIndex==3){
@@ -288,6 +286,7 @@ bool Matrix::readFileToGraph3(string fileName) {
         if (i.GetType() == Node::NodeType::Pub) {
             tab[i.GetId()][target].flow = INF;
             tab[i.GetId()][target].remainingFlow = INF;
+            tab[i.GetId()][target].cost = 0;
         }
     }
     return true;
@@ -320,48 +319,6 @@ bool Matrix::bfs(int s, const vector<vector<EdgeData>>& graf, int t, vector<int>
         }
     }
     return false;
-}
-
-//algorytm znajdowania najkrotszych sciezek.
-void Matrix::dijkstra(int source) {
-    const double INF = numeric_limits<double>::max();
-    vector<double> d(vertices + 1, INF);
-    vector<int> visited(vertices + 1, 0);
-    d[source] = 0;
-
-    // Kolejka priorytetowa - pary {odleg?o??, wierzcho?ek}
-    priority_queue<pair<double, int>, vector<pair<double, int>>, greater<>> pq;
-    pq.push({ 0, source });
-
-    while (!pq.empty()) {
-        double dist = pq.top().first;
-        int u = pq.top().second;
-        pq.pop();
-
-        if (visited[u]) continue;
-        visited[u] = 1;
-
-        for (int v = 0; v < vertices; ++v) {
-            if (tab[u][v].remainingFlow != 0) {
-                double weight = tab[u][v].cost;
-                if (d[u] + weight < d[v]) {
-                    d[v] = d[u] + weight;
-                    pq.push({ d[v], v });
-                }
-            }
-        }
-    }
-
-    // Wy?wietlenie wyników
-   /* cout << "Odleg?o?ci od wierzcho?ka " << source << ":\n";
-    for (int i = 0; i < vertices; ++i) {
-        if (d[i] == INF) {
-            cout << "Do wierzcho?ka " << i << " nie ma ?cie?ki.\n";
-        }
-        else {
-            cout << "Odleg?o?? do wierzcho?ka " << i << ": " << d[i] << "\n";
-        }
-    }*/
 }
 
 //algorytm znajdowania najkrotszych sciezek.
@@ -455,18 +412,32 @@ double Matrix::BusackerGowen2(double const maxFlow, int s, int t, vector<Path>& 
     double cost; //koszt jednej sciezki
     vector<int> path; // lista sciezek do wypisanie
 
+    Matrix siecResidualna(vertices); //siec residualna
+
+    //Siec residualna na start algorytmu jest taka sama jak siec przep?ywowa
+    // powieksza sie? o 1 (dodaje midT)
+    for (int i = 0; i < vertices; i++) {
+        for (int j = 0; j < vertices; j++) {
+            if ((j < vertices) && (i < vertices)) {
+                siecResidualna.tab[i][j] = tab[i][j];
+            }
+            else {
+                siecResidualna.tab[i][j] = EdgeData();
+            }
+        }
+    }
+
 
     // Wykonuje dopoki nie zostal osiagniety przeplyw F(maxFlow)
     // i dopoki istnieje sciezka z s do t (wybiera t? sci??k? która ma najni?szy koszt)
-    while (result < maxFlow && (this->*shortestPathFunc)(s, t, cost, f, tab)) {
-
+    while (result < maxFlow && (this->*shortestPathFunc)(s, t, cost, f, siecResidualna.tab)) {
         int tmpT = t;
         int tmp = f[t];
-        double maxFlowOfPath = tab[tmp][tmpT].remainingFlow;
+        double maxFlowOfPath = siecResidualna.tab[tmp][tmpT].remainingFlow;
         while (tmp != s) {
             tmpT = tmp;
             tmp = f[tmp];
-            maxFlowOfPath = min(maxFlowOfPath, tab[tmp][tmpT].remainingFlow);
+            maxFlowOfPath = min(maxFlowOfPath, siecResidualna.tab[tmp][tmpT].remainingFlow);
         }
 
         if (result + maxFlowOfPath > maxFlow) {
@@ -477,16 +448,16 @@ double Matrix::BusackerGowen2(double const maxFlow, int s, int t, vector<Path>& 
         tmpT = t;
         tmp = f[t];
         while (tmp != s) {
-            tab[tmp][tmpT].remainingFlow -= maxFlowOfPath;
-            tab[tmpT][tmp].remainingFlow += maxFlowOfPath;
-            tab[tmpT][tmp].cost = - tab[tmp][tmpT].cost;
+            siecResidualna.tab[tmp][tmpT].remainingFlow -= maxFlowOfPath;
+            siecResidualna.tab[tmpT][tmp].remainingFlow += maxFlowOfPath;
+            siecResidualna.tab[tmpT][tmp].cost = -siecResidualna.tab[tmp][tmpT].cost;
             path.push_back(tmpT);
             tmpT = tmp;
             tmp = f[tmp];
         }
-        tab[tmp][tmpT].remainingFlow -= maxFlowOfPath;
-        tab[tmpT][tmp].remainingFlow += maxFlowOfPath;
-        tab[tmpT][tmp].cost = - tab[tmp][tmpT].cost;
+        siecResidualna.tab[tmp][tmpT].remainingFlow -= maxFlowOfPath;
+        siecResidualna.tab[tmpT][tmp].remainingFlow += maxFlowOfPath;
+        siecResidualna.tab[tmpT][tmp].cost = -siecResidualna.tab[tmp][tmpT].cost;
         path.push_back(tmpT);
         path.push_back(s);
         reverse(path.begin(), path.end());
@@ -524,30 +495,28 @@ void Matrix::maxFlowMinCost() {
     vector<Path> a;
     double maxFlow = edmondsKarp();
     cout << endl;
-    BusackerGowen2(maxFlow, 0 , vertices - 1, a , &Matrix::dijkstraModify);
+    BusackerGowen2(maxFlow, source , target, a , &Matrix::dijkstraModify);
     cout << endl;
-    BusackerGowen2(maxFlow, 0, vertices - 1, a , &Matrix::BellmanFord);
+    BusackerGowen2(maxFlow, source, target, a , &Matrix::BellmanFord);
 }
 
-//minCostMaxFlow dla naszego problemu. Z wykorzystaniem algorytmu BusackeraGowena
+// ROZWIAZANIE ANALIZATORA PRZEPLYWU
+//minCostMaxFlow dla naszego problemu. Z wykorzystaniem algorytmu BusackeraGowena. 
 double Matrix::maxFlowMinCost2() {
     pair<double,double> maxFlow = maxFlowAlgorithm();
     int midT = vertices;
     this->init(vertices + 1);
-
     vector<Path> road1;
     vector<Path> road2;
 
 
     for (Node i : listVertices) {
-
         if (i.GetType() == Node::NodeType::Brewery) {
             tab[i.GetId()][midT].remainingFlow = i.GetCapacity();
             tab[i.GetId()][midT].flow = i.GetCapacity();
             tab[i.GetId()][midT].cost = 0;
        }
     }
-
     double result1 = BusackerGowen2(maxFlow.first, 0, midT, road1, &Matrix::BellmanFord);
 
     //Resetuje wszystkie powrotne krawedzie ktore nie istnieja w orginalny grafie
@@ -562,37 +531,50 @@ double Matrix::maxFlowMinCost2() {
 
     //Resetuje wszystkie krawedzie od Browarów do midT 
     //W druga strone zostawiam celowo tj z midT -> browar
+    //W druga strone ustawiam na maxFlow(I czesci)
     for (Node i : listVertices) {
         if (i.GetType() == Node::NodeType::Brewery) {
             if (tab[i.GetId()][midT].remainingFlow > 0)
                 tab[i.GetId()][midT].remainingFlow = 0;
+                tab[midT][i.GetId()].remainingFlow = maxFlow.first;
         }
     }
 
     double result2 = BusackerGowen2(maxFlow.second, midT, vertices - 2, road2, &Matrix::BellmanFord);
 
+    cout << endl;
+    cout << "-------------------------------------------------" << endl;
+    cout << "Drogi dla ca?ego grafu: " << endl;
 
     vector<Path> goodRoads1 = Path::filterPaths(road1, this->tab);
     vector<Path> goodRoads2 = Path::filterPaths(road2, this->tab);
     vector<Path> combined = Path::combineRoads(goodRoads1, goodRoads2, this->tab);
+
+    double resultFlow = Path::sumFlow(combined);
     for (Path p : combined) {
         for (int i : p.getPath()) {
             cout << i << " ";
         }
-        cout << "Przepustowosc: " << p.getFlow() << " Koszt: " << p.getCost() << endl;
+        cout << "Przepustowosc ca?ej drogi: " << p.getFlow() << " Koszt ca?ej drogi: " << p.getCost() << endl;
+        cout << "Punkt ??cz?cy (browar który przetworzy?): " << p.getConnectedPoint() << endl;
     }
 
-    printToFileSolution(min(maxFlow.first, maxFlow.second), goodRoads1, goodRoads2);
+    cout << "Koszt wszystkich dróg (naprawiana kazda krawedz tylko raz): " << Path::sumUniqueEdgesCost(combined, tab) << endl;
+    cout << "Maksymalny przeplyw ca?ego grafu (nie uwzgledniana jeszcze konwersja): " << resultFlow << endl;
+    cout << endl;
+    cout << "-------------------------------------------------" << endl;
+    cout << endl;
+
+    printToFileSolution(resultFlow , combined);
 
     return result1 + result2;
 }
 
 //Zapisuje wynik do pliku i wypisuje
-void Matrix::printToFileSolution(double maxFlow, vector<Path> firstRoads, vector<Path> secondRoads) {
+void Matrix::printToFileSolution(double maxFlow, vector<Path> combined) {
 
     wofstream out("wynik.txt", ios::binary);
-    out.imbue(locale(out.getloc(),
-        new codecvt_utf8<wchar_t>));  // ustawienie UTF-8
+    out.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
 
     if (!out.is_open()) {
         wcerr << "Nie mo?na otworzy? pliku wynik.txt do zapisu." << endl;
@@ -601,115 +583,144 @@ void Matrix::printToFileSolution(double maxFlow, vector<Path> firstRoads, vector
    // out << (wchar_t)0xFEFF;
     // Wypisanie punktów
     wstring name;
-    out << L"Punkty:" << endl;
-    for (Node i : listVertices) {
-        if (i.GetType() == Node::NodeType::Field) {
-            name = L"pole";
-        }
-        else if (i.GetType() == Node::NodeType::Brewery) {
-            name = L"browar";
-        }
-        else if (i.GetType() == Node::NodeType::Pub) {
-            name = L"karczma";
-        }
-        else {
-            name = L"skrzy?owanie";
-        }
+    wstring tekst = L"?????ó";
+    out << tekst;
+    out.close();
+    //out << L"Punkty:" << endl;
+    //for (Node& i : listVertices) {
+    //    if (i.GetType() == Node::NodeType::Field) {
+    //        name = L"pole";
+    //    }
+    //    else if (i.GetType() == Node::NodeType::Brewery) {
+    //        name = L"browar";
+    //    }
+    //    else if (i.GetType() == Node::NodeType::Pub) {
+    //        name = L"karczma";
+    //    }
+    //    else {
+    //        name = L"skrzy?owanie";
+    //    }
 
-        out << L"Punkt " << to_wstring(i.GetId()) << L": typ: " << name << L"; pozycja x = " << to_wstring(i.GetX()) << L", y = " << to_wstring(i.GetY());
-        if (name == L"pole") {
-            double productivity = tab[0][i.GetId()].flow;
-            out << L"; wydajno??: " << to_wstring(productivity) << L" ton." << endl;
-        }
-        else if (name == L"browar") {
-            out << L"; pojemno??: " << to_wstring(i.GetCapacity()) << L" ton." << endl;
-        }
-        else {
-            out << L"." << endl;
-        }
-    }
-    //Mapowanie typów w?z?ów
-    unordered_map<int, wstring> tab;
-    for (Node i : listVertices) {
-        if (i.GetType() == Node::NodeType::Field) {
-            tab[i.GetId()] = L"pola";
-        }
-        else if (i.GetType() == Node::NodeType::Brewery) {
-            tab[i.GetId()] = L"browaru";
-        }
-        else if (i.GetType() == Node::NodeType::Pub) {
-            tab[i.GetId()] = L"karczmy";
-        }
-        else {
-            tab[i.GetId()] = L"skrzy?owania";
-        }
-    }
+    //    out << L"Punkt " << to_wstring(i.GetId()) << L": typ: " << name << L"; pozycja x = " << to_wstring(i.GetX()) << L", y = " << to_wstring(i.GetY());
+    //    if (name == L"pole") {
+    //        i.setCapacity(tab[0][i.GetId()].flow);
+    //        out << L"; wydajno??: " << to_wstring(i.GetCapacity()) << L" ton." << endl;
+    //    }
+    //    else if (name == L"browar") {
+    //        out << L"; pojemno??: " << to_wstring(i.GetCapacity()) << L" ton." << endl;
+    //    }
+    //    else {
+    //        out << L"." << endl;
+    //    }
+    //}
+    ////Mapowanie typów w?z?ów
+    //unordered_map<int, wstring> tab;
+    //for (Node i : listVertices) {
+    //    if (i.GetType() == Node::NodeType::Field) {
+    //        tab[i.GetId()] = L"pola";
+    //    }
+    //    else if (i.GetType() == Node::NodeType::Brewery) {
+    //        tab[i.GetId()] = L"browaru";
+    //    }
+    //    else if (i.GetType() == Node::NodeType::Pub) {
+    //        tab[i.GetId()] = L"karczmy";
+    //    }
+    //    else {
+    //        tab[i.GetId()] = L"skrzy?owania";
+    //    }
+    //}
 
     // Drogi pola -> browar
-    int countRoads = 1;
-    out << endl << L"Drogi: " << endl;
-    for (const Path& p : firstRoads) {
-        const vector<int>& path = p.getPath();
-        out << L"Droga " << countRoads << L": z pola ";
-        for (size_t i = 0; i < path.size(); ++i) {
-            int node = path[i];
-            if (i == 0) {
-                out << L"[" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") ";
-            }
-            else {
-                out << L"do " << tab[node] << L" [" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") ";
-            }
-        }
-        out << L": przepustowo??: " << p.getFlow() << L" ton; koszt naprawy " << p.getCost() << L" srebrnych pensów." << endl;
-        countRoads++;
-    }
-    // Drogi browar -> karczma
-    
+    //int countRoads = 1;
+    //out << endl << L"Drogi: " << endl;
+    //for (const Path& p : firstRoads) {
+    //    const vector<int>& path = p.getPath();
+    //    out << L"Droga " << countRoads << L": z pola ";
+    //    for (size_t i = 0; i < path.size(); ++i) {
+    //        int node = path[i];
+    //        if (i == 0) {
+    //            out << L"[" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") ";
+    //        }
+    //        else {
+    //            out << L"do " << tab[node] << L" [" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") ";
+    //        }
+    //    }
+    //    out << L": przepustowo??: " << p.getFlow() << L" ton; koszt naprawy " << p.getCost() << L" srebrnych pensów." << endl;
+    //    countRoads++;
+    //}
+    //// Drogi browar -> karczma
+    //
 
 
-    int countRoads2 = countRoads;
-    for (const Path& p : secondRoads) {
-        const vector<int> path = p.getPath();
-        out << L"Droga " << countRoads2 << L": z browaru ";
-        for (size_t i = 0; i < path.size(); ++i) {
-            int node = path[i];
-            if (i == 0) {
-                out << L"[" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L")";
-            }
-            else {
-                out << L" do " << tab[node] << L" [" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L")";
-            }
-        }
-        out << L": przepustowo??: " << p.getFlow() << L" ton; koszt naprawy " << p.getCost() << L" srebrnych pensów." << endl;
-        countRoads2++;
-    }
+    //int countRoads2 = countRoads;
+    //for (const Path& p : secondRoads) {
+    //    const vector<int> path = p.getPath();
+    //    out << L"Droga " << countRoads2 << L": z browaru ";
+    //    for (size_t i = 0; i < path.size(); ++i) {
+    //        int node = path[i];
+    //        if (i == 0) {
+    //            out << L"[" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L")";
+    //        }
+    //        else {
+    //            out << L" do " << tab[node] << L" [" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L")";
+    //        }
+    //    }
+    //    out << L": przepustowo??: " << p.getFlow() << L" ton; koszt naprawy " << p.getCost() << L" srebrnych pensów." << endl;
+    //    countRoads2++;
+    //}
 
-    out << endl;
-    out << L"Rozwi?zanie:" << endl;
-    out << L"Maksymalna ilo?? piwa, któr? mo?na przetransportowa? : " << maxFlow << L" ton" << endl;
+    //out << endl;
+    //out << L"Rozwi?zanie:" << endl;
+    //out << L"Maksymalna ilo?? piwa, któr? mo?na przetransportowa?: " << maxFlow << L" ton; koszt naprawy: ";
+    //out << Path::sumUniqueEdgesCost(combined, this->tab) << " srebrnych pensów" << endl;
 
-    // Po??czenie dróg
-    vector<Path> combined = Path::combineRoads(firstRoads, secondRoads, this->tab);
-    // Wypisanie trasy ko?cowej
-    out << L"Przebieg trasy: " << endl;
-    countRoads = 1;
-    for (const Path& p : combined) {
-        out << L"Trasa nr " << countRoads << L":" << endl;
-        out << L"Z pola ";
-        const vector<int>& path = p.getPath();
-        for (size_t i = 0; i < path.size(); ++i) {
-            int node = path[i];
-            if (i == 0) {
-                out << L"[" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") " << p.getFlow() << L" ton ";
-            }
-            else {
-                out << L"z " << tab[node] << L" [" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") " << p.getFlow() << L" ton ";
-            }
-        }
-        countRoads++;
-        out << "\n";
-    }
-    out.close();
+    //// Wypisanie trasy ko?cowej
+    //int countRoads = 1;
+    //out << L"Przebieg trasy: " << endl;
+    //countRoads = 1;
+    //for (const Path& p : combined) {
+
+    //    int breweryID = p.getConnectedPoint();
+    //    bool checkBrewery = false;
+
+    //    out << L"Trasa nr " << countRoads << L":" << endl;
+    //    const vector<int>& path = p.getPath();
+    //    for (size_t i = 0; i < path.size() - 1; ++i) {
+    //        int node = path[i];
+    //        
+    //        /*if (i == 0) {
+    //            out << L"[" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") " << p.getFlow() << L" ton ";
+    //        }
+    //        else {
+    //            out << L"z " << tab[node] << L" [" << node << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") " << p.getFlow() << L" ton ";
+    //        }*/
+    //        wstring stringPole;
+    //        if (i == 0) {
+    //            wstringstream ss;
+    //            ss << L"zawarto?? pola [" << to_wstring(node) << L"] na pozycji (" << to_wstring(listVertices[node - 1].GetX()) << L", " << to_wstring(listVertices[node - 1].GetY()) << L") wynosi " << to_wstring(listVertices[node - 1].GetCapacity() - p.getFlow()) << L";" << endl;
+    //            stringPole = ss.str();
+    //            listVertices[node - 1].setCapacity(listVertices[node - 1].GetCapacity() - p.getFlow());
+
+
+    //        }
+
+    //        out << L"Z " << tab[node] << L" [" << to_wstring(node) << L"] na pozycji (" << to_wstring(listVertices[node - 1].GetX()) << L", " << to_wstring(listVertices[node - 1].GetY()) << L") " << to_wstring(p.getFlow()) << L" ton " << (checkBrewery ? L"piwa " : L"j?czmienia ");
+    //        if (path[i + 1] == breweryID) {
+    //            checkBrewery = true;
+    //            out << L"do " << tab[path[i + 1]] << L" [" << to_wstring(path[i + 1]) << L"] na pozycji (" << to_wstring(listVertices[path[i + 1] - 1].GetX()) << L", " << to_wstring(listVertices[path[i + 1] - 1].GetY()) << L");" << endl;
+    //            if (i == 0) out << stringPole;
+    //            out << L"pojemno?? browaru [" << to_wstring(path[i + 1]) << L"] na pozycji (" << to_wstring(listVertices[path[i + 1] - 1].GetX()) << L", " << to_wstring(listVertices[path[i + 1] - 1].GetY()) << L") wynosi " << to_wstring((listVertices[path[i + 1] - 1].GetCapacity() - p.getFlow())) << L";" << endl;
+    //            listVertices[path[i + 1] - 1].setCapacity(listVertices[path[i + 1] - 1].GetCapacity() - p.getFlow());
+    //        }
+    //        else {
+    //            out << L"do " << tab[path[i + 1]] << L" [" << to_wstring(path[i + 1]) << L"] na pozycji (" << to_wstring(listVertices[path[i + 1] - 1].GetX()) << L", " << to_wstring(listVertices[path[i + 1] - 1].GetY()) << L");" << endl;
+    //            if (i == 0) out << stringPole;
+    //        }
+
+    //    }
+    //    countRoads++;
+    //}
+    //out.close();
     //WYPISYWANIE
     wifstream file(L"wynik.txt");
     file.imbue(locale(file.getloc(), new codecvt_utf8<wchar_t>()));
@@ -725,6 +736,7 @@ void Matrix::printToFileSolution(double maxFlow, vector<Path> firstRoads, vector
 
         file.close();
     }
+    cout << endl;
 }
 
 // Klasyczny algorytm Edmondsa-Karpa
@@ -788,19 +800,19 @@ double Matrix::edmondsKarpClassic(int s, vector<vector<EdgeData>>& graf, int t, 
     {
         int tmpT = t;
         int tmp = f[t];
-        cout << " Droga: z " << s << " do " << t << endl;
+        //cout << " Droga: z " << s << " do " << t << endl;
         double min = graf[tmp][tmpT].remainingFlow;
 
         //Wypisuje siezki powieszajace i wyznacza minimum przepustowosci z tej sciezki
         while (tmp != s) {
-            cout << tmpT << " -> " << tmp << " min: " << min << endl;
+            //cout << tmpT << " -> " << tmp << " min: " << min << endl;
             tmpT = tmp;
             tmp = f[tmp];
             if (min > graf[tmp][tmpT].remainingFlow) {
                 min = graf[tmp][tmpT].remainingFlow;
             }
         }
-        cout << tmpT << " -> " << tmp << " min: " << min << endl;
+        //cout << tmpT << " -> " << tmp << " min: " << min << endl;
 
         tmpT = t;
         tmp = f[t];
@@ -851,6 +863,7 @@ pair<double, double>  Matrix::maxFlowAlgorithm() {
     vector<int> f(vertices + 1); //tablica ojcow dla 1 przeplywu
     vector<int> f2(vertices + 1); //tablica ojcow dla 2 przeplywu
 
+    cout << "Dla I cz?sci: ";
     maxFlow = edmondsKarpClassic(s, siecResidualna.tab, midT, f);
 
     //Resetuje wszystkie powrotne krawedzie ktore nie istnieja w orginalny grafie
@@ -871,7 +884,7 @@ pair<double, double>  Matrix::maxFlowAlgorithm() {
                
         }
     }
-
+    cout << "Dla II cz?sci: ";
     maxFlow1 = edmondsKarpClassic(midT, siecResidualna.tab, t, f);
 
     return { maxFlow, maxFlow1 };

@@ -2,6 +2,7 @@
 #include "EdgeData.h"
 
 
+
 EdgeData::EdgeData() : v(), remainingFlow(0), flow(0), cost(0) {}
 
 EdgeData::EdgeData(int v, double remainingFlow) {
@@ -16,4 +17,11 @@ EdgeData::EdgeData(int v, double remainingFlow, double cost) {
 	this->remainingFlow = remainingFlow;
 	this->cost = cost;
 	this->flow = remainingFlow;
+}
+
+EdgeData* EdgeData::findEdge(std::vector<EdgeData>& edges, int to) {
+	for (auto& edge : edges) {
+		if (edge.v == to) return &edge;
+	}
+	return nullptr;
 }
