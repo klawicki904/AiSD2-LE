@@ -1,10 +1,17 @@
 
 #include "gtest/gtest.h"
 #include "Matrix.h"
+
+#include "printNodesRoads.h"
+#include "printRoutes.h"
+
 #include <string>
 #include <sstream>
 #include <functional>
 
+#include <fstream>
+#include <windows.h>
+#include <locale>
 
 
 // Konstruktor
@@ -587,6 +594,8 @@ double Matrix::maxFlowMinCost2() {
     return result1 + result2;
 }
 
+//stara wersja printToFileSolution
+/*
 //Zapisuje wynik do pliku i wypisuje
 void Matrix::printToFileSolution(double maxFlow, vector<Path> firstRoads, vector<Path> secondRoads) {
 
@@ -664,7 +673,7 @@ void Matrix::printToFileSolution(double maxFlow, vector<Path> firstRoads, vector
         countRoads++;
     }
     // Drogi browar -> karczma
-    
+
 
 
     int countRoads2 = countRoads;
@@ -726,6 +735,63 @@ void Matrix::printToFileSolution(double maxFlow, vector<Path> firstRoads, vector
         file.close();
     }
 }
+*/
+
+
+
+
+//Zapisuje wynik do pliku i wypisuje
+void Matrix::printToFileSolution(double maxFlow, vector<Path> firstRoads, vector<Path> secondRoads) {
+
+    wofstream out("wynik.txt", ios::binary);
+    out.imbue(locale(out.getloc(),
+        new codecvt_utf8<wchar_t>));  // ustawienie UTF-8
+
+    if (!out.is_open()) {
+        wcerr << "Nie mozna otworzyc pliku wynik.txt do zapisu." << endl;
+        return;
+    }
+    // out << (wchar_t)0xFEFF;
+
+
+    //wypisanie punktów
+    printNodes(out, listVertices);
+
+
+    //wypisanie dróg
+    printRoads(out, tab, listVertices);
+
+
+
+
+
+    out << endl;
+    out << L"Rozwi¹zanie:" << endl;
+    out << L"Maksymalna iloœæ piwa, któr¹ mo¿na przetransportowaæ: " << maxFlow << L" ton;" << endl;
+    out << L" koszt naprawy: " << endl;                                                     ///////// !!
+
+
+
+    out.close();
+
+
+    //WYPISYWANIE
+    wifstream file(L"wynik.txt");
+    file.imbue(locale(file.getloc(), new codecvt_utf8<wchar_t>()));
+    if (!file.is_open()) {
+        wcerr << L"Nie mo?na otworzy? pliku wynik.txt" << endl;
+    }
+    else {
+        wstring line;
+
+        while (getline(file, line)) {
+            wcout << line << L"\n";
+        }
+
+        file.close();
+    }
+}
+
 
 // Klasyczny algorytm Edmondsa-Karpa
 double Matrix::edmondsKarp() {

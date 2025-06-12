@@ -8,6 +8,10 @@
 #include "Node.h"
 #include "EdgeData.h"
 #include "Quarter.h"
+
+#include "printNodesRoads.h"
+#include "printRoutes.h"
+
 #include <vector>
 #include <fstream>
 #include <queue>
@@ -18,6 +22,8 @@
 #include <codecvt>
 #include <io.h>
 #include <fcntl.h>
+
+#include <windows.h>
 
 
 using namespace std;
