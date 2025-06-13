@@ -19,7 +19,7 @@ Matrix::Matrix() : vertices(0) {
 }
 
 Matrix::Matrix(int n) : vertices(n) {
-    tab.resize(n, vector<EdgeData>(n));  // Inicjalizuje macierz o rozmiarze n x n, wype?nion? zerami
+    tab.resize(n, vector<EdgeData>(n));  // Inicjalizuje macierz o rozmiarze n x n, wype³nion¹ zerami
     listVertices.resize(n);
     source = 0; // Inicjalizuje ?r?d?o
     target = n - 1; // Inicjalizuje uj?cie
@@ -27,7 +27,7 @@ Matrix::Matrix(int n) : vertices(n) {
 
 void Matrix::init(int n) {
     if (n <= vertices) {
-        // Je?li zmniejszamy lub rozmiar si? nie zmienia, mo?esz zrobi? resize bez kopiowania
+        // Jeœli zmniejszamy lub rozmiar siê nie zmienia, mo¿esz zrobiæ resize bez kopiowania
         vertices = n;
         tab.resize(vertices);
         for (int i = 0; i < vertices; i++) {
@@ -35,14 +35,14 @@ void Matrix::init(int n) {
         }
     }
     else {
-        // Je?li zwi?kszamy rozmiar, zachowujemy stare dane i rozszerzamy macierz
+        // Jeœli zwiêkszamy rozmiar, zachowujemy stare dane i rozszerzamy macierz
         int oldVertices = vertices;
         vertices = n;
 
-        // Powi?kszamy liczb? wierszy
+        // Powiêkszamy liczbê wierszy
         tab.resize(vertices);
 
-        // Powi?kszamy ka?dy wiersz (istniej?cy i nowy)
+        // Powiêkszamy ka¿dy wiersz (istniej¹cy i nowy)
         for (int i = 0; i < vertices; i++) {
             tab[i].resize(vertices);
         }
@@ -52,11 +52,11 @@ void Matrix::init(int n) {
             tab[i][j].remainingFlow = tab[i][j].flow;
         }
     }
-    source = 0; // Inicjalizuje ?r?d?o
+    source = 0; // Inicjalizuje Ÿród³o
     target = n - 1; // Inicjalizuje uj?cie
 }
 
-// Funkcja do dodawania krawedzi (u, v) z wag? 'weight'
+// Funkcja do dodawania krawedzi (u, v) z wag¹ 'weight'
 void Matrix::addEdge(int u, int v, double weight, double cost) {
     tab[u][v] = EdgeData(v, weight, cost);  // Dodaje wagi krawedzi w macierzy
 }
@@ -88,13 +88,13 @@ bool Matrix::readFileToGraph(string fileName) {
 
     if (!(plik >> vertices >> edges))
     {
-        cerr << "Nie mo?na otworzy? pliku ";
+        cerr << "Nie mozna otworzyc pliku ";
         return false;
     }
     //inicjalizuje macierz
     this->init(vertices);
 
-    // Wczytywanie kraw?dzi
+    // Wczytywanie krawêdzi
     for (int i = 0; i < edges; i++) {
         getline(plik, line);
         if (line.empty()) {
@@ -105,19 +105,19 @@ bool Matrix::readFileToGraph(string fileName) {
         istringstream iss(line);
 
         if (!(iss >> u >> v >> maxFlow)) {
-            std::cerr << "B??d podczas wczytywania kraw?dzi w linii: " << line << std::endl;
+            std::cerr << "Blad podczas wczytywania krawedzi w linii: " << line << std::endl;
             continue;
         }
 
         if (!(iss >> cost)) {
-            cost = 0.0; // Je?li brak kosztu, przypisz domy?lnie
+            cost = 0.0; // Jeœli brak kosztu, przypisz domyœlnie
         }
 
         addEdge(u, v, maxFlow, cost);
     }
 
 
-    // Wczytywanie Node'?w
+    // Wczytywanie Node'ów
     while (plik >> nodeId >> x >> y >> line >> capacity) {
         Node::NodeType type = Node::NodeType::None;
 
@@ -143,11 +143,11 @@ bool Matrix::readFileToGraph3(string fileName) {
     string fieldType;
     int nodeId;
     if (!plik.is_open()) {
-        cerr << "Nie mo?na otworzy? pliku!: " << fileName << endl;
+        cerr << "Nie mozna otworzyc pliku!: " << fileName << endl;
         return false;
     }
 
-    // Pomijamy lini? "KONWERSJA"
+    // Pomijamy liniê "KONWERSJA"
     getline(plik, line);
     if (line != "KONWERSJA") {
         cerr << "Blad skladniowy na poczatku wczytywania pliku" << endl;
@@ -158,15 +158,15 @@ bool Matrix::readFileToGraph3(string fileName) {
     plik >> Node::breweryEfficiencyMultiplier;
 
     plik.ignore();
-    getline(plik, line);
-
-    if (line != "PUNKTY") {
-        cerr << "Blad skladniowy we wczytywaniu sekcji KONWERSJA" << endl;
-        return false;
+    while (getline(plik, line))
+    {
+        if (line.empty()) { continue; } // pomijaj puste linie
+        break; // przerywa pêtlê jak znajdzie niepust¹ liniê
     }
 
     // Wczytywanie Node'w
     while (getline(plik, line)) {
+        if (line.empty()) { continue; } // pomijaj puste linie
         if (line == "DROGI") break;
 
         istringstream iss(line);
@@ -196,9 +196,9 @@ bool Matrix::readFileToGraph3(string fileName) {
     vertices += 2;             // abstrakcyjne
     this->init(vertices);
 
-    // Wczytywanie kraw?dzi
-    while(true){
-        getline(plik, line);
+    // Wczytywanie krawêdzi
+    while (getline(plik, line)) {
+        if (line.empty()) { continue; } // pomijaj puste linie
         istringstream iss(line);
         if (iss >> u >> v >> maxFlow >> cost)addEdge(u, v, maxFlow, cost);
         else break;
@@ -208,26 +208,38 @@ bool Matrix::readFileToGraph3(string fileName) {
         return false;
     }
     // Wczytywanie punktow oraz mnoznikow cwiartek
-    vector<Quarter> initialQuarters(4);
+    vector<Quarter> initialQuarters;
+    size_t quartersCount = 0;
+    Quarter tempQuarter;
     double efficiency;                  // dzielone przez tysiac, aby zrobic mnoznik
-    for (int i = 0; i < 4; i++) {
-        getline(plik, line);
+    while (getline(plik, line)) {
+        if (line.empty()) { continue; } // pomijaj puste linie
+        cout << "line: " << line << endl;
         istringstream iss(line);
         iss >> efficiency;
-        efficiency /= 1000;
-        initialQuarters[i].efficiencyMultiplier = efficiency;
-        while (iss >> x >> y)initialQuarters[i].pointTab.push_back(make_pair(x, y));
+        cout << "eff: " << efficiency << endl;
+        //efficiency /= 1000;
+        tempQuarter.efficiencyMultiplier = efficiency;
+        initialQuarters.push_back(tempQuarter);
+
+        while (iss >> x >> y)
+        {
+            cout << "x; y: " << x << "; " << y << endl;
+            initialQuarters[quartersCount].pointTab.push_back(make_pair(x, y));
+        }
+        quartersCount++;
+        cout << "quartersCount: " << quartersCount << endl;
     }
     this->initialQuarters = initialQuarters;
     //sortowanie punktow wzgledem wspolrzednej katowej
-    for (int i = 0; i < 4; i++)initialQuarters[i].sort();
+    for (int i = 0; i < quartersCount; i++)initialQuarters[i].sort();
 
     //szczerze nie warto bylo przepisywac cwiartki do klasy bo tu jest syf
     //w generatorze jest porzadeczek :D
     
     //algorytm otoczki wypuklej w celu ustalenia wielokata wypuklego
-    vector<Quarter> quarters(4);
-    for (int k = 0; k < 4; k++) {
+    vector<Quarter> quarters(quartersCount);
+    for (int k = 0; k < quartersCount; k++) {
         quarters[k].efficiencyMultiplier = initialQuarters[k].efficiencyMultiplier;
         quarters[k].pointTab.push_back(initialQuarters[k].pointTab[0]);
         quarters[k].pointTab.push_back(initialQuarters[k].pointTab[1]);
@@ -244,16 +256,16 @@ bool Matrix::readFileToGraph3(string fileName) {
     }
 
     //czy to na pewno wielokat?
-    for (int i = 0; i < 4; i++)if (quarters[i].pointTab.size() < 3) {
+    for (int i = 0; i < quartersCount; i++)if (quarters[i].pointTab.size() < 3) {
         cerr << "Wielokat " << i + 1 << " nie jest wielokatem, bo ma za malo bokow";
         return false;
     }
 
     //zmieniamy efektywnosc produkcji zboza przez pola w zaleznosci od tego w jakiej cwiartce sie znajduje
     bool isFieldValid;
-    for(int i=0;i<listVertices.size();i++)if(listVertices[i].type==Node::NodeType::Field){
+    for (int i = 0;i < listVertices.size();i++)if (listVertices[i].type == Node::NodeType::Field) {
         pair<double, double> fieldCoordinates = make_pair(listVertices[i].x, listVertices[i].y);
-        for (int quarterIndex = 0; quarterIndex < 4; quarterIndex++) {
+        for (int quarterIndex = 0; quarterIndex < quartersCount; quarterIndex++) {
             isFieldValid = true;
             for (int j = 0; j < quarters[quarterIndex].pointTab.size() - 1; j++) {
                 if (!Quarter::comparator(quarters[quarterIndex].pointTab[j], quarters[quarterIndex].pointTab[j + 1], fieldCoordinates)) {
@@ -262,13 +274,13 @@ bool Matrix::readFileToGraph3(string fileName) {
                 }
             }
             if (isFieldValid) {
-                tab[0][i+1].flow += quarters[quarterIndex].efficiencyMultiplier;
+                tab[0][i + 1].flow += quarters[quarterIndex].efficiencyMultiplier;
                 tab[0][i + 1].remainingFlow += quarters[quarterIndex].efficiencyMultiplier;
                 tab[0][i + 1].cost = 0;
                 //this->listVertices[i + 1].capacity += quarters[quarterIndex].efficiencyMultiplier;
                 break;
             }
-            else if(!isFieldValid && quarterIndex==3){
+            else if (!isFieldValid && quarterIndex == 3) {
                 cerr << "Pole z indeksem: " << i + 1 << " nie nalezy do zadnego wielokata" << endl;
                 return false;
             }
@@ -303,7 +315,7 @@ bool Matrix::readFileToGraph3(string fileName) {
     return true;
 }
 
-//Zmodyfikowany bfs.  Je?eli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
+//Zmodyfikowany bfs.  Je¿eli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
 bool Matrix::bfs(int s, const vector<vector<EdgeData>>& graf, int t, vector<int>& f) {
     vector<int> visited(f.size(), 0);
     queue<int> kolejka;
@@ -370,7 +382,7 @@ bool Matrix::dijkstraModify(int source, int target, double& cost, vector<int>& p
     vector<int> visited(vertices + 1, 0);
     d[source] = 0;
 
-    // Kolejka priorytetowa - pary {odleg?o??, wierzcho?ek}
+    // Kolejka priorytetowa - pary {odlegœoœæ, wierzcho³ek}
     priority_queue<pair<double, int>, vector<pair<double, int>>, greater<>> pq;
     pq.push({ 0, source });
 
@@ -382,7 +394,7 @@ bool Matrix::dijkstraModify(int source, int target, double& cost, vector<int>& p
         if (visited[u]) continue;
         visited[u] = 1;
 
-        if (u == target) break;// znaleziono najkr?tsz? ?cie?k? do t
+        if (u == target) break;// znaleziono najkrótsz¹ œcie¿k¹ do t
 
         for (int v = 0; v < vertices; ++v) {
             if (graf[u][v].remainingFlow != 0) {
@@ -396,8 +408,8 @@ bool Matrix::dijkstraModify(int source, int target, double& cost, vector<int>& p
         }
     }
 
-    // Wy?wietlenie wynik?w
-    //cout << "Odleg?o?ci od wierzcho?ka " << source << ":\n";
+    // Wyœwietlenie wyników
+    //cout << "Odleg³oœci od wierzcho³ka " << source << ":\n";
 
     if (d[target] == INF) {
         return false;
@@ -411,12 +423,12 @@ bool Matrix::dijkstraModify(int source, int target, double& cost, vector<int>& p
     }
 }
 
-//Algorytm Busackera_Gowena wyznacza najta?szy przep?yw w sieci dla docelowego przep?ywu F.
-// Nie tworze w nim sieci residualnej. Dzia?a na orginale. Zatem uruchomienie dwukrotnie tej metody nie da dobrych wynikow
+//Algorytm Busackera_Gowena wyznacza najtañszy przep³yw w sieci dla docelowego przep?ywu F.
+// Nie tworze w nim sieci residualnej. Dzia³a na orginale. Zatem uruchomienie dwukrotnie tej metody nie da dobrych wynikow
 double Matrix::BusackerGowen2(double const maxFlow, int s, int t, vector<Path>& roads,
     bool (Matrix::* shortestPathFunc)(int, int, double&, vector<int>&, const vector<vector<EdgeData>>&)) {
 
-    double result = 0; //przeplyw, zwieksza si? a? nie osiagnie warto?ci F- tj. maxFlow. Podanego jako argument funkcji.
+    double result = 0; //przeplyw, zwieksza siê a¿ nie osiagnie wartoœci F- tj. maxFlow. Podanego jako argument funkcji.
     double summaricResult = 0; //Suma (cost * przeplyw)-jedna sciezka
     double sumCost = 0; // Suma kosztow sciezek
     vector<int> f(vertices); //tablica ojcow
@@ -425,8 +437,8 @@ double Matrix::BusackerGowen2(double const maxFlow, int s, int t, vector<Path>& 
 
     Matrix siecResidualna(vertices); //siec residualna
 
-    //Siec residualna na start algorytmu jest taka sama jak siec przep?ywowa
-    // powieksza sie? o 1 (dodaje midT)
+    //Siec residualna na start algorytmu jest taka sama jak siec przep³ywowa
+    // powieksza sieæ o 1 (dodaje midT)
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < vertices; j++) {
             if ((j < vertices) && (i < vertices)) {
@@ -440,7 +452,7 @@ double Matrix::BusackerGowen2(double const maxFlow, int s, int t, vector<Path>& 
 
 
     // Wykonuje dopoki nie zostal osiagniety przeplyw F(maxFlow)
-    // i dopoki istnieje sciezka z s do t (wybiera t? sci??k? kt?ra ma najni?szy koszt)
+    // i dopoki istnieje sciezka z s do t (wybiera t¹ scie¿kê która ma najni¿szy koszt)
     while (result < maxFlow && (this->*shortestPathFunc)(s, t, cost, f, siecResidualna.tab)) {
         int tmpT = t;
         int tmp = f[t];
@@ -491,11 +503,11 @@ double Matrix::BusackerGowen2(double const maxFlow, int s, int t, vector<Path>& 
 
     //wypisanie rezultatow
     cout << "Sumaryczny koszt: " << summaricResult << endl;
-    cout << "Suma koszt?w dr?g: " << sumCost << endl;
+    cout << "Suma kosztow drog: " << sumCost << endl;
 
     //wyjatek
     if (result != maxFlow) {
-        cout << "UWAGA! Nie osi?gni?to maksymalnego przeplywu. GDZIES JEST BLAD";
+        cout << "UWAGA! Nie osiagnieto maksymalnego przeplywu. GDZIES JEST BLAD";
     }
 
     return summaricResult;
@@ -513,7 +525,7 @@ void Matrix::maxFlowMinCost() {
 
 // ROZWIAZANIE ANALIZATORA PRZEPLYWU
 //minCostMaxFlow dla naszego problemu. Z wykorzystaniem algorytmu BusackeraGowena. 
-double Matrix::maxFlowMinCost2() {
+double Matrix::maxFlowMinCost2(string outputPath) {
     cout << endl;
     pair<double,double> maxFlow = maxFlowAlgorithm();
     int midT = vertices;
@@ -541,7 +553,7 @@ double Matrix::maxFlowMinCost2() {
         }
     }
 
-    //Resetuje wszystkie krawedzie od Browar?w do midT 
+    //Resetuje wszystkie krawedzie od Browarow do midT 
     //W druga strone zostawiam celowo tj z midT -> browar
     //W druga strone ustawiam na maxFlow(I czesci)
     for (Node i : listVertices) {
@@ -556,7 +568,7 @@ double Matrix::maxFlowMinCost2() {
 
     cout << endl;
     cout << "-------------------------------------------------" << endl;
-    cout << "Drogi dla ca?ego grafu: " << endl;
+    cout << "Drogi dla calego grafu: " << endl;
 
     vector<Path> goodRoads1 = Path::filterPaths(road1, this->tab);
     vector<Path> goodRoads2 = Path::filterPaths(road2, this->tab);
@@ -567,17 +579,17 @@ double Matrix::maxFlowMinCost2() {
         for (int i : p.getPath()) {
             cout << i << " ";
         }
-        cout << "Przepustowosc ca?ej drogi: " << p.getFlow() << " Koszt ca?ej drogi: " << p.getCost() << endl;
-        cout << "Punkt ??cz?cy (browar kt?ry przetworzy?): " << p.getConnectedPoint() << endl;
+        cout << "Przepustowosc calej drogi: " << p.getFlow() << " Koszt calej drogi: " << p.getCost() << endl;
+        cout << "Punkt ??cz?cy (browar ktory przetworzyl): " << p.getConnectedPoint() << endl;
     }
 
-    cout << "Koszt wszystkich dr?g (naprawiana kazda krawedz tylko raz): " << Path::sumUniqueEdgesCost(combined, tab) << endl;
-    cout << "Maksymalny przeplyw ca?ego grafu (nie uwzgledniana jeszcze konwersja): " << resultFlow << endl;
+    cout << "Koszt wszystkich drog (naprawiana kazda krawedz tylko raz): " << Path::sumUniqueEdgesCost(combined, tab) << endl;
+    cout << "Maksymalny przeplyw calego grafu (nie uwzgledniana jeszcze konwersja): " << resultFlow << endl;
     cout << endl;
     cout << "-------------------------------------------------" << endl;
     cout << endl;
 
-    printToFileSolution2(resultFlow, combined);
+    printToFileSolution2(resultFlow, combined, outputPath);
    // printToFileSolution(min(maxFlow.first, maxFlow.second));
 
     return result1 + result2;
@@ -586,20 +598,20 @@ double Matrix::maxFlowMinCost2() {
 //stara wersja printToFileSolution
 
 //Zapisuje wynik do pliku i wypisuje
-void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined) {
+void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string outputPath) {
 
-    wofstream out("wynik.txt", ios::binary);
+    wofstream out(outputPath, ios::binary);
     out.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
     if (!out.is_open()) {
-        wcerr << "Nie mo?na otworzy? pliku wynik.txt do zapisu." << endl;
+        wcerr << "Nie mo¿na otworzyæ pliku wynik.txt do zapisu." << endl;
         return;
     }
     out << (wchar_t)0xFEFF;
 
-     // Wypisanie punkt?w
+     // Wypisanie punktow
     wstring name;
     out << L"Konwersja:" << endl;
-    out << Node::breweryEfficiencyMultiplier << L" ton to ilo?? piwa, jak? uzyskuje si? z tony j?czmienia w ka?dym z browar?w." << endl << endl;
+    out << Node::breweryEfficiencyMultiplier << L" ton to iloœæ piwa, jak¹ uzyskuje siê z tony jêczmienia w ka¿dym z browarów." << endl << endl;
     out << L"Punkty:" << endl;
     for (Node& i : listVertices) {
         if (i.GetType() == Node::NodeType::Field) {
@@ -612,17 +624,17 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined) {
             name = L"karczma";
         }
         else {
-            name = L"skrzy?owanie";
+            name = L"skrzy¿owanie";
         }
 
 
         out << L"Punkt " << i.GetId() << L": typ: " << name << L"; pozycja x = " << i.GetX() << L", y = " << i.GetY();
         if (name == L"pole") {
             i.setCapacity(tab[0][i.GetId()].flow);
-            out << L"; wydajno??: " << i.GetCapacity() << L" ton." << endl;
+            out << L"; wydajnoœæ: " << i.GetCapacity() << L" ton." << endl;
         }
         else if (name == L"browar") {
-            out << L"; pojemno??: " << i.GetCapacity() << L" ton." << endl;
+            out << L"; pojemnoœæ: " << i.GetCapacity() << L" ton." << endl;
         }
         else {
             out << L"." << endl;
@@ -632,17 +644,17 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined) {
 
     printRoadsMatrix(out, this->tab, listVertices , vertices - 2);
     out << endl;
-    out << L"?wiartki:" << endl;
+    out << L"æwiartki:" << endl;
 
     for (const Quarter& q : initialQuarters) {
-        out << L"warto??: "<< q.efficiencyMultiplier << L"; punkty graniczne: ";
+        out << L"wartoœæ: "<< q.efficiencyMultiplier << L"; punkty graniczne: ";
         for (const auto& point : q.pointTab) {
-            out << L"(" << point.first << L", " << point.second << L"), ";
+            out << L"(" << point.first << L"; " << point.second << L"), ";
         }
         out << endl;
     }
     
-    //Mapowanie typ?w w?z??w
+    //Mapowanie typów wêz³ów
     unordered_map<int, wstring> tab;
     for (Node i : listVertices) {
         if (i.GetType() == Node::NodeType::Field) {
@@ -655,20 +667,20 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined) {
             tab[i.GetId()] = L"karczmy";
         }
         else {
-            tab[i.GetId()] = L"skrzy?owania";
+            tab[i.GetId()] = L"skrzy¿owania";
         }
     }
 
-    //wypisanie punkt?w
+    //wypisanie punktów
 //    printNodes(out, listVertices);
 
 
     out << endl;
-    out << L"Rozwi?zanie:" << endl;
-    out << L"Maksymalna ilo?? piwa, kt?r? mo?na przetransportowa?: " << maxFlow << L" ton; koszt naprawy: ";
-    out << Path::sumUniqueEdgesCost(combined, this->tab) << " srebrnych pens?w" << endl;
+    out << L"Rozwi¹zanie:" << endl;
+    out << L"Maksymalna iloœæ piwa, któr¹ mo¿na przetransportowaæ: " << maxFlow << L" ton; koszt naprawy: ";
+    out << Path::sumUniqueEdgesCost(combined, this->tab) << " srebrnych pensów" << endl;
 
-    // Wypisanie trasy ko?cowej
+    // Wypisanie trasy koñcowej
     int countRoads = 1;
     out << L"Przebieg trasy: " << endl;
     countRoads = 1;
@@ -684,23 +696,23 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined) {
             wstring stringPole;
             if (i == 0) {
                 wstringstream ss;
-                ss << L"zawarto?? pola [" << to_wstring(node) << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") wynosi " << listVertices[node - 1].GetCapacity() - p.getFlow() << L";" << endl;
+                ss << L"zawartoœæ pola [" << to_wstring(node) << L"] na pozycji (" << listVertices[node - 1].GetX() << L"; " << listVertices[node - 1].GetY() << L") wynosi " << listVertices[node - 1].GetCapacity() - p.getFlow() << L";" << endl;
                 stringPole = ss.str();
                 listVertices[node - 1].setCapacity(listVertices[node - 1].GetCapacity() - p.getFlow());
 
 
             }
 
-            out << L"Z " << tab[node] << L" [" << to_wstring(node) << L"] na pozycji (" << listVertices[node - 1].GetX() << L", " << listVertices[node - 1].GetY() << L") " << p.getFlow() << L" ton " << (checkBrewery ? L"piwa " : L"j?czmienia ");
+            out << L"Z " << tab[node] << L" [" << to_wstring(node) << L"] na pozycji (" << listVertices[node - 1].GetX() << L"; " << listVertices[node - 1].GetY() << L") " << p.getFlow() << L" ton " << (checkBrewery ? L"piwa " : L"jêczmienia ");
             if (path[i + 1] == breweryID) {
                 checkBrewery = true;
-                out << L"do " << tab[path[i + 1]] << L" [" << to_wstring(path[i + 1]) << L"] na pozycji (" << listVertices[path[i + 1] - 1].GetX() << L", " << listVertices[path[i + 1] - 1].GetY() << L");" << endl;
+                out << L"do " << tab[path[i + 1]] << L" [" << to_wstring(path[i + 1]) << L"] na pozycji (" << listVertices[path[i + 1] - 1].GetX() << L"; " << listVertices[path[i + 1] - 1].GetY() << L");" << endl;
                 if (i == 0) out << stringPole;
-                out << L"pojemno?? browaru [" << path[i + 1] << L"] na pozycji (" << listVertices[path[i + 1] - 1].GetX() << L", " << listVertices[path[i + 1] - 1].GetY() << L") wynosi " << (listVertices[path[i + 1] - 1].GetCapacity() - p.getFlow()) << L";" << endl;
+                out << L"pojemnoœæ browaru [" << path[i + 1] << L"] na pozycji (" << listVertices[path[i + 1] - 1].GetX() << L"; " << listVertices[path[i + 1] - 1].GetY() << L") wynosi " << (listVertices[path[i + 1] - 1].GetCapacity() - p.getFlow()) << L";" << endl;
                 listVertices[path[i + 1] - 1].setCapacity(listVertices[path[i + 1] - 1].GetCapacity() - p.getFlow());
             }
             else {
-                out << L"do " << tab[path[i + 1]] << L" [" << to_wstring(path[i + 1]) << L"] na pozycji (" << listVertices[path[i + 1] - 1].GetX() << L", " << listVertices[path[i + 1] - 1].GetY() << L");" << endl;
+                out << L"do " << tab[path[i + 1]] << L" [" << to_wstring(path[i + 1]) << L"] na pozycji (" << listVertices[path[i + 1] - 1].GetX() << L"; " << listVertices[path[i + 1] - 1].GetY() << L");" << endl;
                 if (i == 0) out << stringPole;
             }
         }
@@ -711,7 +723,7 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined) {
             wifstream file(L"wynik.txt", ios::binary);
             file.imbue(locale(file.getloc(), new codecvt_utf8<wchar_t>()));
             if (!file.is_open()) {
-                wcerr << L"Nie mo?na otworzy? pliku wynik.txt" << endl;
+                wcerr << L"Nie mozna otworzyc pliku wynik.txt" << endl;
             }
             else {
                 wstring line;
@@ -792,7 +804,7 @@ double Matrix::edmondsKarp() {
     double maxFlow = 0; //maksymalny przeplyw
     Matrix siecResidualna(vertices); //siec residualna
 
-    //Siec residualna na start algorytmu jest taka sama jak siec przep?ywowa
+    //Siec residualna na start algorytmu jest taka sama jak siec przep³ywowa
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < vertices; j++) {
             siecResidualna.tab[i][j] = tab[i][j];
@@ -831,7 +843,7 @@ double Matrix::edmondsKarp() {
         siecResidualna.tab[tmp][tmpT].remainingFlow -= min;
         siecResidualna.tab[tmpT][tmp].remainingFlow += min;
 
-        //dodaje minimum z tej ?cie?ki do wyniku, jako maksymalny przep?yw
+        //dodaje minimum z tej œcie¿ki do wyniku, jako maksymalny przep³yw
         maxFlow += min;
     }
     cout << "Maksymalny przeplyw" << maxFlow;
@@ -870,24 +882,24 @@ double Matrix::edmondsKarpClassic(int s, vector<vector<EdgeData>>& graf, int t, 
         }
         graf[tmp][tmpT].remainingFlow -= min;
         graf[tmpT][tmp].remainingFlow += min;
-        //dodaje minimum z tej ?cie?ki do wyniku, jako maksymalny przep?yw
+        //dodaje minimum z tej œcie¿ki do wyniku, jako maksymalny przep³yw
         maxFlow += min;
     }
     cout << "maksymalny przelyw:" << maxFlow << endl;
     return maxFlow;
 }
 
-//Stary "edmonsKarp2()". Liczy maksymalny przeplyw dla naszego problemu. Zwraca dwa przep?ywy.
+//Stary "edmonsKarp2()". Liczy maksymalny przeplyw dla naszego problemu. Zwraca dwa przep³ywy.
 pair<double, double>  Matrix::maxFlowAlgorithm() {
     int s = 0;
     int t = vertices - 1;
     const double INF = numeric_limits<double>::max();
-    int midT = vertices; // sztuczny wierzcho?ek
+    int midT = vertices; // sztuczny wierzcho³ek
     double maxFlow = 0, maxFlow1 = 0, result = 0; //maksymalny przeplyw
     Matrix siecResidualna(vertices + 1); //siec residualna
 
-    //Siec residualna na start algorytmu jest taka sama jak siec przep?ywowa
-    // powieksza sie? o 1 (dodaje midT)
+    //Siec residualna na start algorytmu jest taka sama jak siec przep³ywowa
+    // powieksza sieæ o 1 (dodaje midT)
     for (int i = 0; i <= vertices; i++) {
         for (int j = 0; j <= vertices; j++) {
             if ((j < vertices) && (i < vertices)) {
@@ -908,7 +920,7 @@ pair<double, double>  Matrix::maxFlowAlgorithm() {
     vector<int> f(vertices + 1); //tablica ojcow dla 1 przeplywu
     vector<int> f2(vertices + 1); //tablica ojcow dla 2 przeplywu
 
-    cout << "Dla I cz?sci: ";
+    cout << "Dla I czesci: ";
     maxFlow = edmondsKarpClassic(s, siecResidualna.tab, midT, f);
 
     //Resetuje wszystkie powrotne krawedzie ktore nie istnieja w orginalny grafie
@@ -920,7 +932,7 @@ pair<double, double>  Matrix::maxFlowAlgorithm() {
         }
     }
 
-    //Resetuje wszystkie krawedzie od Browar?w do midT 
+    //Resetuje wszystkie krawedzie od Browarów do midT 
     //W druga strone zostawiam celowo tj z midT -> browar
     for (Node i : listVertices) {
         if (i.GetType() == Node::NodeType::Brewery) {
@@ -929,7 +941,7 @@ pair<double, double>  Matrix::maxFlowAlgorithm() {
                
         }
     }
-    cout << "Dla II cz?sci: ";
+    cout << "Dla II czesci: ";
     maxFlow1 = edmondsKarpClassic(midT, siecResidualna.tab, t, f);
 
     return { maxFlow, maxFlow1 };

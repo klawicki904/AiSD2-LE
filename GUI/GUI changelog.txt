@@ -69,5 +69,37 @@ Changelog 28.05.2025 (v0.8.2)
 - added "Move to Incorrectly Placed Element" to special actions
 - fixed a crash that could occur when moving multiple nodes placed in the same position
 
-Changelog 11.06.2025 (v1.0)
-- 
+Changelog 11.06.2025 (v0.9.5)
+- added regular expressions support in file search
+- fixed quarter areas never being correct when consisting of more than 8 border points
+- fixed a bug where the detailed input text was showing ony first few lines of text
+- fixed a bug where operation status error message would persist after correctly loading a graph
+- if text file is too large (>80000 characters), a button appears to open the file (Unity's limitation for text fields)
+- grid in Map and Simulate tabs scales depending on camera zoom
+- all decimal input fields are now limited to 2 decimal places and are correctly validated
+- nodes positions' are limited to 2 decimal places
+- integrated external C++ search algorithms (naive, Edmons-Karp, KMP, Boyer-Moore), search algorithms should work with all UTF-8 characters (including Polish letters)
+- added "Find Previous" and "Find Next" buttons in file tab's search menu
+- added Drag & Drop support for Graph Data files
+- added "Match Case" toggle in file tab's search menu
+- updated icons
+- added "select all" to Special Actions menu
+- solution data now can "read" dots in values with a decimal separator
+- generator GUI can be launched inside the main GUI
+- values are rounded to 2 decimal places while reading from input files
+- fixed updating values of multi-selected nodes
+- graph can no longer be interacted with through UI
+- replaced "Node type" dropdown with buttons-icons selector
+- program no longer freezes when creating a quarter with many nodes inside it
+- nodes have a higher select priority over arrows now
+- added more details of the current status in the loading screen
+- Special Actions Menu now shows on top of the loading screen
+- added a slider to change pattern matches color
+- added line numbers in "File" tab
+- added a slider to choose the responsiveness of the program while doing intensive tasks (clearing/generating)
+- the program now uses dots as decimal separators instead of commas
+- integrated Path Analyzer
+
+
+Known bugs:
+- nodes sometimes don't update their "incorrect" state

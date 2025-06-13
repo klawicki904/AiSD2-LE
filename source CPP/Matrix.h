@@ -88,7 +88,7 @@ public:
     void maxFlowMinCost();
 
     // rozwiazanie problemu. tj liczenie maksymalnego przeplywu i minimalnego kosztu. Dla problemu s->Browary->Puby
-    double maxFlowMinCost2();
+    double maxFlowMinCost2(string outputPath);
 
 
     //Stary "edmonsKarp2()". Liczy maksymalny przeplyw dla naszego problemu.
@@ -98,7 +98,7 @@ public:
     void printToFileSolution(double maxFlow, vector<Path> combined);
 
     //void printToFileSolution(double maxFlow);
-    void printToFileSolution2(double resultFlow, vector<Path>  combined);
+    void printToFileSolution2(double resultFlow, vector<Path>  combined, string outputPath);
 
       
   

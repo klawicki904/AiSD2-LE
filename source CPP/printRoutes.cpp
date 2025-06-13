@@ -48,8 +48,8 @@ void printRouteDetails(std::wofstream& out, const vector<vector<int>>& paths, co
             wstring z_ze = (typ == L"skrzy¿owanie") ? L"ze " : L"z ";
 
             out << z_ze << L" " << odmien(typ) << L" [" << from << L"] na pozycji (" << nFrom.GetX()
-                << L", " << nFrom.GetY() << L") do " << odmien(nTo.TypeAsWString()) << L" [" << to
-                << L"] na pozycji (" << nTo.GetX() << L", " << nTo.GetY() << L"): "
+                << L"; " << nFrom.GetY() << L") do " << odmien(nTo.TypeAsWString()) << L" [" << to
+                << L"] na pozycji (" << nTo.GetX() << L"; " << nTo.GetY() << L"): "
                 << flows[i] << L" ton " << produkt << L"\n";
         }
         out << endl;

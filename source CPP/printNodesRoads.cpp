@@ -28,10 +28,10 @@ void printNodes(std::wofstream& out, const vector<Node>& nodes) {
         out << L"Punkt " << node.GetId() << L": typ: " << typ << L"; pozycja: x = " << node.GetX() << L", y = " << node.GetY();
 
         if (typ == L"pole") {                                                                                                       //////////////////////////////////
-            out << L"; wydajno??: " << node.GetCapacity() << L" ton.\n";
+            out << L"; wydajnoœæ: " << node.GetCapacity() << L" ton.\n";
         }
         if (typ == L"browar") {
-            out << L"; pojemno??: " << node.GetCapacity() << L" ton.\n";
+            out << L"; pojemnoœæ: " << node.GetCapacity() << L" ton.\n";
         }
         else {
             out << L".\n";
@@ -52,9 +52,9 @@ void printRoads(std::wofstream& out, const vector<vector<EdgeData>>& nList, cons
             wstring z_ze = (typ == L"skrzy¿owanie") ? L"ze" : L"z";
 
             out << L"Droga " << roadCounter++ << L": " << z_ze << L" " << odmien(typ) << L" [" << from.GetId()
-                << L"] na pozycji (" << from.GetX() << L", " << from.GetY() << L") do "
+                << L"] na pozycji (" << from.GetX() << L"; " << from.GetY() << L") do "
                 << odmien(to.TypeAsWString()) << " [" << to.GetId() << L"] na pozycji ("
-                << to.GetX() << L", " << to.GetY() << L"): przepustowoœæ: "
+                << to.GetX() << L"; " << to.GetY() << L"): przepustowoœæ: "
                 << edge.remainingFlow << L" ton; koszt naprawy: "
                 << edge.cost << L" srebrnych pensów.\n";
         }
@@ -72,12 +72,12 @@ void printRoadsMatrix(std::wofstream& out, const vector<vector<EdgeData>>& nList
                 const Node& from = nodes[u -1];
                 const Node& to = nodes[v - 1];
                 wstring typ = from.TypeAsWString();
-                wstring z_ze = (typ == L"skrzy?owanie") ? L"ze" : L"z";
+                wstring z_ze = (typ == L"skrzy¿owanie") ? L"ze" : L"z";
 
                 out << L"Droga " << roadCounter++ << L": " << z_ze << L" " << odmien(typ) << L" [" << from.GetId()
-                    << L"] na pozycji (" << from.GetX() << L", " << from.GetY() << L") do "
+                    << L"] na pozycji (" << from.GetX() << L"; " << from.GetY() << L") do "
                     << odmien(to.TypeAsWString()) << " [" << to.GetId() << L"] na pozycji ("
-                    << to.GetX() << L", " << to.GetY() << L"): przepustowo??: "
+                    << to.GetX() << L"; " << to.GetY() << L"): przepustowoœæ: "
                     << nList[u][v].flow << L" ton; koszt naprawy: "
                     << nList[u][v].cost << L" srebrnych pensów.\n";
             }
