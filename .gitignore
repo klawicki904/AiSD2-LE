@@ -23,6 +23,7 @@
 !*.url
 !*.zip
 !*.rar
+!*.mp4
 
 # Allow directories (so Git can track files within)
 !*/
