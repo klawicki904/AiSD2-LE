@@ -22,7 +22,7 @@
 !*.settings
 !*.url
 !*.zip
-
+!*.rar
 
 # Allow directories (so Git can track files within)
 !*/
