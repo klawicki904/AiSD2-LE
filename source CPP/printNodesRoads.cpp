@@ -66,8 +66,8 @@ void printRoadsMatrix(std::wofstream& out, const vector<vector<EdgeData>>& nList
     out << endl;
     out << L"Drogi:\n";
     int roadCounter = 1;
-    for (int u = 1; u < size ; ++u) {
-        for (int v = 1; v < size; ++v) {
+    for (int u = 1; u < size + 1 ; ++u) {
+        for (int v = 1; v < size + 1; ++v) {
             if (nList[u][v].flow > 0) {
                 const Node& from = nodes[u -1];
                 const Node& to = nodes[v - 1];

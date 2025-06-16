@@ -36,14 +36,14 @@ void Matrix::init(int n) {
         }
     }
     else {
-        // Je?li zwi?kszamy rozmiar, zachowujemy stare dane i rozszerzamy macierz
+        // Jesli zwiekszamy rozmiar, zachowujemy stare dane i rozszerzamy macierz
         int oldVertices = vertices;
         vertices = n;
 
-        // Powi?kszamy liczb? wierszy
+        // Powiekszamy liczbe wierszy
         tab.resize(vertices);
 
-        // Powi?kszamy ka?dy wiersz (istniej?cy i nowy)
+        // Powiekszamy kazdy wiersz (istniejacy i nowy)
         for (int i = 0; i < vertices; i++) {
             tab[i].resize(vertices);
         }
@@ -53,11 +53,11 @@ void Matrix::init(int n) {
             tab[i][j].remainingFlow = tab[i][j].flow;
         }
     }
-    source = 0; // Inicjalizuje ?r?d?o
-    target = n - 1; // Inicjalizuje uj?cie
+    source = 0; // Inicjalizuje zrodlo
+    target = n - 1; // Inicjalizuje ujscie
 }
 
-// Funkcja do dodawania krawedzi (u, v) z wag? 'weight'
+// Funkcja do dodawania krawedzi (u, v) z waga 'weight'
 void Matrix::addEdge(int u, int v, double weight, double cost) {
     tab[u][v] = EdgeData(v, weight, cost);  // Dodaje wagi krawedzi w macierzy
 }
@@ -95,7 +95,7 @@ bool Matrix::readFileToGraph(string fileName) {
     //inicjalizuje macierz
     this->init(vertices);
 
-    // Wczytywanie kraw?dzi
+    // Wczytywanie krawedzi
     for (int i = 0; i < edges; i++) {
         getline(plik, line);
         if (line.empty()) {
@@ -111,14 +111,14 @@ bool Matrix::readFileToGraph(string fileName) {
         }
 
         if (!(iss >> cost)) {
-            cost = 0.0; // Je?li brak kosztu, przypisz domy?lnie
+            cost = 0.0; // Jesli brak kosztu, przypisz domyslnie
         }
 
         addEdge(u, v, maxFlow, cost);
     }
 
 
-    // Wczytywanie Node'?w
+    // Wczytywanie Node'ow
     while (plik >> nodeId >> x >> y >> line >> capacity) {
         Node::NodeType type = Node::NodeType::None;
 
@@ -162,10 +162,10 @@ bool Matrix::readFileToGraph3(string fileName) {
     while (getline(plik, line))
     {
         if (line.empty()) { continue; } // pomijaj puste linie
-        break; // przerywa p?tl? jak znajdzie niepust? lini?
+        break; // przerywa petla jak znajdzie niepusta linie
     }
 
-    // Wczytywanie Node'w
+    // Wczytywanie Node'ow
     while (getline(plik, line)) {
         if (line.empty()) { continue; } // pomijaj puste linie
         if (line == "DROGI") break;
@@ -197,7 +197,7 @@ bool Matrix::readFileToGraph3(string fileName) {
     vertices += 2;             // abstrakcyjne
     this->init(vertices);
 
-    // Wczytywanie kraw?dzi
+    // Wczytywanie krawedzi
     while (getline(plik, line)) {
         if (line.empty()) { continue; } // pomijaj puste linie
         istringstream iss(line);
@@ -278,7 +278,7 @@ bool Matrix::readFileToGraph3(string fileName) {
  /*               tab[0][i + 1].flow += quarters[quarterIndex].efficiencyMultiplier;
                 tab[0][i + 1].remainingFlow += quarters[quarterIndex].efficiencyMultiplier;
                 tab[0][i + 1].cost = 0;*/
-                this->listVertices[i].capacity += quarters[quarterIndex].efficiencyMultiplier;
+                this->listVertices[i].capacity = quarters[quarterIndex].efficiencyMultiplier;
                 break;
             }
             else if (!isFieldValid && quarterIndex == 3) {
@@ -348,8 +348,8 @@ void Matrix::createResidualNet(vector<vector<EdgeData>>& graf , const vector<Nod
         }
     }
 
-    //Siec residualna na start algorytmu jest taka sama jak siec przep?ywowa
-    // powieksza sie? o 1 (dodaje midT)
+    //Siec residualna na start algorytmu jest taka sama jak siec przeplywowa
+    // powieksza siec o 1 (dodaje midT)
     for (int i = 1; i <= orginalSize; i++) {
         for (int j = 1; j <= orginalSize; j++) {
             if (graf[i][j].flow > 0) {
@@ -360,7 +360,7 @@ void Matrix::createResidualNet(vector<vector<EdgeData>>& graf , const vector<Nod
     }
 }
 
-//Zmodyfikowany bfs.  Je?eli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
+//Zmodyfikowany bfs.  Jezeli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
 bool Matrix::bfs(int s, const vector<vector<EdgeData>>& graf, int t, vector<int>& f) {
     vector<int> visited(f.size(), 0);
     queue<int> kolejka;
@@ -427,7 +427,7 @@ bool Matrix::dijkstraModify(int source, int target, double& cost, vector<int>& p
     vector<int> visited(vertices + 1, 0);
     d[source] = 0;
 
-    // Kolejka priorytetowa - pary {odleg?o??, wierzcho?ek}
+    // Kolejka priorytetowa - pary {odleglosc, wierzcholek}
     priority_queue<pair<double, int>, vector<pair<double, int>>, greater<>> pq;
     pq.push({ 0, source });
 
@@ -439,7 +439,7 @@ bool Matrix::dijkstraModify(int source, int target, double& cost, vector<int>& p
         if (visited[u]) continue;
         visited[u] = 1;
 
-        if (u == target) break;// znaleziono najkr?tsz? ?cie?k? do t
+        if (u == target) break;// znaleziono najkrotsza sciezke do t
 
         for (int v = 0; v < vertices; ++v) {
             if (graf[u][v].remainingFlow != 0) {
@@ -453,8 +453,8 @@ bool Matrix::dijkstraModify(int source, int target, double& cost, vector<int>& p
         }
     }
 
-    // Wy?wietlenie wynik?w
-    //cout << "Odleg?o?ci od wierzcho?ka " << source << ":\n";
+    // Wyswietlenie wynikow
+    //cout << "Odleglosci od wierzcholka " << source << ":\n";
 
     if (d[target] == INF) {
         return false;
@@ -864,7 +864,7 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string 
      // Wypisanie punktow
     wstring name;
     out << L"Konwersja:" << endl;
-    out << Node::breweryEfficiencyMultiplier << L" ton to ilo?? piwa, jak? uzyskuje si? z tony j?czmienia w ka?dym z browar?w." << endl << endl;
+    out << Node::breweryEfficiencyMultiplier << L" ton to iloœæ piwa, jak¹ uzyskuje siê z tony jêczmienia w ka¿dym z browarów." << endl << endl;
     out << L"Punkty:" << endl;
     for (const Node& i : listVertices) {
         if (i.GetType() == Node::NodeType::Field) {
@@ -877,16 +877,16 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string 
             name = L"karczma";
         }
         else {
-            name = L"skrzy?owanie";
+            name = L"skrzy¿owanie";
         }
 
 
         out << L"Punkt " << i.GetId() << L": typ: " << name << L"; pozycja x = " << i.GetX() << L", y = " << i.GetY();
         if (name == L"pole") {
-            out << L"; wydajno??: " << i.GetCapacity() << L" ton." << endl;
+            out << L"; wydajnoœæ: " << i.GetCapacity() << L" ton." << endl;
         }
         else if (name == L"browar") {
-            out << L"; pojemno??: " << i.GetCapacity() << L" ton." << endl;
+            out << L"; pojemnoœæ: " << i.GetCapacity() << L" ton." << endl;
         }
         else {
             out << L"." << endl;
@@ -896,10 +896,10 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string 
 
     printRoadsMatrix(out, this->tab, listVertices , vertices - 2);
     out << endl;
-    out << L"?wiartki:" << endl;
+    out << L"æwiartki:" << endl;
 
     for (const Quarter& q : initialQuarters) {
-        out << L"warto??: "<< q.efficiencyMultiplier << L"; punkty graniczne: ";
+        out << L"wartoœæ: "<< q.efficiencyMultiplier << L"; punkty graniczne: ";
         for (const auto& point : q.pointTab) {
             out << L"(" << point.first << L"; " << point.second << L"), ";
         }
@@ -919,7 +919,7 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string 
             tab[i.GetId()] = L"karczmy";
         }
         else {
-            tab[i.GetId()] = L"skrzy?owania";
+            tab[i.GetId()] = L"skrzy¿owania";
         }
     }
 
@@ -928,9 +928,9 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string 
 
 
     out << endl;
-    out << L"Rozwi?zanie:" << endl;
-    out << L"Maksymalna ilo?? piwa, kt?r? mo?na przetransportowa?: " << maxFlow << L" ton; koszt naprawy: ";
-    out << Path::sumUniqueEdgesCost(combined, this->tab) << " srebrnych pens?w" << endl;
+    out << L"Rozwi¹zanie:" << endl;
+    out << L"Maksymalna iloœæ piwa, któr¹ mo¿na przetransportowaæ: " << maxFlow << L" ton; koszt naprawy: ";
+    out << Path::sumUniqueEdgesCost(combined, this->tab) << " srebrnych pensów" << endl;
 
     // Wypisanie trasy ko?cowej
     int countRoads = 1;
@@ -948,19 +948,19 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string 
             wstring stringPole;
             if (i == 0) {
                 wstringstream ss;
-                ss << L"zawarto?? pola [" << to_wstring(node) << L"] na pozycji (" << listVertices[node - 1].GetX() << L"; " << listVertices[node - 1].GetY() << L") wynosi " << listVertices[node - 1].GetCapacity() - p.getFlowJeczmien() << L";" << endl;
+                ss << L"zawartoœæ pola [" << to_wstring(node) << L"] na pozycji (" << listVertices[node - 1].GetX() << L"; " << listVertices[node - 1].GetY() << L") wynosi " << listVertices[node - 1].GetCapacity() - p.getFlowJeczmien() << L";" << endl;
                 stringPole = ss.str();
                 listVertices[node - 1].setCapacity(listVertices[node - 1].GetCapacity() - p.getFlowJeczmien());
 
 
             }
 
-            out << L"Z " << tab[node] << L" [" << to_wstring(node) << L"] na pozycji (" << listVertices[node - 1].GetX() << L"; " << listVertices[node - 1].GetY() << L") " << (checkBrewery ? p.getFlowPiwo() : p.getFlowJeczmien()) << L" ton " << (checkBrewery ? L"piwa " : L"j?czmienia ");
+            out << L"Z " << tab[node] << L" [" << to_wstring(node) << L"] na pozycji (" << listVertices[node - 1].GetX() << L"; " << listVertices[node - 1].GetY() << L") " << (checkBrewery ? p.getFlowPiwo() : p.getFlowJeczmien()) << L" ton " << (checkBrewery ? L"piwa " : L"jêczmienia ");
             if (path[i + 1] == breweryID) {
                 checkBrewery = true;
                 out << L"do " << tab[path[i + 1]] << L" [" << to_wstring(path[i + 1]) << L"] na pozycji (" << listVertices[path[i + 1] - 1].GetX() << L"; " << listVertices[path[i + 1] - 1].GetY() << L");" << endl;
                 if (i == 0) out << stringPole;
-                out << L"pojemno?? browaru [" << path[i + 1] << L"] na pozycji (" << listVertices[path[i + 1] - 1].GetX() << L"; " << listVertices[path[i + 1] - 1].GetY() << L") wynosi " << (listVertices[path[i + 1] - 1].GetCapacity() - p.getFlowJeczmien()) << L";" << endl;
+                out << L"pojemnoœæ browaru [" << path[i + 1] << L"] na pozycji (" << listVertices[path[i + 1] - 1].GetX() << L"; " << listVertices[path[i + 1] - 1].GetY() << L") wynosi " << (listVertices[path[i + 1] - 1].GetCapacity() - p.getFlowJeczmien()) << L";" << endl;
                 listVertices[path[i + 1] - 1].setCapacity(listVertices[path[i + 1] - 1].GetCapacity() - p.getFlowJeczmien());
             }
             else {
