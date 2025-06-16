@@ -63,6 +63,9 @@ public:
     // Remaster wczytywania autorstwa JK
     bool readFileToGraph3(string fileName);
 
+    //Tworzy siec residualna
+    void createResidualNet(vector<vector<EdgeData>>& graf , const vector<Node>& listNodes);
+
     //Zmodyfikowany bfs.  Je?eli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
     bool bfs(int x, const vector<vector<EdgeData>>& graf, int t, vector<int>& f);
 
@@ -78,6 +81,9 @@ public:
     double BusackerGowen2(double const maxFlow, int s, int t, vector<Path>& roads,
         bool (Matrix::* shortestPathFunc)(int, int, double&, vector<int>&, const vector<vector<EdgeData>>&));
 
+    double BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& roads, double konwersja, int midLayer,
+        bool (Matrix::* shortestPathFunc)(int, int, double&, vector<int>&, const vector<vector<EdgeData>>&));
+
     //Klasyczna metoda wyliczaj?ca maksymalny przep?yw bez przekazywania argumentow
     double edmondsKarp();
 
@@ -90,6 +96,9 @@ public:
     // rozwiazanie problemu. tj liczenie maksymalnego przeplywu i minimalnego kosztu. Dla problemu s->Browary->Puby
     double maxFlowMinCost2(string outputPath);
 
+    // rozwiazanie problemu. tj liczenie maksymalnego przeplywu i minimalnego kosztu. Dla problemu s->Browary->Puby
+    double maxFlowMinCost3(string outputPath);
+
 
     //Stary "edmonsKarp2()". Liczy maksymalny przeplyw dla naszego problemu.
     pair<double, double> maxFlowAlgorithm();
@@ -100,8 +109,11 @@ public:
     //void printToFileSolution(double maxFlow);
     void printToFileSolution2(double resultFlow, vector<Path>  combined, string outputPath);
 
+    void tempPrint(string outputPath , vector<Node>& listNodes);
+
+    double edmondsKarpClassicWithConversion(int s, int t, double conversion, int midLayer);
+
       
-  
 };
 
 #endif	

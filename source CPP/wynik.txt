@@ -1,1 +1,105 @@
-﻿?????ó
+﻿Konwersja:
+1 ton to ilo?? piwa, jak? uzyskuje si? z tony j?czmienia w ka?dym z browar?w.
+
+Punkty:
+Punkt 1: typ: pole; pozycja x = -7, y = -4; wydajno??: 49 ton.
+Punkt 2: typ: pole; pozycja x = -7, y = -2; wydajno??: 49 ton.
+Punkt 3: typ: pole; pozycja x = -7, y = 1; wydajno??: 49 ton.
+Punkt 4: typ: pole; pozycja x = -7, y = 3; wydajno??: 49 ton.
+Punkt 5: typ: skrzy?owanie; pozycja x = -2, y = -5.
+Punkt 6: typ: skrzy?owanie; pozycja x = -2, y = -3.
+Punkt 7: typ: skrzy?owanie; pozycja x = -1, y = -1.
+Punkt 8: typ: skrzy?owanie; pozycja x = -1, y = 5.
+Punkt 9: typ: skrzy?owanie; pozycja x = 4, y = 2.
+Punkt 10: typ: skrzy?owanie; pozycja x = 4, y = 6.
+Punkt 11: typ: skrzy?owanie; pozycja x = 5, y = -4.
+Punkt 12: typ: browar; pozycja x = 10, y = 4; pojemno??: 30 ton.
+Punkt 13: typ: browar; pozycja x = 11, y = -2; pojemno??: 30 ton.
+Punkt 14: typ: karczma; pozycja x = 14, y = 1.
+
+Drogi:
+Droga 1: z pola [1] na pozycji (-7; -4) do skrzy¿owania [5] na pozycji (-2; -5): przepustowoœæ: 20 ton; koszt naprawy: 5 srebrnych pensów.
+Droga 2: z pola [1] na pozycji (-7; -4) do skrzy¿owania [6] na pozycji (-2; -3): przepustowoœæ: 2 ton; koszt naprawy: 1 srebrnych pensów.
+Droga 3: z pola [1] na pozycji (-7; -4) do skrzy¿owania [8] na pozycji (-1; 5): przepustowoœæ: 30 ton; koszt naprawy: 20 srebrnych pensów.
+Droga 4: z pola [2] na pozycji (-7; -2) do skrzy¿owania [6] na pozycji (-2; -3): przepustowoœæ: 10 ton; koszt naprawy: 5 srebrnych pensów.
+Droga 5: z pola [3] na pozycji (-7; 1) do skrzy¿owania [7] na pozycji (-1; -1): przepustowoœæ: 7 ton; koszt naprawy: 0 srebrnych pensów.
+Droga 6: z pola [4] na pozycji (-7; 3) do skrzy¿owania [8] na pozycji (-1; 5): przepustowoœæ: 15 ton; koszt naprawy: 2 srebrnych pensów.
+Droga 7: z skrzy¿owania [5] na pozycji (-2; -5) do skrzy¿owania [9] na pozycji (4; 2): przepustowoœæ: 5 ton; koszt naprawy: 2 srebrnych pensów.
+Droga 8: z skrzy¿owania [6] na pozycji (-2; -3) do skrzy¿owania [11] na pozycji (5; -4): przepustowoœæ: 10 ton; koszt naprawy: 2 srebrnych pensów.
+Droga 9: z skrzy¿owania [7] na pozycji (-1; -1) do skrzy¿owania [11] na pozycji (5; -4): przepustowoœæ: 10 ton; koszt naprawy: 1 srebrnych pensów.
+Droga 10: z skrzy¿owania [8] na pozycji (-1; 5) do pola [3] na pozycji (-7; 1): przepustowoœæ: 3 ton; koszt naprawy: 3 srebrnych pensów.
+Droga 11: z skrzy¿owania [8] na pozycji (-1; 5) do skrzy¿owania [7] na pozycji (-1; -1): przepustowoœæ: 12 ton; koszt naprawy: 1 srebrnych pensów.
+Droga 12: z skrzy¿owania [8] na pozycji (-1; 5) do skrzy¿owania [9] na pozycji (4; 2): przepustowoœæ: 5 ton; koszt naprawy: 5 srebrnych pensów.
+Droga 13: z skrzy¿owania [8] na pozycji (-1; 5) do skrzy¿owania [10] na pozycji (4; 6): przepustowoœæ: 60 ton; koszt naprawy: 2 srebrnych pensów.
+Droga 14: z skrzy¿owania [8] na pozycji (-1; 5) do skrzy¿owania [11] na pozycji (5; -4): przepustowoœæ: 100 ton; koszt naprawy: 2 srebrnych pensów.
+Droga 15: z skrzy¿owania [9] na pozycji (4; 2) do browaru [12] na pozycji (10; 4): przepustowoœæ: 5 ton; koszt naprawy: 2 srebrnych pensów.
+Droga 16: z skrzy¿owania [9] na pozycji (4; 2) do browaru [13] na pozycji (11; -2): przepustowoœæ: 10 ton; koszt naprawy: 1 srebrnych pensów.
+Droga 17: z skrzy¿owania [10] na pozycji (4; 6) do browaru [12] na pozycji (10; 4): przepustowoœæ: 2 ton; koszt naprawy: 2 srebrnych pensów.
+Droga 18: z skrzy¿owania [11] na pozycji (5; -4) do browaru [12] na pozycji (10; 4): przepustowoœæ: 10 ton; koszt naprawy: 2 srebrnych pensów.
+Droga 19: z skrzy¿owania [11] na pozycji (5; -4) do browaru [13] na pozycji (11; -2): przepustowoœæ: 10 ton; koszt naprawy: 1 srebrnych pensów.
+
+?wiartki:
+warto??: 50; punkty graniczne: (-10; -6), (-7; -5), (-5; -3), (-6; 2), (-11; 0), 
+warto??: 50; punkty graniczne: (-10; 1), (-12; 3), (-11; 4), (-8; 6), (-6; 5), (-6; 3), 
+
+Rozwi?zanie:
+Maksymalna ilo?? piwa, kt?r? mo?na przetransportowa?: 32 ton; koszt naprawy: 35 srebrnych pens?w
+Przebieg trasy: 
+Trasa nr 1:
+Z pola [3] na pozycji (-7; 1) 7 ton j?czmienia do skrzy?owania [7] na pozycji (-1; -1);
+zawarto?? pola [3] na pozycji (-7; 1) wynosi 42;
+Z skrzy?owania [7] na pozycji (-1; -1) 7 ton j?czmienia do skrzy?owania [11] na pozycji (5; -4);
+Z skrzy?owania [11] na pozycji (5; -4) 7 ton j?czmienia do browaru [13] na pozycji (11; -2);
+pojemno?? browaru [13] na pozycji (11; -2) wynosi 23;
+Z browaru [13] na pozycji (11; -2) 7 ton piwa do karczmy [14] na pozycji (14; 1);
+Trasa nr 2:
+Z pola [1] na pozycji (-7; -4) 2 ton j?czmienia do skrzy?owania [6] na pozycji (-2; -3);
+zawarto?? pola [1] na pozycji (-7; -4) wynosi 47;
+Z skrzy?owania [6] na pozycji (-2; -3) 2 ton j?czmienia do skrzy?owania [11] na pozycji (5; -4);
+Z skrzy?owania [11] na pozycji (5; -4) 2 ton j?czmienia do browaru [13] na pozycji (11; -2);
+pojemno?? browaru [13] na pozycji (11; -2) wynosi 21;
+Z browaru [13] na pozycji (11; -2) 2 ton piwa do karczmy [14] na pozycji (14; 1);
+Trasa nr 3:
+Z pola [4] na pozycji (-7; 3) 1 ton j?czmienia do skrzy?owania [8] na pozycji (-1; 5);
+zawarto?? pola [4] na pozycji (-7; 3) wynosi 48;
+Z skrzy?owania [8] na pozycji (-1; 5) 1 ton j?czmienia do skrzy?owania [11] na pozycji (5; -4);
+Z skrzy?owania [11] na pozycji (5; -4) 1 ton j?czmienia do browaru [13] na pozycji (11; -2);
+pojemno?? browaru [13] na pozycji (11; -2) wynosi 20;
+Z browaru [13] na pozycji (11; -2) 1 ton piwa do karczmy [14] na pozycji (14; 1);
+Trasa nr 4:
+Z pola [4] na pozycji (-7; 3) 2 ton j?czmienia do skrzy?owania [8] na pozycji (-1; 5);
+zawarto?? pola [4] na pozycji (-7; 3) wynosi 46;
+Z skrzy?owania [8] na pozycji (-1; 5) 2 ton j?czmienia do skrzy?owania [10] na pozycji (4; 6);
+Z skrzy?owania [10] na pozycji (4; 6) 2 ton j?czmienia do browaru [12] na pozycji (10; 4);
+pojemno?? browaru [12] na pozycji (10; 4) wynosi 28;
+Z browaru [12] na pozycji (10; 4) 2 ton piwa do karczmy [14] na pozycji (14; 1);
+Trasa nr 5:
+Z pola [4] na pozycji (-7; 3) 10 ton j?czmienia do skrzy?owania [8] na pozycji (-1; 5);
+zawarto?? pola [4] na pozycji (-7; 3) wynosi 36;
+Z skrzy?owania [8] na pozycji (-1; 5) 10 ton j?czmienia do skrzy?owania [11] na pozycji (5; -4);
+Z skrzy?owania [11] na pozycji (5; -4) 10 ton j?czmienia do browaru [12] na pozycji (10; 4);
+pojemno?? browaru [12] na pozycji (10; 4) wynosi 18;
+Z browaru [12] na pozycji (10; 4) 10 ton piwa do karczmy [14] na pozycji (14; 1);
+Trasa nr 6:
+Z pola [1] na pozycji (-7; -4) 5 ton j?czmienia do skrzy?owania [5] na pozycji (-2; -5);
+zawarto?? pola [1] na pozycji (-7; -4) wynosi 42;
+Z skrzy?owania [5] na pozycji (-2; -5) 5 ton j?czmienia do skrzy?owania [9] na pozycji (4; 2);
+Z skrzy?owania [9] na pozycji (4; 2) 5 ton j?czmienia do browaru [13] na pozycji (11; -2);
+pojemno?? browaru [13] na pozycji (11; -2) wynosi 15;
+Z browaru [13] na pozycji (11; -2) 5 ton piwa do karczmy [14] na pozycji (14; 1);
+Trasa nr 7:
+Z pola [4] na pozycji (-7; 3) 2 ton j?czmienia do skrzy?owania [8] na pozycji (-1; 5);
+zawarto?? pola [4] na pozycji (-7; 3) wynosi 34;
+Z skrzy?owania [8] na pozycji (-1; 5) 2 ton j?czmienia do skrzy?owania [9] na pozycji (4; 2);
+Z skrzy?owania [9] na pozycji (4; 2) 2 ton j?czmienia do browaru [13] na pozycji (11; -2);
+pojemno?? browaru [13] na pozycji (11; -2) wynosi 13;
+Z browaru [13] na pozycji (11; -2) 2 ton piwa do karczmy [14] na pozycji (14; 1);
+Trasa nr 8:
+Z pola [2] na pozycji (-7; -2) 3 ton j?czmienia do skrzy?owania [6] na pozycji (-2; -3);
+zawarto?? pola [2] na pozycji (-7; -2) wynosi 46;
+Z skrzy?owania [6] na pozycji (-2; -3) 3 ton j?czmienia do skrzy?owania [11] na pozycji (5; -4);
+Z skrzy?owania [11] na pozycji (5; -4) 3 ton j?czmienia do skrzy?owania [8] na pozycji (-1; 5);
+Z skrzy?owania [8] na pozycji (-1; 5) 3 ton j?czmienia do skrzy?owania [9] na pozycji (4; 2);
+Z skrzy?owania [9] na pozycji (4; 2) 3 ton j?czmienia do browaru [13] na pozycji (11; -2);
+pojemno?? browaru [13] na pozycji (11; -2) wynosi 10;
+Z browaru [13] na pozycji (11; -2) 3 ton piwa do karczmy [14] na pozycji (14; 1);

@@ -11,6 +11,10 @@ Path::Path(const vector<int>& path, double flow, double cost)
     : path(path), flow(flow), cost(cost) {
 }
 
+Path::Path(const vector<int>& path, double flow, double cost, int connectedPoint, double flowJeczmien, double flowPiwo)
+    : path(path), flow(flow), cost(cost), connectedPoint(connectedPoint), flowJeczmien(flowJeczmien), flowPiwo(flowPiwo) {
+}
+
 void Path::setPath(const vector<int>& newPath) {
     path = newPath;
 }
@@ -42,6 +46,13 @@ int Path::getConnectedPoint() const {
     return connectedPoint;
 }
 
+double Path::getFlowJeczmien() const {
+    return flowJeczmien;
+}
+double Path::getFlowPiwo() const {
+    return flowPiwo;
+}
+
 
  vector<Path> Path::filterPaths(
     const vector<Path>& roads,
@@ -57,7 +68,7 @@ int Path::getConnectedPoint() const {
 
          //  Usuwa wszystkie wierzcho?ki równe 0, midT lub vertices-2
          cleaned.erase(
-             std::remove_if(
+             remove_if(
                  cleaned.begin(),
                  cleaned.end(),
                  [&](int v) {
@@ -202,5 +213,46 @@ double Path::sumFlow(const std::vector<Path>& paths) {
 
     return total;
 }
+
+vector<Path> Path::filterRoads(const vector<Path>& raw, int n) {
+    int internalCount = n - 2;             // oryginalne w?z?y 1..N-2
+    int layerSize = internalCount * 2;  // warstwa II: internalCount+1..2*internalCount
+
+    vector<Path> out;
+    out.reserve(raw.size());
+
+    for (auto p : raw) {
+        vector<int> newPath;
+        newPath.reserve(p.path.size());
+        bool removedConnected = false;
+
+        for (auto v : p.path) {
+            // Pomijamy ?ród?o (0) i uj?cie (layerSize+1)
+            if (v == 0 || v == layerSize + 1) {
+                continue;
+            }
+
+            // Pomijamy connectedPoint dok?adnie raz
+                if (!removedConnected && v == p.connectedPoint) {
+                    removedConnected = true;
+                    continue;
+                }
+
+            // Mapowanie warstwy II na I
+            if (v >= internalCount + 1 && v <= layerSize) {
+                v -= internalCount;
+            }
+            // W?z?y warstwy I (1..internalCount) zostaj? bez zmian
+
+            newPath.push_back(v);
+        }
+
+        p.path = std::move(newPath);
+        out.push_back(std::move(p));
+    }
+
+    return out;
+}
+    
 
 vector<Path> realPaths;

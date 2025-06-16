@@ -11,15 +11,17 @@ int main(int argc, char** argv)
     
     if (argc == 1)
     {
-        /*if (!matrix2.readFileToGraph3("./daneEksperymentalne.txt"))
+       /* if (!matrix2.readFileToGraph3("./daneZWagami2.txt"))
         {
             return -1;
         }*/
-        if (!graphMatrix.readFileToGraph3("./daneZeWszystkim.txt"))
+        if (!graphMatrix.readFileToGraph3("./daneZWagami2.txt"))
         {
             return -1;
         }
-        graphMatrix.maxFlowMinCost2("./wynik.txt");
+        //maxFlowMinCost3 AKTUALNE ROZWIAZANIE ANALIZATORA PRZEPLYWU
+        graphMatrix.maxFlowMinCost3("./wynik.txt");
+        //matrix2.maxFlowMinCost2("./wynik.txt");
     }
     else if (argc == 3)
     {
@@ -27,7 +29,7 @@ int main(int argc, char** argv)
         {
             return -1;
         }
-        graphMatrix.maxFlowMinCost2(argv[2]);
+        graphMatrix.maxFlowMinCost3(argv[2]);
     }
     else
     {
