@@ -6,12 +6,16 @@ Quarter::Quarter() {
 }
 
 bool Quarter::comparator(pair<double, double> a, pair<double, double> b, pair<double, double> p) {
-    //cout << "porownuje wektor " << a.first << " " << a.second << " -> " << b.first << " " << b.second << " z punktem " << p.first << " " << p.second;
+    //cout << "porownuje polprosta " << a.first << " " << a.second << " -> " << b.first << " " << b.second << " z punktem " << p.first << " " << p.second;
     double det = (b.first * p.second) + (a.first * b.second) + (a.second * p.first) - (b.first * a.second) - (a.first * p.second) - (b.second * p.first);
-    if (abs(det) < 1e-9) {
+    if (abs(det)<1e-9) {
         double distA = (b.first - a.first) * (b.first - a.first) + (b.second - a.second) * (b.second - a.second);
         double distB = (p.first - a.first) * (p.first - a.first) + (p.second - a.second) * (p.second - a.second);
-        return distA < distB;
+        //cout << a.first << " " << a.second << endl;
+        //cout << b.first << " " << b.second << endl;
+        //cout << p.first << " " << p.second << endl;
+        //cout << distA << " " << distB << endl<<endl;
+        return distA > distB;
     }
     return det > 0;
 }
@@ -24,5 +28,5 @@ void Quarter::sort() {
             lowestYValue = pointTab[i].second;
         }
         swap(pointTab[0], pointTab[lowestYid]);
-        std::sort(pointTab.begin(), pointTab.end(), [&](pair<double, double> a, pair<double, double> b) {return comparator(pointTab[0], a, b); });
+        std::sort(pointTab.begin()+1, pointTab.end(), [&](pair<double, double> a, pair<double, double> b) {return comparator(pointTab[0], a, b); });
 }

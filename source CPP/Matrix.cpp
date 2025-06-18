@@ -233,22 +233,19 @@ bool Matrix::readFileToGraph3(string fileName) {
     }
     this->initialQuarters = initialQuarters;
     //sortowanie punktow wzgledem wspolrzednej katowej
-    cout << "test4\n";
     for (int i = 0; i < quartersCount; i++)initialQuarters[i].sort();
-    cout << "test5\n";
+
     //szczerze nie warto bylo przepisywac cwiartki do klasy bo tu jest syf
     //w generatorze jest porzadeczek :D
     
     //algorytm otoczki wypuklej w celu ustalenia wielokata wypuklego
     vector<Quarter> quarters(quartersCount);
-    for (int k = 0; k < quartersCount; k++) {
-        cout << "test-k: "<<k<<"\n";
+    for (int k = 0; k < quartersCount; k++){
         quarters[k].efficiencyMultiplier = initialQuarters[k].efficiencyMultiplier;
         quarters[k].pointTab.push_back(initialQuarters[k].pointTab[0]);
         quarters[k].pointTab.push_back(initialQuarters[k].pointTab[1]);
-
         for (int i = 2; i < initialQuarters[k].pointTab.size(); i++) {
-            cout << "test-i: " << i << "\n";
+            //cout << initialQuarters[k].pointTab[i].first << " " << initialQuarters[k].pointTab[i].second << endl;
             if (Quarter::comparator(quarters[k].pointTab[quarters[k].pointTab.size() - 2], quarters[k].pointTab[quarters[k].pointTab.size() - 1], initialQuarters[k].pointTab[i]))quarters[k].pointTab.push_back(initialQuarters[k].pointTab[i]);
             else {
                 quarters[k].pointTab.pop_back();
@@ -258,11 +255,32 @@ bool Matrix::readFileToGraph3(string fileName) {
         }
         quarters[k].pointTab.push_back(initialQuarters[k].pointTab[0]);
     }
-    cout << "test6\n";
+
     //czy to na pewno wielokat?
     for (int i = 0; i < quartersCount; i++)if (quarters[i].pointTab.size() < 3) {
         cerr << "Wielokat " << i + 1 << " nie jest wielokatem, bo ma za malo bokow";
         return false;
+    }
+    
+    //czy wielokaty sa rozlaczne?
+    bool isQuarterValid = false;
+    for (int currentQuarterIndex = 0; currentQuarterIndex < quartersCount; currentQuarterIndex++){
+        for (int i = 0; i < quarters[currentQuarterIndex].pointTab.size() - 1; i++) {
+            for (int quarterIndex = 0; quarterIndex < quartersCount; quarterIndex++) {
+                isQuarterValid = false;
+                if (quarterIndex == currentQuarterIndex)continue;
+                for (int j = 0; j < quarters[quarterIndex].pointTab.size() - 1; j++) {
+                    if (!Quarter::comparator(quarters[quarterIndex].pointTab[j], quarters[quarterIndex].pointTab[j + 1], quarters[currentQuarterIndex].pointTab[i])) {
+                        isQuarterValid = true;
+                        break;
+                    }
+                }
+                if (!isQuarterValid) {
+                    cerr << "Pewne dwie cwiartki nie sa ze soba rozlaczne!" << endl;
+                    return false;
+                }
+            }
+        }
     }
 
     //zmieniamy efektywnosc produkcji zboza przez pola w zaleznosci od tego w jakiej cwiartce sie znajduje
@@ -278,13 +296,13 @@ bool Matrix::readFileToGraph3(string fileName) {
                 }
             }
             if (isFieldValid) {
- /*               tab[0][i + 1].flow += quarters[quarterIndex].efficiencyMultiplier;
+ /*             tab[0][i + 1].flow += quarters[quarterIndex].efficiencyMultiplier;
                 tab[0][i + 1].remainingFlow += quarters[quarterIndex].efficiencyMultiplier;
                 tab[0][i + 1].cost = 0;*/
                 this->listVertices[i].capacity = quarters[quarterIndex].efficiencyMultiplier;
                 break;
             }
-            else if (!isFieldValid && quarterIndex == 3) {
+            else if (!isFieldValid && quarterIndex == quartersCount-1) {
                 cerr << "Pole z indeksem: " << i + 1 << " nie nalezy do zadnego wielokata" << endl;
                 return false;
             }
