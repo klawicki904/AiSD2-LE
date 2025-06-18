@@ -212,7 +212,7 @@ bool Matrix::readFileToGraph3(string fileName) {
     vector<Quarter> initialQuarters;
     size_t quartersCount = 0;
     Quarter tempQuarter;
-    double efficiency;                  // dzielone przez tysiac, aby zrobic mnoznik
+    double efficiency;
     while (getline(plik, line)) {
         if (line.empty()) { continue; } // pomijaj puste linie
         cout << "line: " << line << endl;
@@ -233,19 +233,22 @@ bool Matrix::readFileToGraph3(string fileName) {
     }
     this->initialQuarters = initialQuarters;
     //sortowanie punktow wzgledem wspolrzednej katowej
+    cout << "test4\n";
     for (int i = 0; i < quartersCount; i++)initialQuarters[i].sort();
-
+    cout << "test5\n";
     //szczerze nie warto bylo przepisywac cwiartki do klasy bo tu jest syf
     //w generatorze jest porzadeczek :D
     
     //algorytm otoczki wypuklej w celu ustalenia wielokata wypuklego
     vector<Quarter> quarters(quartersCount);
     for (int k = 0; k < quartersCount; k++) {
+        cout << "test-k: "<<k<<"\n";
         quarters[k].efficiencyMultiplier = initialQuarters[k].efficiencyMultiplier;
         quarters[k].pointTab.push_back(initialQuarters[k].pointTab[0]);
         quarters[k].pointTab.push_back(initialQuarters[k].pointTab[1]);
 
         for (int i = 2; i < initialQuarters[k].pointTab.size(); i++) {
+            cout << "test-i: " << i << "\n";
             if (Quarter::comparator(quarters[k].pointTab[quarters[k].pointTab.size() - 2], quarters[k].pointTab[quarters[k].pointTab.size() - 1], initialQuarters[k].pointTab[i]))quarters[k].pointTab.push_back(initialQuarters[k].pointTab[i]);
             else {
                 quarters[k].pointTab.pop_back();
@@ -255,7 +258,7 @@ bool Matrix::readFileToGraph3(string fileName) {
         }
         quarters[k].pointTab.push_back(initialQuarters[k].pointTab[0]);
     }
-
+    cout << "test6\n";
     //czy to na pewno wielokat?
     for (int i = 0; i < quartersCount; i++)if (quarters[i].pointTab.size() < 3) {
         cerr << "Wielokat " << i + 1 << " nie jest wielokatem, bo ma za malo bokow";
