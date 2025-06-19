@@ -877,7 +877,7 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string 
     wofstream out(outputPath, ios::binary);
     out.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
     if (!out.is_open()) {
-        wcerr << "Nie mo?na otworzy? pliku wynik.txt do zapisu." << endl;
+        wcerr << "Nie mozna otworzyc pliku z rozwiazaniem do zapisu." << endl;
         return;
     }
     out << (wchar_t)0xFEFF;
@@ -992,25 +992,25 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string 
     }
 
             out.close();
-            //WYPISYWANIE
-            wifstream file(L"wynik.txt", ios::binary);
-            file.imbue(locale(file.getloc(), new codecvt_utf8<wchar_t>()));
-            if (!file.is_open()) {
-                wcerr << L"Nie mozna otworzyc pliku wynik.txt" << endl;
-            }
-            else {
-                wstring line;
-                wchar_t firstChar = file.peek();
-                if (firstChar == 0xFEFF) {
-                    file.get(); // zignoruj BOM
-                }
+            //WYPISYWANIE zawartoœci pliku na konsolê (nie dzia³a, bo jak napotyka polski znak to przestaje wypisywaæ)
+            //wifstream file(L"wynik.txt", ios::binary);
+            //file.imbue(locale(file.getloc(), new codecvt_utf8<wchar_t>()));
+            //if (!file.is_open()) {
+            //    wcerr << L"Nie mozna otworzyc pliku wynik.txt" << endl;
+            //}
+            //else {
+            //    wstring line;
+            //    wchar_t firstChar = file.peek();
+            //    if (firstChar == 0xFEFF) {
+            //        file.get(); // zignoruj BOM
+            //    }
 
-                while (getline(file, line)) {
-                    wcout << line << L"\n";
-                }
+            //    while (getline(file, line)) {
+            //        wcout << line << L"\n";
+            //    }
 
-                file.close();
-            }
+            //    file.close();
+            //}
         }
 
 
