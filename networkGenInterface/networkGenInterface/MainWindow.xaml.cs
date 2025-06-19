@@ -36,8 +36,8 @@ namespace networkGenInterface
 
         private void NumberCheck(object sender, TextCompositionEventArgs e)
         {
-            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox,densityList,twoWayCheckbox};
-            var labels = new Label[] { vertNLabel, fieldNLabel, breweryNLabel, pubNLabel, sectionNLabel, densityLabel,twoWayLabel};
+            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox,densityList,twoWayCheckbox,minFlowIntervalBox,maxFlowIntervalBox};
+            var labels = new Label[] { vertNLabel, fieldNLabel, breweryNLabel, pubNLabel, sectionNLabel, densityLabel,twoWayLabel,flowIntervalLabel,flowIntervalDashLabel};
             GetControlIndex(ref sender, ref controls, out int controlIndex);
             e.Handled = !Regex.IsMatch(e.Text, @"^\d+$");
             if (!e.Handled && controlIndex!=controls.Length-1)
@@ -52,6 +52,12 @@ namespace networkGenInterface
                     (controls[6] as CheckBox).Visibility = Visibility.Visible;
                     labels[6].Foreground= Brushes.AntiqueWhite;
                     twoWayBackground.Background= new SolidColorBrush(Color.FromRgb(68, 26, 112));
+                    (controls[7] as TextBox).Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+                    (controls[7] as TextBox).IsEnabled = true;
+                    (controls[8] as TextBox).Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+                    (controls[8] as TextBox).IsEnabled = true;
+                    labels[7].Foreground = Brushes.AntiqueWhite;
+                    labels[8].Foreground = Brushes.AntiqueWhite;
                 }
                 else
                 {
@@ -80,12 +86,12 @@ namespace networkGenInterface
 
         private void InputDataCheck(object sender, TextChangedEventArgs e)
         {
-            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox, densityList,twoWayCheckbox };
-            var labels = new Label[] { vertNLabel, fieldNLabel, breweryNLabel, pubNLabel, sectionNLabel, densityLabel,twoWayLabel};
+            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox, densityList,twoWayCheckbox, minFlowIntervalBox, maxFlowIntervalBox };
+            var labels = new Label[] { vertNLabel, fieldNLabel, breweryNLabel, pubNLabel, sectionNLabel, densityLabel,twoWayLabel, flowIntervalLabel, flowIntervalDashLabel };
             GetControlIndex(ref sender, ref controls, out int controlIndex);
             if ((sender as TextBox).Text.Length == 0)
             {
-                for (int i = controlIndex + 1; i < controls.Length; i++)
+                for (int i = controlIndex + 1; i < controls.Length-1; i++)
                 {
                     if (i == 5)
                     {
@@ -104,11 +110,18 @@ namespace networkGenInterface
                         (controls[i] as TextBox).Text = "";
                         (controls[i] as TextBox).Background = Brushes.Transparent;
                         (controls[i] as TextBox).IsEnabled = false;
+                        if (i == 7)
+                        {
+                            (controls[i+1] as TextBox).Text = "";
+                            (controls[i+1] as TextBox).Background = Brushes.Transparent;
+                            (controls[i+1] as TextBox).IsEnabled = false;
+                            labels[i + 1].Foreground = Brushes.Transparent;
+                        }
                     }
                     labels[i].Foreground = Brushes.Transparent;
                 }
             }
-            if (RatioCheck()  && BreweryNCheck())
+            if (RatioCheck()  && BreweryNCheck() && FlowIntervalCheck())
             {
                 generateButton.Visibility = Visibility.Visible;
                 generateButton.IsEnabled = true;
@@ -144,7 +157,7 @@ namespace networkGenInterface
         }
         private void ChangeGeneralInfo(object sender, RoutedEventArgs e)
         {
-            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox, densityList };
+            var controls = new Object[] { vertNBox, fieldNBox, breweryNBox, pubNBox, sectionNBox, densityList,minFlowIntervalBox,maxFlowIntervalBox};
             GetControlIndex(ref sender, ref controls, out int controlIndex);
             switch (controlIndex) {
                 case 0:
@@ -171,6 +184,12 @@ namespace networkGenInterface
                 case 5:
                     generalInfoLabel.Content = "Różnorodność połączeń = Drogi skróty";
                     break;
+                case 6:
+                    generalInfoLabel.Content = "Minimalna wartość losowanej przepustowości";
+                    break;
+                case 7:
+                    generalInfoLabel.Content = "Maksymalna wartość losowanej przepustowości";
+                    break;
 
             }
         }
@@ -191,6 +210,14 @@ namespace networkGenInterface
             if (!int.TryParse(pubNBox.Text, out int pubN)) return false;
             return breweryN<=vertN-2-fieldN-pubN;
         }
+        private bool FlowIntervalCheck()
+        {
+            if (!int.TryParse(minFlowIntervalBox.Text, out int minFlow)) return false;
+            if (!int.TryParse(maxFlowIntervalBox.Text, out int maxFlow)) return false;
+            if (minFlow < 0) return false;
+            if (maxFlow < 1 || maxFlow < minFlow) return false;
+            return true;
+        }
         private void ExecuteGenerator()
         {
             bool doWriteDebugData = true;
@@ -203,7 +230,7 @@ namespace networkGenInterface
             }
             string isTwoWay = twoWayCheckbox.IsChecked.GetValueOrDefault() ? "1" : "0";
             string arguments = "\""+dataPath + "\" " + int.Parse(vertNBox.Text)+" "+int.Parse(sectionNBox.Text)+" "+densityList.SelectedIndex+" "
-                +int.Parse(fieldNBox.Text)+" "+int.Parse(breweryNBox.Text)+" "+int.Parse(pubNBox.Text)+" "+isTwoWay;
+                +int.Parse(fieldNBox.Text)+" "+int.Parse(breweryNBox.Text)+" "+int.Parse(pubNBox.Text)+" "+isTwoWay+" "+int.Parse(minFlowIntervalBox.Text)+" "+int.Parse(maxFlowIntervalBox.Text);
             Console.WriteLine(arguments);
             var generatorProcess = new Process
             {
@@ -248,6 +275,8 @@ namespace networkGenInterface
             int pubN = int.Parse(pubNBox.Text);
             sectionNBox.Text = Math.Round(0.16 * Math.Pow(vertN-2, 0.8)).ToString();
             densityList.SelectedIndex = 1;
+            minFlowIntervalBox.Text = "15";
+            maxFlowIntervalBox.Text = "45";
 
             breweryNBox.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
             pubNBox.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
@@ -265,6 +294,12 @@ namespace networkGenInterface
             twoWayCheckbox.Visibility = Visibility.Visible;
             twoWayLabel.Foreground = Brushes.AntiqueWhite;
             twoWayBackground.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+            minFlowIntervalBox.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+            maxFlowIntervalBox.Background = new SolidColorBrush(Color.FromRgb(68, 26, 112));
+            flowIntervalLabel.Foreground = Brushes.AntiqueWhite;
+            flowIntervalDashLabel.Foreground = Brushes.AntiqueWhite;
+            minFlowIntervalBox.IsEnabled = true;
+            maxFlowIntervalBox.IsEnabled = true;
         }
     }
 }

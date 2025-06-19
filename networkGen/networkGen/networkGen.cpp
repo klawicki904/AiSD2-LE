@@ -7,6 +7,7 @@
 #include <fstream>
 #include <algorithm>
 #include <math.h>
+#include <iomanip>
 //#include <limits>
 #include "Node.h"
 using namespace std;
@@ -48,7 +49,7 @@ int main(int argc, char **argv)
 {
     ///---------------wstep---------------
     srand(time(nullptr));
-    int vertN, checkpointN, density, fieldN, breweryN, pubN;
+    int vertN, checkpointN, density, fieldN, breweryN, pubN, minFlow, maxFlow;
     string path;
     bool isTwoWay;
     // vertN - ilosc wszystkich wierzcholkow w sieci residualnej (moze sie roznic w kodzie ze wzgledu na implementacje i wierzcholki abstrakcyjne)
@@ -61,7 +62,7 @@ int main(int argc, char **argv)
    
     //---------------input uzytkownika---------------
     // dane z interfejsu (argumenty linii polecen)
-    if (argc == 9) {
+    if (argc == 11) {
         path = argv[1];
         vertN = atoi(argv[2])-2;
         checkpointN = atoi(argv[3]) + 4;
@@ -70,6 +71,8 @@ int main(int argc, char **argv)
         breweryN = atoi(argv[6]);
         pubN = atoi(argv[7]);
         isTwoWay = (bool)atoi(argv[8]);
+        minFlow = atoi(argv[9]);
+        maxFlow = atoi(argv[10]);
         if (vertN < 6)return 0;
         if (fieldN <= 0)fieldN = 1;
         if (breweryN <= 0)breweryN = 1;
@@ -129,9 +132,20 @@ int main(int argc, char **argv)
         cout << "Jak duza ma byc szansa na drogi-skroty? (0 - normalna, 1 - wieksza, 2 - wieksza++): ";
         cin >> density;
 
+        cout << "Minimalna wartosc losowanej przepustowosci drog: ";
+        cin >> minFlow;
+        cout << "Maksymalna wartosc losowanej przepustowosci drog: ";
+        cin >> maxFlow;
+        if (minFlow < 0 || maxFlow < 0 || maxFlow < minFlow) {
+            cout << "Wartosci losowanych przepustowosci sa niepoprawne"<<endl;
+            return 0;
+        }
+
         cout << "Czy drogi maja byc dwukierunkowe? (0 - nie, 1 - tak): ";
         cin >> isTwoWay;
     }
+    maxFlow -= minFlow;
+    maxFlow++;
     ///---------------cwiartki---------------
     int quarterPointN;
     vector<set<pair<int, int>>> uniquePointsInSquareSet(4);     // zawiera unikalne punkty dla kazdej z czterech cwiartek
@@ -168,7 +182,7 @@ int main(int argc, char **argv)
             lowestYValue = uniquePointsInSquareTab[k][i].second;
         }
         swap(uniquePointsInSquareTab[k][0], uniquePointsInSquareTab[k][lowestYid]);
-        sort(uniquePointsInSquareTab[k].begin(), uniquePointsInSquareTab[k].end(), [&](pair<int, int> a, pair<int, int> b) {return Comparator(uniquePointsInSquareTab[k][0], a, b); });
+        sort(uniquePointsInSquareTab[k].begin()+1, uniquePointsInSquareTab[k].end(), [&](pair<int, int> a, pair<int, int> b) {return Comparator(uniquePointsInSquareTab[k][0], a, b); });
     }
     // uzywam wektora quarters jako kolejki, poniewaz potrzebuje dostepu do ostatnich dwoch elementow
     // wyznaczam na podstawie poprzednich losowo wybranych punktow wynikowy wielokat wypukly
@@ -294,7 +308,10 @@ int main(int argc, char **argv)
         fieldCoordinatesSetSize = fieldCoordinatesSet.size();
         fieldCoordinatesSet.insert(point);
         if (isPointValid && fieldCoordinatesSetSize!=fieldCoordinatesSet.size())vertTab[i]->coordinates = point;
-        else i--;
+        else {
+            //cout << "Pole numer " << i << " nie ma miejsca" << endl;
+            i--;
+        }
     }
 
     ///---------------wyznaczanie wspolrzednych pozostalych punktow---------------
@@ -320,7 +337,7 @@ int main(int argc, char **argv)
     while (uniqueBreweries.size() != breweryN)uniqueBreweries.insert(rand() % (checkpointTab[checkpointN-2] -1 - checkpointTab[1]) + checkpointTab[1]);
     for (auto it = uniqueBreweries.begin(); it != uniqueBreweries.end(); it++)vertTab[*it]->amIBrewery = true;
 
-    ///---------------wierzcholek startowy---------------   !!! DO ZMIANY - WARTOSCI POWINNY ODPOWIADAC PRODUKCJI POL !!!
+    ///---------------wierzcholek startowy---------------   NIEPOTRZEBNE
     for (int i = 1; i < checkpointTab[1]; i++)vertTab[0]->to.emplace_back(i, 99);
 
     cout << "Liczba pol: " << checkpointTab[1] - 1 << endl;
@@ -359,7 +376,7 @@ int main(int argc, char **argv)
         while (uniqueConnections.size() != connectionN)uniqueConnections.insert(rand() % (checkpointTab[checkpointN-1] - checkpointTab[j + 1]) + checkpointTab[j + 1]);
         for (auto it = uniqueConnections.begin(); it != uniqueConnections.end(); it++) {
             //cout << "zdalne polaczenie: " << i << " -> " << *it << " w sekcji " << j << " w liczbie : " << connectionN << endl;
-            vertTab[i]->to.emplace_back(*it, rand() % 17 + 5);
+            vertTab[i]->to.emplace_back(*it, rand() % maxFlow + minFlow);
             vertTab[*it]->amIConnected = true;
         }
     }
@@ -404,7 +421,7 @@ int main(int argc, char **argv)
         set<int> uniqueConnections;
         while (uniqueConnections.size() < connectionN)uniqueConnections.insert(rand() % (checkpointTab[j + 1] - checkpointTab[j]) + checkpointTab[j]);
         for (auto it = uniqueConnections.begin(); it != uniqueConnections.end(); it++) {
-            vertTab[i]->to.emplace_back(*it, rand() % 17 + 5);
+            vertTab[i]->to.emplace_back(*it, rand() % maxFlow + minFlow);
             vertTab[*it]->amIConnected = true;
             //cout << "sasiednie polaczenie: " << i << " -> "<<*it<<" w sekcji " << j << " dotychczasowe polaczenia: " << vertTab[i]->to.size() << " " << endl;
         }
@@ -442,7 +459,7 @@ int main(int argc, char **argv)
             // glowna czesc korekty
             //cout<<"korekta: "<<minimumConnectionNIndex<<" -> "<<i << " w sekcji " << j << endl;
             connectionInfo++;
-            vertTab[minimumConnectionNIndex]->to.emplace_back(i, rand() % 17 + 5);
+            vertTab[minimumConnectionNIndex]->to.emplace_back(i, rand() % maxFlow + minFlow);
             vertTab[i]->amIConnected = true;
         }
     }
@@ -460,28 +477,29 @@ int main(int argc, char **argv)
     //file.close();
 
     // wersja oficjalna zgodna z szablonem danych wejsciowych ZAWIERA DROGI DWUKIERUNKOWE
-    float roadCost;
+    int roadCost;
     ofstream experimentalFile(path);
-    experimentalFile << "KONWERSJA" << endl << static_cast <float>(rand()) / static_cast <float>(RAND_MAX) << endl<<"PUNKTY"<<endl;
-    experimentalFile <<"0 "<< vertTab[0]->coordinates.first << " " << vertTab[0]->coordinates.second << " brak" << endl;
+    experimentalFile << "KONWERSJA" << endl << fixed<<setprecision(2)<<static_cast <float>(rand()) / static_cast <float>(RAND_MAX) + rand()%2 << endl<<"PUNKTY"<<endl;
+    //experimentalFile <<"0 "<< vertTab[0]->coordinates.first << " " << vertTab[0]->coordinates.second << " brak" << endl;
     for (int i = 1; i < checkpointTab[1]; i++)experimentalFile << i << " "<<vertTab[i]->coordinates.first<<" "<<vertTab[i]->coordinates.second<<" pole" << endl;
     for (int i = checkpointTab[1]; i < checkpointTab[checkpointN - 2]; i++) {
         if (vertTab[i]->amIBrewery)experimentalFile << i <<" "<< vertTab[i]->coordinates.first << " " << vertTab[i]->coordinates.second << " browar " << 
-            static_cast <float>(rand()) / static_cast <float>(RAND_MAX) + 20 + rand() % 12 <<endl;
+            static_cast <float>(rand()) / static_cast <float>(RAND_MAX) + maxFlow + rand() % (2*maxFlow) <<endl;
         else experimentalFile << i << " "<<vertTab[i]->coordinates.first << " " << vertTab[i]->coordinates.second << " brak" << endl;
     }
     for (int i = checkpointTab[checkpointN - 2]; i < checkpointTab[checkpointN - 1]; i++)experimentalFile << i<<" "<<vertTab[i]->coordinates.first<<" "<<vertTab[i]->coordinates.second<<" karczma" << endl;
-    experimentalFile << vertN+1<<" "<< x << " " << y << " brak" << endl << "DROGI";
+    //experimentalFile << vertN+1<<" "<< x << " " << y << " brak" << endl << "DROGI";
+    experimentalFile << "DROGI";
     //experimentalFile << "DROGI";
-    for (int i = 0; i <= vertN; i++)for (int j = 0; j < vertTab[i]->to.size(); j++) {
-        if (rand() % 4 == 0)roadCost = static_cast <float>(rand()) / static_cast <float>(RAND_MAX) + rand() % 70;
+    for (int i = 1; i <= vertN; i++)for (int j = 0; j < vertTab[i]->to.size(); j++) {
+        if (rand() % 4 == 0)roadCost = rand() % 69+1;
         else roadCost = 0;
-        experimentalFile << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second << " " << roadCost;
+        if(vertTab[i]->to[j].first != vertN+1)experimentalFile << endl << i << " " << vertTab[i]->to[j].first << " " << vertTab[i]->to[j].second << " " << roadCost;
         if (i != 0 && i <= vertN-pubN && isTwoWay)experimentalFile << endl << vertTab[i]->to[j].first << " " << i << " " << vertTab[i]->to[j].second << " " << roadCost;
     }
     experimentalFile << endl << "CWIARTKI";
     for (int k = 0; k < 4; k++) {
-        experimentalFile << endl<<rand() % 9900 + 100;
+        experimentalFile << endl<< maxFlow + rand() % (3 * maxFlow);
         for (int i = 0; i < quarters[k].size()-1; i++)experimentalFile<<" "<< quarters[k][i].first << " " << quarters[k][i].second;
         
     }
