@@ -210,13 +210,12 @@ int main(int argc, char** argv) {
 
     bool compressFile = false;
     bool decompressFile = false;
-    bool deleteInputFile = false;
     string inputFilePath = "";
     string outputFilePath = "";
 
     if (argc < 4)
     {
-        cerr << "Usage: " << argv[0] << " (-c or -d) [-x] <input_file> <output_file>" << endl;
+        cerr << "Usage: " << argv[0] << " (-c or -d) <input_file> <output_file>" << endl;
         return 1;
     }
 
@@ -231,10 +230,6 @@ int main(int argc, char** argv) {
         else if (arg == "-d")
         {
             decompressFile = true;
-        }
-        else if (arg == "-x")
-        {
-            deleteInputFile = true;
         }
         else if (arg[0] == '-')
         {
@@ -303,31 +298,6 @@ int main(int argc, char** argv) {
         outputText.imbue(locale("")); //zapewnia obsluge polskich znakow
         outputText << decoded;
         outputText.close();
-    }
-    if (deleteInputFile) // usuñ plik, jeœli wybrano tak¹ opcjê
-    {
-        try
-        {
-            filesystem::path _inputFilePath = inputFilePath;
-
-            if (!filesystem::exists(_inputFilePath)) {
-                cout << "file " << _inputFilePath << " not found.\n";
-                return 1;
-            }
-
-            if (filesystem::remove(_inputFilePath))
-            {
-                /* cout << "file " << _inputFilePath << " deleted.\n"; */
-            }
-            else
-                cerr << "could not delete file " << _inputFilePath << ".\n";
-        }
-        catch (const filesystem::filesystem_error& err) {
-            cerr << "filesystem error: " << err.what() << '\n';
-        }
-        catch (const std::exception& ex) {
-            cerr << "other error: " << ex.what() << '\n';
-        }
     }
 
     cout << filesystem::file_size(inputFilePath) << " " << // rozmiar pliku wejœciowego
