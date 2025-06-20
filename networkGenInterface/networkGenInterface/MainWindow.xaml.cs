@@ -220,40 +220,42 @@ namespace networkGenInterface
         }
         private void ExecuteGenerator()
         {
-            bool doWriteDebugData = true;
             string dataPath = "./generated_map.txt";
             string[] commandLineArgs = Environment.GetCommandLineArgs();
             if (commandLineArgs.Length == 2)
             {
                 dataPath = commandLineArgs[1];
-                doWriteDebugData = false;
             }
             string isTwoWay = twoWayCheckbox.IsChecked.GetValueOrDefault() ? "1" : "0";
             string arguments = "\""+dataPath + "\" " + int.Parse(vertNBox.Text)+" "+int.Parse(sectionNBox.Text)+" "+densityList.SelectedIndex+" "
                 +int.Parse(fieldNBox.Text)+" "+int.Parse(breweryNBox.Text)+" "+int.Parse(pubNBox.Text)+" "+isTwoWay+" "+int.Parse(minFlowIntervalBox.Text)+" "+int.Parse(maxFlowIntervalBox.Text);
-            Console.WriteLine(arguments);
             var generatorProcess = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "Resources\\Generator\\networkGen.exe",
                     Arguments = arguments,
-                    RedirectStandardOutput = true,
+                    RedirectStandardOutput = false,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };
             generatorProcess.Start();
+            /*
             if (doWriteDebugData)
             {
                 using (StreamWriter debugLogFile = new StreamWriter("./gen_debug_log.txt"))
                 {
                     debugLogFile.Write("networkGen debug log:");
-                    while (!generatorProcess.StandardOutput.EndOfStream) debugLogFile.WriteLine(generatorProcess.StandardOutput.ReadLine());
+                    while (!generatorProcess.StandardOutput.EndOfStream)
+                    {
+                        Console.WriteLine("linia");
+                        debugLogFile.WriteLine(generatorProcess.StandardOutput.ReadLine());
+                    }
                 }
             }
+            */
             generatorProcess.WaitForExit();
-
         }
 
         private void FillRecommendedData(object sender, RoutedEventArgs e)
