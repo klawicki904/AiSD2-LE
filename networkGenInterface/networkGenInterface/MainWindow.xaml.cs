@@ -138,7 +138,7 @@ namespace networkGenInterface
                 if (!int.TryParse(vertNBox.Text, out int vertN)) return;
                 if(!int.TryParse(fieldNBox.Text, out int fieldN))return;
                 if(!int.TryParse(pubNBox.Text, out int pubN))return;
-                double recommendedValue = Math.Round(0.16 * Math.Pow(vertN-2, 0.8));
+                double recommendedValue = Math.Round(0.16 * Math.Pow(vertN, 0.8));
                 if (!RatioCheck()) generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue + "\nPodano zbyt mało wierzchołków\nlub zbyt dużo zestawów wierzchołków!";
                 else generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue;
             }
@@ -164,19 +164,19 @@ namespace networkGenInterface
                     generalInfoLabel.Content = "Podaj odpowiednio dużą liczbę wierzchołków";
                     break;
                 case 1:
-                    generalInfoLabel.Content = "Rekomendowana wartość = " + Math.Round(int.Parse(vertNBox.Text)*0.12);
+                    generalInfoLabel.Content = "Rekomendowana wartość = " + Math.Round((int.Parse(vertNBox.Text)+2)*0.12);
                     break;
                 case 2:
-                    generalInfoLabel.Content = "Rekomendowana wartość = " + Math.Round(int.Parse(vertNBox.Text) * 0.24, 0);
+                    generalInfoLabel.Content = "Rekomendowana wartość = " + Math.Round((int.Parse(vertNBox.Text) + 2) * 0.24, 0);
                     break;
                 case 3:
-                    generalInfoLabel.Content = "Rekomendowana wartość = " + Math.Round(int.Parse(vertNBox.Text) * 0.14);
+                    generalInfoLabel.Content = "Rekomendowana wartość = " + Math.Round((int.Parse(vertNBox.Text)+2) * 0.14);
                     break;
                 case 4:
                     if (!int.TryParse(vertNBox.Text, out int vertN)) return;
                     if (!int.TryParse(fieldNBox.Text, out int fieldN)) return;
                     if (!int.TryParse(pubNBox.Text, out int pubN)) return;
-                    double recommendedValue = Math.Round(0.16*Math.Pow(vertN-2,0.8));
+                    double recommendedValue = Math.Round(0.16*Math.Pow(vertN,0.8));
                     if (!BreweryNCheck()) generalInfoLabel.Content = "Brak miejsca dla browarów!";
                     else if (!RatioCheck()) generalInfoLabel.Content = "Rekomendowana wartość = "+recommendedValue+"\nPodano zbyt mało wierzchołków\nlub zbyt dużo zestawów wierzchołków!";
                     else generalInfoLabel.Content = "Rekomendowana wartość = " + recommendedValue;
@@ -199,8 +199,8 @@ namespace networkGenInterface
             if (!int.TryParse(sectionNBox.Text, out int sectionN)) return false;
             if (!int.TryParse(fieldNBox.Text, out int fieldN)) return false;
             if (!int.TryParse(pubNBox.Text, out int pubN)) return false;
-            if (vertN < 8) return false;
-            return (vertN-fieldN-pubN-7)/3+1 >= sectionN;
+            if (vertN < 6) return false;
+            return (vertN-fieldN-pubN-5)/3+1 >= sectionN;
         }
         private bool BreweryNCheck()
         {
@@ -208,7 +208,7 @@ namespace networkGenInterface
             if (!int.TryParse(breweryNBox.Text, out int breweryN)) return false;
             if (!int.TryParse(fieldNBox.Text, out int fieldN)) return false;
             if (!int.TryParse(pubNBox.Text, out int pubN)) return false;
-            return breweryN<=vertN-2-fieldN-pubN;
+            return breweryN<=vertN-fieldN-pubN;
         }
         private bool FlowIntervalCheck()
         {
@@ -265,17 +265,17 @@ namespace networkGenInterface
                 generalInfoLabel.Content = "Najpierw podaj liczbę wierzchołków";
                 return;
             }
-            if (vertN < 8)
+            if (vertN < 6)
             {
                 generalInfoLabel.Content = "Podano za mało wierzchołków";
                 return;
             }
-            fieldNBox.Text = Math.Round(int.Parse(vertNBox.Text) * 0.12).ToString();
-            breweryNBox.Text = Math.Round(int.Parse(vertNBox.Text) * 0.24).ToString();
-            pubNBox.Text = Math.Round(int.Parse(vertNBox.Text) * 0.14).ToString();
+            fieldNBox.Text = Math.Round((int.Parse(vertNBox.Text) + 2) * 0.12).ToString();
+            breweryNBox.Text = Math.Round((int.Parse(vertNBox.Text) + 2) * 0.24).ToString();
+            pubNBox.Text = Math.Round((int.Parse(vertNBox.Text) + 2) * 0.14).ToString();
             int fieldN = int.Parse(fieldNBox.Text);
             int pubN = int.Parse(pubNBox.Text);
-            sectionNBox.Text = Math.Round(0.16 * Math.Pow(vertN-2, 0.8)).ToString();
+            sectionNBox.Text = Math.Round(0.16 * Math.Pow(vertN, 0.8)).ToString();
             densityList.SelectedIndex = 1;
             minFlowIntervalBox.Text = "15";
             maxFlowIntervalBox.Text = "45";

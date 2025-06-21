@@ -64,7 +64,7 @@ int main(int argc, char **argv)
     // dane z interfejsu (argumenty linii polecen)
     if (argc == 11) {
         path = argv[1];
-        vertN = atoi(argv[2])-2;
+        vertN = atoi(argv[2]);
         checkpointN = atoi(argv[3]) + 4;
         density = atoi(argv[4]);
         fieldN = atoi(argv[5]);
