@@ -18,7 +18,7 @@
 #include <limits>
 #include "Path.h"
 #include <unordered_map> //do wypisania wynikow
-#include <locale>
+#include <locale> 
 #include <codecvt>
 #include <io.h>
 #include <fcntl.h>
@@ -54,16 +54,10 @@ public:
     //Wypisuje macierz
     void printGraph() const;
 
-    //Czyta dane z pliku i inicjalizuje macierz
-    bool readFileToGraph(string fileName);
-
-    // Wczytywanie pliku wejsciowego przed "cwiartki update"
-    //bool readFileToGraph2(string fileName);
-
     // Remaster wczytywania autorstwa JK
     bool readFileToGraph3(string fileName);
 
-    //Tworzy siec residualna
+    //Tworzy siec residualna. Pod nasz problem
     void createResidualNet(vector<vector<EdgeData>>& graf , const vector<Node>& listNodes);
 
     //Zmodyfikowany bfs.  Je?eli jest sciezka powiekszajaca z s do t, to zwraca true. Aktulizuje tez tablice ojcow
@@ -75,50 +69,29 @@ public:
     //algorytm znajdowania najkrotszych sciezek.
     bool BellmanFord(int source, int target, double& cost, vector<int>& parents, const vector<vector<EdgeData>>& graf);
 
-    //Algorytm Busackera_Gowena wyznacza najta?szy przep?yw w sieci dla docelowego przep?ywu F.
-    // Nie tworze w nim sieci residualnej. Dzia?a na orginale. Zatem uruchomienie dwukrotnie tej metody nie da dobrych wynikow
-    // Nalezalo by po wywolaniu tej metody. naprawic siec (np. ponownie wczytac z pliku) by uruchomic j? po raz kolejny
-    double BusackerGowen2(double const maxFlow, int s, int t, vector<Path>& roads,
-        bool (Matrix::* shortestPathFunc)(int, int, double&, vector<int>&, const vector<vector<EdgeData>>&));
-
+    // Wyznacza minCostMaxFlow z uwzglednieniem konwersji. Do szukania najta?szych ?cie?ek: Dijkstra z potencja?ami (algorytm Johnsona)
     double BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& roads, double konwersja, int midLayer);
 
     //Klasyczna metoda wyliczaj?ca maksymalny przep?yw bez przekazywania argumentow
     double edmondsKarp();
 
-    bool dijkstraWithPotentials(int source,
-        int target,
-        double& cost,
-        vector<int>& parents,
-        const vector<vector<EdgeData>>& graf,
-        const vector<double>& pot) const;
+    // Dijkstra z kosztami zredukowanymi przez potencja?y
+    bool dijkstraWithPotentials(int source, int target, double& cost, vector<int>& parents, const vector<vector<EdgeData>>& graf, const vector<double>& pot) const;
 
+    // Bellman-Ford: wyznacza potencja?y dla macierzy s?siedztwa
+    // Potencja?y: pot[i] to koszt najta?szej ?cie?ki z wierzcho?ka t do i
     void computePotentials(vector<double>& pot) const;
 
     // Klasyczny algorytm Edmondsa-Karpa. Z podaniem argumentow
     double edmondsKarpClassic(int s, vector<vector<EdgeData>>& graf, int t, vector<int>& f);
 
-    // rozwiazanie problemu. tj liczenie maksymalnego przeplywu i minimalnego kosztu.
-    void maxFlowMinCost();
-
-    // rozwiazanie problemu. tj liczenie maksymalnego przeplywu i minimalnego kosztu. Dla problemu s->Browary->Puby
-    double maxFlowMinCost2(string outputPath);
-
     // rozwiazanie problemu. tj liczenie maksymalnego przeplywu i minimalnego kosztu. Dla problemu s->Browary->Puby
     double maxFlowMinCost3(string outputPath);
 
-
-    //Stary "edmonsKarp2()". Liczy maksymalny przeplyw dla naszego problemu.
-    pair<double, double> maxFlowAlgorithm();
-
-    //wypisuje lub zapisuje do pliku
-    void printToFileSolution(double maxFlow, vector<Path> combined);
-
-    //void printToFileSolution(double maxFlow);
+    // Wypisuje rozwiazanie
     void printToFileSolution2(double resultFlow, vector<Path>  combined, string outputPath);
 
-    void tempPrint(string outputPath , vector<Node>& listNodes);
-
+    // algorytm Edmondsa-Karpa z uwzglednienim konwersji
     double edmondsKarpClassicWithConversion(int s, int t, double conversion, int midLayer);
 
       

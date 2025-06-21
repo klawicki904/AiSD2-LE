@@ -100,6 +100,10 @@
     <ClCompile Include="..\source CPP\EdgeData.cpp" />
     <ClCompile Include="..\source CPP\Matrix.cpp" />
     <ClCompile Include="..\source CPP\Node.cpp" />
+    <ClCompile Include="..\source CPP\Path.cpp" />
+    <ClCompile Include="..\source CPP\printNodesRoads.cpp" />
+    <ClCompile Include="..\source CPP\printRoutes.cpp" />
+    <ClCompile Include="..\source CPP\Quarter.cpp" />
     <ClCompile Include="ClassicAlgorithmTests.cpp" />
     <ClCompile Include="MaxFLowMinCost.cpp" />
   </ItemGroup>

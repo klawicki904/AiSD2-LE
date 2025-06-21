@@ -1,1 +1,2 @@
 G:\Dokumenty\Projekt - Lokalny\Tests\x64\Debug\Tests.vcxproj.Up2Date
+G:\Dokumenty\ProjektKoncowy\AiSD2-LE\Tests\x64\Debug\Tests.vcxproj.Up2Date

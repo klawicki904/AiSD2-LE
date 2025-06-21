@@ -2,6 +2,9 @@
 #include "gtest/gtest.h"
 #include "../source CPP/Matrix.h"
 #include "../source CPP/EdgeData.h"
+#include "../source CPP/Quarter.h"
+#include "../source CPP/Path.h"
+#include "../source CPP/Node.h"
 
 //Testy podstawowych algorytmow (takich ktore mozna sprawdzic na roznych stronach)
 
@@ -11,13 +14,9 @@ TEST(MinCostMaxFlowTest, Case0_FourNodeGraphWithoutMaxFlow_FlowAndCost) {
     m.addEdge(2, 1, 20, 8);
     m.addEdge(2, 3, 15, 4);
 
-
     double maxFlow = m.edmondsKarp();
-    double BG_DijkstraCost = m.BusackerGowen2(maxFlow,0,3, &Matrix::dijkstraModify);
-    double BG_BellmanFordCost = m.BusackerGowen2(maxFlow, 0, 3, &Matrix::BellmanFord);
     EXPECT_DOUBLE_EQ(0, maxFlow);
-   // EXPECT_DOUBLE_EQ(0, BG_DijkstraCost);
-    EXPECT_DOUBLE_EQ(0, BG_BellmanFordCost);
+
 }
 
 TEST(MinCostMaxFlowTest, Case1_SixNodeGraph_FlowAndCost) {
@@ -32,11 +31,8 @@ TEST(MinCostMaxFlowTest, Case1_SixNodeGraph_FlowAndCost) {
     m.addEdge(4, 5, 3, 9);
 
     double maxFlow = m.edmondsKarp();
-    double BG_DijkstraCost = m.BusackerGowen2(maxFlow,0,5, &Matrix::dijkstraModify);
-    double BG_BellmanFordCost = m.BusackerGowen2(maxFlow, 0, 5, &Matrix::BellmanFord);
     EXPECT_DOUBLE_EQ(6, maxFlow);
-    EXPECT_DOUBLE_EQ(75, BG_DijkstraCost);
-   // EXPECT_DOUBLE_EQ(75, BG_BellmanFordCost);
+
 }
 TEST(MinCostMaxFlowTest, Case2_FiveNodeGraph_FlowAndCost) {
     Matrix m(5);
@@ -49,11 +45,7 @@ TEST(MinCostMaxFlowTest, Case2_FiveNodeGraph_FlowAndCost) {
     m.addEdge(2, 4, 17, 3);
 
     double maxFlow = m.edmondsKarp();
-    double BG_DijkstraCost = m.BusackerGowen2(maxFlow,0,4, &Matrix::dijkstraModify);
-  //  double BG_BellmanFordCost = m.BusackerGowen2(maxFlow, 0, 4, &Matrix::BellmanFord);
     EXPECT_DOUBLE_EQ(31, maxFlow);
-    EXPECT_DOUBLE_EQ(365, BG_DijkstraCost);
-   // EXPECT_DOUBLE_EQ(365, BG_BellmanFordCost);
 }
 
 TEST(MinCostMaxFlowTest, Case3_15NodeGraph_FlowAndCost) {
@@ -89,9 +81,6 @@ TEST(MinCostMaxFlowTest, Case3_15NodeGraph_FlowAndCost) {
     m.addEdge(13, 14, 99, 1);
 
     double maxFlow = m.edmondsKarp();
-    double BG_DijkstraCost = m.BusackerGowen2(maxFlow,0,14, &Matrix::dijkstraModify);
-    double BG_BellmanFordCost = m.BusackerGowen2(maxFlow, 0, 14, &Matrix::BellmanFord);
     EXPECT_DOUBLE_EQ(81, maxFlow);
-   // EXPECT_DOUBLE_EQ(405, BG_DijkstraCost);
-   // EXPECT_DOUBLE_EQ(405, BG_BellmanFordCost);
+
 }

@@ -24,6 +24,7 @@
     <ProjectGuid>{e7d11fc6-02a2-48f5-9d42-f91450050d8a}</ProjectGuid>
     <RootNamespace>AiSDIILEproj</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>PathAnalyzer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -136,8 +137,8 @@
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="Quarter.cpp" />
-	<ClCompile Include="printNodesRoads.cpp" />
-	<ClCompile Include="printRoutes.cpp" />
+    <ClCompile Include="printNodesRoads.cpp" />
+    <ClCompile Include="printRoutes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdjacencyList.h" />
@@ -148,8 +149,8 @@
     <ClInclude Include="Path.h" />
     <ClInclude Include="Quarter.h" />
     <ClInclude Include="resource.h" />
-	<ClInclude Include="printNodesRoads.h" />
-	<ClInclude Include="printRoutes.h" />
+    <ClInclude Include="printNodesRoads.h" />
+    <ClInclude Include="printRoutes.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AiSD-II-LE-proj.rc" />

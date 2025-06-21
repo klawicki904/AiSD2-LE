@@ -77,63 +77,6 @@ void Matrix::printGraph() const {
     }
 }
 
-
-//Czyta dane z pliku i inicjalizuje macierz
-bool Matrix::readFileToGraph(string fileName) {
-    ifstream plik(fileName);
-    int vertices; // ilosc wierzcholkow
-    int u, v, edges;// u , v (u --> v), przepustowosc, ilosc krawedzi 
-    double maxFlow, x, y, capacity, cost = 0.0;
-    string line;
-    int nodeId;
-
-    if (!(plik >> vertices >> edges))
-    {
-        cerr << "Nie mozna otworzyc pliku ";
-        return false;
-    }
-    //inicjalizuje macierz
-    this->init(vertices);
-
-    // Wczytywanie krawedzi
-    for (int i = 0; i < edges; i++) {
-        getline(plik, line);
-        if (line.empty()) {
-            i--; // ignoruj puste linie
-            continue;
-        }
-
-        istringstream iss(line);
-
-        if (!(iss >> u >> v >> maxFlow)) {
-            std::cerr << "Blad podczas wczytywania krawedzi w linii: " << line << std::endl;
-            continue;
-        }
-
-        if (!(iss >> cost)) {
-            cost = 0.0; // Jesli brak kosztu, przypisz domyslnie
-        }
-
-        addEdge(u, v, maxFlow, cost);
-    }
-
-
-    // Wczytywanie Node'ow
-    while (plik >> nodeId >> x >> y >> line >> capacity) {
-        Node::NodeType type = Node::NodeType::None;
-
-        if (line == "Field") type = Node::NodeType::Field;
-        else if (line == "Brewery") type = Node::NodeType::Brewery;
-        else if (line == "Pub") type = Node::NodeType::Pub;
-
-        Node tmpNode(nodeId, x, y, capacity, type);
-        addNode(tmpNode);
-    }
-
-    plik.close();
-    return true;
-}
-
 // Remaster wczytywania autorstwa JK
 bool Matrix::readFileToGraph3(string fileName) {
     ifstream plik(fileName);
@@ -492,7 +435,7 @@ bool Matrix::dijkstraModify(int source, int target, double& cost, vector<int>& p
 
 // ROZWIAZANIE ANALIZATORA PRZEPLYWU - nowe
 // Idea to przygotowanie grafu w ten sposób, aby uruchamia? algorytmy na jednym grafie zamiast na dwóch
-//minCostMaxFlow dla naszego problemu. Z wykorzystaniem algorytmu BusackeraGowena. 
+//minCostMaxFlow dla naszego problemu. Z wykorzystaniem algorytmu BusackeraGowena. Do szukania minimalnych kosztów ?cie?ek Dijkstra z potencja?ami (algorytm Johnsona) 
 double Matrix::maxFlowMinCost3(string outputPath) {
     cout << endl;
     double result = 0; // Zwraca sumaryczny koszt (mo?e by? przydatne dla testów jednostkowych)
@@ -542,7 +485,6 @@ double Matrix::maxFlowMinCost3(string outputPath) {
 
 //Zapisuje wynik do pliku i wypisuje
 void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string outputPath) {
-
     wofstream out(outputPath, ios::binary);
     out.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
     if (!out.is_open()) {
@@ -615,7 +557,7 @@ void Matrix::printToFileSolution2(double maxFlow, vector<Path> combined, string 
 
     //wypisanie punkt?w
 //    printNodes(out, listVertices);
-
+    
 
     out << endl;
     out << L"Rozwi¹zanie:" << endl;
@@ -775,8 +717,8 @@ double Matrix::edmondsKarpClassic(int s, vector<vector<EdgeData>>& graf, int t, 
     return maxFlow;
 }
 
-// Bellman-Ford: wyznacza potencja?y dla macierzy s?siedztwa tab[][]
-// Potencja?y: pot[i] to koszt najta?szej ?cie?ki z wierzcho?ka s do i
+// Bellman-Ford: wyznacza potencja?y dla macierzy s?siedztwa
+// Potencja?y: pot[i] to koszt najta?szej ?cie?ki z wierzcho?ka t do i
 void Matrix::computePotentials(vector<double>& pot) const {
     const double INF = numeric_limits<double>::max();
     pot.assign(vertices, INF);
@@ -799,10 +741,6 @@ void Matrix::computePotentials(vector<double>& pot) const {
         }
         if (!updated) break;
     }
-
-    //for (int i = 0; i < vertices - 1; i++) {
-    //    this->tab[vertices - 1][i].remainingFlow = 0;
-    //}
 }
 
 // Dijkstra z kosztami zredukowanymi przez potencja?y
@@ -830,7 +768,7 @@ bool Matrix::dijkstraWithPotentials(int source,
         visited[u] = true;
 
         for (int v = 0; v < n; ++v) {
-            if (graf[u][v].remainingFlow != 0) {
+            if (graf[u][v].remainingFlow > 0) {
                 // Koszt zredukowany
                 double reducedCost = graf[u][v].cost + pot[u] - pot[v];
                 if (dist[v] > dist[u] + reducedCost) {
@@ -851,6 +789,7 @@ bool Matrix::dijkstraWithPotentials(int source,
     }
 }
 
+// Wyznacza minCostMaxFlow z uwzglednieniem konwersji. Do szukania najta?szych ?cie?ek: Dijkstra z potencja?ami (algorytm Johnsona)
 double Matrix::BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& roads, double konwersja, int midLayer) {
 
     double result = 0; //przeplyw, zwieksza si? a? nie osiagnie warto?ci F- tj. maxFlow. Podanego jako argument funkcji.
@@ -862,28 +801,32 @@ double Matrix::BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& 
     const double INF = numeric_limits<double>::max();
 
 
-    //potrzebne do 
+    //potrzebne do potencja?ów. Tworze krawedzie t -> i (nie wplywa na algorytm)
     for (int i = 0; i < vertices - 1; i++) {
         this->tab[vertices - 1][i].remainingFlow = 1;
     }
 
-    vector<double> pot(vertices);
+    vector<double> pot(vertices); //potencjaly
+
     // Wykonuje dopoki nie zostal osiagniety przeplyw F(maxFlow)
-    // i dopoki istnieje sciezka z s do t (wybiera t? scie?k? kt?ra ma najni?szy koszt)
     while (result < maxFlow ) {
           
-        computePotentials(pot);
+        computePotentials(pot); //tworzy potencjaly wierzcholkow
+        
+        //dijkstra zwraca true jezeli istnieje siezka powiekszajaca, jezeli nie istnieje konczy algorytm
         if (!(dijkstraWithPotentials(s,t,cost,f,this->tab,pot))) break;
 
-        double maxFlowOfPathJeczmien = INF;
-        bool conversionChceck = true;
-        int connectedPoint;
+        double maxFlowOfPathJeczmien = INF; //przeplyw jeczmienia ze sciezki
+        bool conversionChceck = true; //czy osiagnieto browar ktory konwertuje jeczmien na piwo
+        int connectedPoint; // id wierzcholka browaru kktory konwertowal
 
+
+        //Znajduje minimum jeczmiena i piwa ze sciezki
         int tmpT = t;
         int tmp = f[t];
         double maxFlowOfPathPiwo = tab[tmp][tmpT].remainingFlow;
-        cout << " Droga: z " << t << " do " << s << endl;
-        cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
+       // cout << " Droga: z " << t << " do " << s << endl;
+       // cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
         while (tmp != s) {
             tmpT = tmp;
             tmp = f[tmp];
@@ -893,22 +836,25 @@ double Matrix::BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& 
             }
             if (conversionChceck) {
                 maxFlowOfPathPiwo = min(maxFlowOfPathPiwo, tab[tmp][tmpT].remainingFlow);
-                cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
+                //cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
             }
             else {
                 maxFlowOfPathJeczmien = min(maxFlowOfPathJeczmien, tab[tmp][tmpT].remainingFlow);
-                cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathJeczmien << endl;
+                //cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathJeczmien << endl;
             }
         }
 
+        //Aktualizuje jeczmien i piwo ze sciezki uwzgledniajac konwersje
         maxFlowOfPathJeczmien = min(maxFlowOfPathJeczmien, maxFlowOfPathPiwo / konwersja);
         maxFlowOfPathPiwo = min(maxFlowOfPathPiwo, maxFlowOfPathJeczmien * konwersja);
 
+        // Opcjonalny, gdy metoda liczy min cost dla flow ktory nie jest maksymalnym przeplywem
         if (result + maxFlowOfPathPiwo > maxFlow) {
             maxFlowOfPathPiwo = maxFlow - result;
         }
 
         conversionChceck = true;
+
         //aktualizuje siec residualna
         tmpT = t;
         tmp = f[t];
@@ -921,16 +867,10 @@ double Matrix::BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& 
             if (conversionChceck) {
                 tab[tmp][tmpT].remainingFlow -= maxFlowOfPathPiwo;
                 tab[tmpT][tmp].remainingFlow += maxFlowOfPathPiwo;
-              //  tab[tmp - midLayer][tmpT - midLayer].remainingFlow -= maxFlowOfPathPiwo;
-              //  tab[tmpT - midLayer][tmp - midLayer].remainingFlow += maxFlowOfPathPiwo;
             }
             else {
                 tab[tmp][tmpT].remainingFlow -= maxFlowOfPathJeczmien;
                 tab[tmpT][tmp].remainingFlow += maxFlowOfPathJeczmien;
-                //if (tmp != connectedPoint) {
-                  //  tab[tmp + midLayer][tmpT + midLayer].remainingFlow -= maxFlowOfPathJeczmien;
-                 //   tab[tmpT + midLayer][tmp + midLayer].remainingFlow += maxFlowOfPathJeczmien;
-               // }
             }
             tab[tmpT][tmp].cost = -tab[tmp][tmpT].cost;
             path.push_back(tmpT);
@@ -988,8 +928,8 @@ double Matrix::edmondsKarpClassicWithConversion(int s, int t, double conversion,
         int tmpT = t;
         int tmp = f[t];
         double maxFlowOfPathPiwo = tab[tmp][tmpT].remainingFlow;
-        cout << " Droga: z " << t << " do " << s << endl;
-        cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
+       // cout << " Droga: z " << t << " do " << s << endl;
+       // cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
         while (tmp != s) {
             tmpT = tmp;
             tmp = f[tmp];
@@ -999,21 +939,21 @@ double Matrix::edmondsKarpClassicWithConversion(int s, int t, double conversion,
             }
             if (conversionChceck) {
                 maxFlowOfPathPiwo = min(maxFlowOfPathPiwo, tab[tmp][tmpT].remainingFlow);
-                cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
+                //cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
             }
             else {
                 maxFlowOfPathJeczmien = min(maxFlowOfPathJeczmien, tab[tmp][tmpT].remainingFlow);
-                cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathJeczmien << endl;
+                //cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathJeczmien << endl;
             }
         }
 
 
-        cout << " maks jeczmien " << maxFlowOfPathJeczmien << " maks piwo " << maxFlowOfPathPiwo << endl;
+       // cout << " maks jeczmien " << maxFlowOfPathJeczmien << " maks piwo " << maxFlowOfPathPiwo << endl;
 
             maxFlowOfPathJeczmien = min(maxFlowOfPathJeczmien, maxFlowOfPathPiwo / conversion);
             maxFlowOfPathPiwo = min(maxFlowOfPathPiwo , maxFlowOfPathJeczmien * conversion);
 
-        cout << " maks jeczmien " << maxFlowOfPathJeczmien << " maks piwo " << maxFlowOfPathPiwo << endl;
+       // cout << " maks jeczmien " << maxFlowOfPathJeczmien << " maks piwo " << maxFlowOfPathPiwo << endl;
         conversionChceck = true;
         //aktualizuje siec residualna
         tmpT = t;
@@ -1027,16 +967,11 @@ double Matrix::edmondsKarpClassicWithConversion(int s, int t, double conversion,
             if (conversionChceck) {
                 tab[tmp][tmpT].remainingFlow -= maxFlowOfPathPiwo;
                 tab[tmpT][tmp].remainingFlow += maxFlowOfPathPiwo;
-               // tab[tmp - midLayer][tmpT - midLayer].remainingFlow -= maxFlowOfPathPiwo;
-               /// tab[tmpT - midLayer][tmp - midLayer].remainingFlow += maxFlowOfPathPiwo;
+
             }
             else {
                 tab[tmp][tmpT].remainingFlow -= maxFlowOfPathJeczmien;
                 tab[tmpT][tmp].remainingFlow += maxFlowOfPathJeczmien;
-                if (tmp != connectedPoint) {
-                   // tab[tmp + midLayer][tmpT + midLayer].remainingFlow -= maxFlowOfPathJeczmien;
-                   // tab[tmpT + midLayer][tmp + midLayer].remainingFlow += maxFlowOfPathJeczmien;
-                }
             }
             tmpT = tmp;
             tmp = f[tmp];

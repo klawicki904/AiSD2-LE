@@ -7,3 +7,6 @@ G:\Dokumenty\ProjektAktualny\source CPP\AiSD-II-LE-proj\x64\Debug\AiSD-II-.83AE3
 C:\AiSD2-LE\source CPP\x64\Debug\gtest.pdb
 C:\AiSD2-LE\source CPP\x64\Debug\gtest_main.pdb
 C:\AiSD2-LE\source CPP\AiSD-II-LE-proj\x64\Debug\AiSD-II-.83AE3877.Up2Date
+G:\Dokumenty\ProjektKoncowy\AiSD2-LE\source CPP\x64\Debug\gtest.pdb
+G:\Dokumenty\ProjektKoncowy\AiSD2-LE\source CPP\x64\Debug\gtest_main.pdb
+G:\Dokumenty\ProjektKoncowy\AiSD2-LE\source CPP\AiSD-II-LE-proj\x64\Debug\AiSD-II-.83AE3877.Up2Date
