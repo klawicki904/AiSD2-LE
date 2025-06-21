@@ -81,11 +81,19 @@ public:
     double BusackerGowen2(double const maxFlow, int s, int t, vector<Path>& roads,
         bool (Matrix::* shortestPathFunc)(int, int, double&, vector<int>&, const vector<vector<EdgeData>>&));
 
-    double BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& roads, double konwersja, int midLayer,
-        bool (Matrix::* shortestPathFunc)(int, int, double&, vector<int>&, const vector<vector<EdgeData>>&));
+    double BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& roads, double konwersja, int midLayer);
 
     //Klasyczna metoda wyliczaj?ca maksymalny przep?yw bez przekazywania argumentow
     double edmondsKarp();
+
+    bool dijkstraWithPotentials(int source,
+        int target,
+        double& cost,
+        vector<int>& parents,
+        const vector<vector<EdgeData>>& graf,
+        const vector<double>& pot) const;
+
+    void computePotentials(vector<double>& pot) const;
 
     // Klasyczny algorytm Edmondsa-Karpa. Z podaniem argumentow
     double edmondsKarpClassic(int s, vector<vector<EdgeData>>& graf, int t, vector<int>& f);

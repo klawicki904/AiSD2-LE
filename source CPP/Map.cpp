@@ -15,7 +15,7 @@ int main(int argc, char** argv)
         {
             return -1;
         }*/
-        if (!graphMatrix.readFileToGraph3("./daneZWagami2.txt"))
+        if (!graphMatrix.readFileToGraph3("./GraphData.txt"))
         {
             return -1;
         }
