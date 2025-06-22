@@ -1,0 +1,72 @@
+W odpowiedzi na potrzeby burmistrza Samwise'a, przygotowalismy projekt ShireCraft.
+Nasze rozwiazanie powinno nie tylko spelnic wszystkie wymagania otrzymane w zleceniu, ale rowniez umozliwic wygodne i intuicyjne tworzenie sieci drog krainy Shire (stad nazwa projektu).
+
+Jestem w glownym interfejsie ShireCraft, w zakladce "Mapa". Tutaj mam plaszczyzne, na ktorej bede tworzyl polaczenia miedzy punktami.
+
+Zaczniemy od wyklikania danych wejsciowych.
+
+Burmistrz przekazal nam nastepujace informacje:
+
+Po pierwsze, zarzadzil spis pol, na ktorych uprawiany jest jeczmien, zna wiec ich polozenie i wie, ile srednio jeczmienia wyrasta na jednym poletku.
+Tworze wiec pola: klikam dwa razy w pustym miejscu, tworzy sie punkt tam, gdzie kliknalem. Stworze od razu trzy punkty. Ctrl-A - zaznaczam wszystkie. Ustawiam ich typ na pole. Klikam na pole, widze w prawym dolnym rogu jego polozenie i wiem, ile na nim wyrasta - na razie to jest zero.
+
+Burmistrz zna tez rozmieszczenie browarow, z ktorych kazdy moze przetworzyc okreslona liczbe jeczmienia.
+Przygotuje sobie punkty na pozniej. Zaznaczam te dwa punkty, ustawiam ich typ na browar. Gornemu ustawie pojemnosc 25, a dolnemu 30.25 .
+
+W kazdym z browarow z tony jeczmienia uzyskuje sie jednakowa ilosc piwa.
+Ta ilosc mozemy zmienic w menu schowanym pod ta strzalka. Mamy wiele przyciskow, czesc z nich to sa jednoczesnie skroty klawiszowe. To pole tekstowe oznacza ilosc piwa, jaka uzyskuje sie z tony jeczmienia. Ustawie ja na 0.5 .
+
+Burmistrz zna polozenie wszystkich karczm w swoim kraju.
+Tak jak poprzednio, wystarczy kliknac na punkt, aby dowiedziec sie o jego polozeniu. Zaznacze te dwa punkty i ustawie ich typ na karczme.
+
+W naszym rozwiazaniu moga wystepowac rowniez punkty bez typu, ktore po prostu tworza wiecej skrzyzowan.
+
+Burmistrz posiada mape, na ktorej autor zaznaczyl ilosc zboza oraz piwa, ktora mozna przewiezc pomiedzy poszczegolnymi skrzyzowaniami.
+Ale zeby zawsze udalo sie zrealizowac zaplanowane zadania, przed wyruszeniem w droge nalezy te drogi naprawic.
+W takim razie tworze drogi: klikam dwa razy na punkt, zaczynam tworzyc droge-strzalke. Klikam w puste miejsce, tworzenie jest anulowane. Klikam w drugi punkt, droga laczy te punkty. Klikam na strzalke i moge wpisac koszt naprawy drogi (to jest liczba naturalna) oraz przeplyw, czyli ilosc zboza oraz piwa, ktora mozna przewiezc dana droga (to jest liczba z dokladnoscia do dwoch miejsc po przecinku).
+
+Pozniej okazalo sie, ze w roznych cwiartkach Shire ilosci jeczmienia wyrastajace na jednym polu roznia sie od siebie. Od burmistrza otrzymalismy wspolrzedne punktow granicznych kazdej cwiartki.
+Zeby tworzyc cwiartki, musze wlaczyc tryb tworzenia punktow granicznych. W tym trybie tworze punkty graniczne tak samo jak wczesniej zwykle punkty. Otocze teraz te dwa (gorne) pola jedna cwiartka. Zeby z punktow granicznych zrobic cwiartke, klikam dwa razy na dowolny punkt graniczny. Jak jest juz cwiartka i klikne dwa razy, zaznacza sie wszystkie punkty graniczne do niej nalezace. Jak widzimy, pola zmienily kolor na bialy, a to dlatego, ze w naszym rozwiazaniu kazde pole musi znajdowac sie wewnatrz cwiartki. Wartosc cwiartki decyduje o tym, ile jeczmienia wyrasta na kazdym polu wewnatrz niej. Ustawie wartosc cwiartki na 25. Teraz otocze trzecie pole oddzielna cwiartka. Okazalo sie, ze kazda cwiartka w Shire jest wielokatem wypuklym, czyli wkleslego nie moge zrobic; a takze ze cwiartki sa rozlaczne z pozostalymi cwiartkami, wiec jesli naloze punkt graniczny jednej cwiartki na druga cwiartke, to zaswieca sie na czerwono.
+
+Wyjasnilem na szybko korzystanie z edytora danych wejsciowych, teraz zobaczmy jak nasze dane wygladaja w pliku. Przechodze do zakladki "Pliki". To, co wyklikalem w zakladce "Mapa", zostalo zapisane do pliku tekstowego, a jego zawartosc mozemy tutaj obejrzec. Mamy tutaj rowniez mozliwosc wczytania pliku z danymi wejsciowymi lub pliku z rozwiazaniem. Ta zakladka jest jeszcze pelna niespodzianek, ale nie wszystko na raz. Teraz opisze szybko format danych wejsciowych. Najpierw wczytam wczesniej przygotowany plik z danymi wejsciowymi. Pokaze dla porownania plik z danymi wejsciowymi i wyjsciowymi, bo w danych wyjsciowych mamy w zasadzie powtorzone dane wejsciowe, ale sa dokladniej opisane.
+(Slowo-klucz KONWERSJA - jedna liczba - mnoznik konwersji piwa
+Slowo-klucz PUNKTY - liczba porzadkowa, pozycja pozioma X, pozycja pionowa Y, typ, a po browarze jego pojemnosc
+Slowo-klucz DROGI - z ktorego punktu, do ktorego punktu, przeplyw, koszt
+Slowo-klucz CWIARTKI - wartosc cwiartki, a nastepnie parami pozycje X i Y punktow granicznych)
+Plik z rozwiazaniem ma jeszcze czesc "ROZWIAZANIE", ktora zaraz bedziemy mogli obserwowac w interfejsie.
+Moge tez edytowac zawartosc pliku bezposrednio w interfejsie, zawartosc mapy zmieni sie automatycznie.
+
+Przechodzimy teraz do najwazniejszej czesci.
+Burmistrz powiedzial:
+Opracujcie sposob znalezienia maksymalnej ilosci piwa, ktora mozna dostarczyc do karczm w Shire tak, zeby przy zachowaniu ilosci przewozonego towaru koszt naprawy drog, po ktorych poruszaja sie transporty, byl mozliwie najmniejszy.
+
+Wystarczy, ze przejde do zakladki "Symulacja" i uruchomi sie nasz analizator przeplywu. Ale zanim pokaze, ze dziala, pokaze jak dziala.
+
+Najpierw analizator potrzebuje przekonwertowac nasza mape na graf przeplywowy, zapisac na nim te wartosci nad punktami i zapewnic, zeby do karczm nie trafil jeczmien, tylko piwo.
+Kiedy analizator otrzyma plik z naszymi danymi wejsciowymi, zweryfikuje je i zrobi z nich graf, zrobi kopie tego grafu. Ta kopie duplikuje.
+Nastepnie doda zrodlo, ktore prowadzi z kosztem zerowym do kazdego pola z pierwszej czesci, a wydajnosci pol przeniesie na przeplyw nowo dodanych strzalek.
+Potem doda ujscie, do ktorego prowadza wszystkie karczmy z drugiej czesci. Przeplywy nowych strzalek beda wystarczajaco duze, zeby wszystko przepuscic, a koszty beda zerowe.
+Na koniec browary z pierwszej czesci beda prowadzily do swoich sobowtorow. Pojemnosc kazdego browaru zostanie przeniesiona na nowo utworzone przejscie. W ten sposob zapewnimy, ze trasa zawsze bedzie przebiegac przez browar.
+Analizator wykonuje algorytm na maksymalny przeplyw na nowym grafie.
+Znajac maksymalny przeplyw, tworzy ten nowy graf jeszcze raz, zeby przywrocic wartosci sprzed dzialania algorytmu Edmondsa-Karpa, i wykonuje algorytm Busackera-Gowena, zeby znalezc minimalny koszt i ostateczne rozwiazanie.
+
+Przy okazji pokaze CTRL-Z, czyli cofanie ostatnio wykonanej akcji, jak na porzadny edytor przystalo. Jakbym sie rozmyslil albo za bardzo cofnal, to moge wcisnac CTRL-Y, czyli przywrocic cofniecia.
+
+Pora na symulacje.
+
+W zakladce "Symulacja" dalej widzimy nasza mape, ale juz po przetworzeniu przez analizator. Danych nie mozemy edytowac, dopoki nie wrocimy do zakladki "Mapa". Na dole mamy suwak i przyciski sterowania do podgladu kazdego kroku trasy. Nad przyciskami mamy dostarczona ilosc piwa i laczny koszt naprawy drog do tego momentu w symulacji. Nad suwakiem mamy linie z pliku z rozwiazaniem, ktorej wizualizacja obecnie wyswietla sie na mapie.
+
+Jestesmy teraz w linijce "Trasa nr 1" - widzimy zaznaczona na pomaranczowo cala trase jednego wozu. Bedziemy mogli zobaczyc po kolei kazda droge, ktora sie ten woz poruszal i obserwowac, jak wartosci sie zmieniaja.
+Nastepna linijka: 14 ton jeczmienia przechodzi z dolnego pola do gornego browaru. Mnoznik jest pol, wiec teraz z browaru wyjdzie 7 ton piwa, przez skrzyzowanie i do gornej karczmy.
+Trasa numer dwa: z dolnego pola do gornego browaru, wykorzystujemy cala pojemnosc gornego browaru i do dolnej karczmy.
+Teraz najtansza trasa jest tu na gorze. Kazda droge naprawiamy tylko raz, po pierwszym przejsciu. Przesylamy z gornego pola do gornego browaru, ale ten browar juz nie ma pojemnosci. Wiec jeczmien przechodzi do drugiego browaru i dopiero tam jest zamieniany na piwo.
+Nastepna trasa przejdzie miedzy polami, bo tam koszt jest najmniejszy. Wykorzystalismy caly przeplyw strzalek z dolnego browaru do skrzyzowania. Zostala jeszcze jedna tona na polu. Przejdziemy do gornego pola, do dolnego browaru, do gornego browaru i do dolnej karczmy.
+
+Burmistrz chcial rowniez zapisac sobie nasze rozwiazania na przyszlosc. Wystarczy ze klikne w ten przycisk i burmistrz bedzie mogl zapisac zarowno dane wejsciowe jak i rozwiazanie w wybranym miejscu.
+A ze pamieci komputera ma nie byc zbyt wiele, mamy tez kompresje. Klikam tutaj, wybieram plik do skompresowania i wybieram gdzie ma byc zapisany. W panelu u gory mozemy zobaczyc rozmiary plikow przed i po operacji.
+
+Ostatnia rzecza, jaka burmistrz sobie zyczyl, bylo wyszukiwanie slow w rozwiazaniach. Chcial tez przetestowac kilka sposobow wyszukiwania slow, wiec do wyboru mamy nie tylko cztery algorytmy wyszukiwania, ale takze wyrazenia regularne jak i uwzglednianie wielkosci liter. Dla przykladu wyszukam "n.". Teraz zobaczymy, ze moze nie uwzgledniac wielkosci liter. Nawet dziala dla wyrazen regularnych.
+
+To powinno byc wszystko, co dostalismy w zleceniu, ale nasz program kryje jeszcze kilka ciekawych funkcjonalnosci. Ten magiczny przycisk robi rzeczy, ktore nie snily sie nawet najwiekszym filozofom. Otwiera interfejs graficzny w interfejsie graficznym. To jest generator, ktory byl wykorzystywany do testow poprawnosci i obciazeniowych. Trzeba tylko podac liczbe punktow, jaka chcemy wygenerowac i kliknac w logo, a reszta pol uzupelni sie automatycznie. Teraz klikam generuj i mamy czesciowo losowa mape.
+
+Musze takze pokazac jak pieknie generuja sie u nas duze grafy.

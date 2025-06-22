@@ -1,0 +1,62 @@
+Konwersja:
+1 ton to ilość piwa, jaką uzyskuje się z tony jęczmienia w każdym z browarów.
+
+Punkty:
+Punkt 1: typ: pole; pozycja x = -6, y = -2; wydajność: 110 ton.
+Punkt 2: typ: skrzyżowanie; pozycja x = -3, y = -3.
+Punkt 3: typ: skrzyżowanie; pozycja x = -3, y = 1.
+Punkt 4: typ: skrzyżowanie; pozycja x = 0, y = -3.
+Punkt 5: typ: skrzyżowanie; pozycja x = 0, y = 1.
+Punkt 6: typ: browar; pozycja x = 4, y = -1; pojemność: 100 ton.
+Punkt 7: typ: karczma; pozycja x = 7, y = -1.
+
+Drogi:
+Droga 1: z pola [1] na pozycji (-6; -2) do skrzyżowania [2] na pozycji (-3; -3): przepustowość: 5 ton; koszt naprawy: 9 srebrnych pensów.
+Droga 2: z pola [1] na pozycji (-6; -2) do skrzyżowania [3] na pozycji (-3; 1): przepustowość: 4 ton; koszt naprawy: 1 srebrnych pensów.
+Droga 3: z skrzyżowania [2] na pozycji (-3; -3) do skrzyżowania [4] na pozycji (0; -3): przepustowość: 2 ton; koszt naprawy: 1 srebrnych pensów.
+Droga 4: z skrzyżowania [3] na pozycji (-3; 1) do skrzyżowania [2] na pozycji (-3; -3): przepustowość: 2 ton; koszt naprawy: 1 srebrnych pensów.
+Droga 5: z skrzyżowania [3] na pozycji (-3; 1) do skrzyżowania [5] na pozycji (0; 1): przepustowość: 5 ton; koszt naprawy: 9 srebrnych pensów.
+Droga 6: z skrzyżowania [4] na pozycji (0; -3) do skrzyżowania [5] na pozycji (0; 1): przepustowość: 3 ton; koszt naprawy: 1 srebrnych pensów.
+Droga 7: z skrzyżowania [4] na pozycji (0; -3) do browaru [6] na pozycji (4; -1): przepustowość: 3 ton; koszt naprawy: 9 srebrnych pensów.
+Droga 8: z skrzyżowania [5] na pozycji (0; 1) do browaru [6] na pozycji (4; -1): przepustowość: 5 ton; koszt naprawy: 1 srebrnych pensów.
+Droga 9: z browaru [6] na pozycji (4; -1) do karczmy [7] na pozycji (7; -1): przepustowość: 100 ton; koszt naprawy: 0 srebrnych pensów.
+
+ćwiartki:
+wartość: 110; punkty graniczne: (-7; -1), (-5; -1), (-5; -3), (-7; -3), 
+
+Rozwiązanie:
+Maksymalna ilość piwa, którą można przetransportować: 6 ton; koszt naprawy: 32 srebrnych pensów
+Przebieg trasy: 
+Trasa nr 1:
+Z pola [1] na pozycji (-6; -2) 2 ton jęczmienia do skrzyżowania [3] na pozycji (-3; 1);
+zawartość pola [1] na pozycji (-6; -2) wynosi 108;
+Z skrzyżowania [3] na pozycji (-3; 1) 2 ton jęczmienia do skrzyżowania [2] na pozycji (-3; -3);
+Z skrzyżowania [2] na pozycji (-3; -3) 2 ton jęczmienia do skrzyżowania [4] na pozycji (0; -3);
+Z skrzyżowania [4] na pozycji (0; -3) 2 ton jęczmienia do skrzyżowania [5] na pozycji (0; 1);
+Z skrzyżowania [5] na pozycji (0; 1) 2 ton jęczmienia do browaru [6] na pozycji (4; -1);
+pojemność browaru [6] na pozycji (4; -1) wynosi 98;
+Z browaru [6] na pozycji (4; -1) 2 ton piwa do karczmy [7] na pozycji (7; -1);
+Trasa nr 2:
+Z pola [1] na pozycji (-6; -2) 2 ton jęczmienia do skrzyżowania [3] na pozycji (-3; 1);
+zawartość pola [1] na pozycji (-6; -2) wynosi 106;
+Z skrzyżowania [3] na pozycji (-3; 1) 2 ton jęczmienia do skrzyżowania [5] na pozycji (0; 1);
+Z skrzyżowania [5] na pozycji (0; 1) 2 ton jęczmienia do browaru [6] na pozycji (4; -1);
+pojemność browaru [6] na pozycji (4; -1) wynosi 96;
+Z browaru [6] na pozycji (4; -1) 2 ton piwa do karczmy [7] na pozycji (7; -1);
+Trasa nr 3:
+Z pola [1] na pozycji (-6; -2) 1 ton jęczmienia do skrzyżowania [2] na pozycji (-3; -3);
+zawartość pola [1] na pozycji (-6; -2) wynosi 105;
+Z skrzyżowania [2] na pozycji (-3; -3) 1 ton jęczmienia do skrzyżowania [3] na pozycji (-3; 1);
+Z skrzyżowania [3] na pozycji (-3; 1) 1 ton jęczmienia do skrzyżowania [5] na pozycji (0; 1);
+Z skrzyżowania [5] na pozycji (0; 1) 1 ton jęczmienia do browaru [6] na pozycji (4; -1);
+pojemność browaru [6] na pozycji (4; -1) wynosi 95;
+Z browaru [6] na pozycji (4; -1) 1 ton piwa do karczmy [7] na pozycji (7; -1);
+Trasa nr 4:
+Z pola [1] na pozycji (-6; -2) 1 ton jęczmienia do skrzyżowania [2] na pozycji (-3; -3);
+zawartość pola [1] na pozycji (-6; -2) wynosi 104;
+Z skrzyżowania [2] na pozycji (-3; -3) 1 ton jęczmienia do skrzyżowania [3] na pozycji (-3; 1);
+Z skrzyżowania [3] na pozycji (-3; 1) 1 ton jęczmienia do skrzyżowania [5] na pozycji (0; 1);
+Z skrzyżowania [5] na pozycji (0; 1) 1 ton jęczmienia do skrzyżowania [4] na pozycji (0; -3);
+Z skrzyżowania [4] na pozycji (0; -3) 1 ton jęczmienia do browaru [6] na pozycji (4; -1);
+pojemność browaru [6] na pozycji (4; -1) wynosi 94;
+Z browaru [6] na pozycji (4; -1) 1 ton piwa do karczmy [7] na pozycji (7; -1);

@@ -1,0 +1,23 @@
+Konwersja:
+0.5 ton to ilość piwa, jaką uzyskuje się z tony jęczmienia w każdym z browarów.
+
+Punkty:
+Punkt 1: typ: pole; pozycja x = -2, y = -1; wydajność: 2 ton.
+Punkt 2: typ: browar; pozycja x = 1, y = -1; pojemność: 5 ton.
+Punkt 3: typ: karczma; pozycja x = 4, y = -1.
+
+Drogi:
+Droga 1: z pola [1] na pozycji (-2; -1) do browaru [2] na pozycji (1; -1): przepustowość: 5 ton; koszt naprawy: 0 srebrnych pensów.
+Droga 2: z browaru [2] na pozycji (1; -1) do karczmy [3] na pozycji (4; -1): przepustowość: 5 ton; koszt naprawy: 0 srebrnych pensów.
+
+ćwiartki:
+wartość: 2; punkty graniczne: (-1; 0), (-3; 0), (-3; -2), (-1; -2), 
+
+Rozwiązanie:
+Maksymalna ilość piwa, którą można przetransportować: 1 ton; koszt naprawy: 0 srebrnych pensów
+Przebieg trasy: 
+Trasa nr 1:
+Z pola [1] na pozycji (-2; -1) 2 ton jęczmienia do browaru [2] na pozycji (1; -1);
+zawartość pola [1] na pozycji (-2; -1) wynosi 0;
+pojemność browaru [2] na pozycji (1; -1) wynosi 3;
+Z browaru [2] na pozycji (1; -1) 1 ton piwa do karczmy [3] na pozycji (4; -1);

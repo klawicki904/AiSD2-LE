@@ -1,0 +1,32 @@
+Test 1:
+Komentarz: Wzorzec na końcu pliku raz.
+
+Test 2:
+Komentarz: Wzorzec pojawia się parę razy
+
+Test 3:
+Komentarz: Dłuższy wzorzec pojawia się parę razy
+
+Test 4:
+Komentarz: Duży tekst z powtarzającym się wzorcem
+
+Test 5:
+Komentarz: Duży tekst z unikalnym wzorcem
+
+Test 6:
+Komentarz: BARDZO DUŻO powtórzeń wzorca
+
+Test 7:
+Komentarz: Wzorzec nie istnieje w pliku
+
+Test 8:
+Komentarz: Długi wzorzec prawie dobry, oprócz ostatniej litery
+
+Test 9:
+Komentarz: Silnie powtarzalny tekst i zawiera wiele fragmentów podobnych do wzorca 
+
+Test 10:
+Komentarz: Długi plik typu aa...aab i wzorzec a...ab pasujący na końcu
+
+Test 11:
+Komentarz: Długi tekst z wieloma powtórzeniami wzorca (aa...aab)

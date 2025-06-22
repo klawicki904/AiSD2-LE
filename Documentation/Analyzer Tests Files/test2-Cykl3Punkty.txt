@@ -1,0 +1,12 @@
+KONWERSJA
+5
+PUNKTY
+1 1 1 pole
+2 3 -3 karczma
+3 5 0 browar 5
+DROGI
+1 2 5 0
+2 3 5 0
+3 1 5 0
+CWIARTKI
+1 0 1 -1.56 -0.44 -0.33 -0.42 2 1
