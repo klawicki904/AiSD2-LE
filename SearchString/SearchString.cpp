@@ -26,7 +26,7 @@ enum SearchAlgorithm
     rabin_karp,
     kmp,
     boyer_moore,
-    trie
+    //trie
 };
 
 //pomocnicze
@@ -123,21 +123,52 @@ void kmpSearch(const wstring& text, const wstring& pattern, int lineNumber) {
 }
 
 // --------------------- BOYER-MOORE -----------------------------
-/*Porownuje wzorzec od konca.
-Jesli wystapi niedopasowanie, przesuwa wzorzec bardziej inteligentnie niz o 1 znak.
-Uzywa tablicy Bad Character Heuristic, czyli: jak daleko mo¿na przesunac wzorzec w zaleznosci od niedopasowanego znaku.*/
+/*Porownuje wzorzec od konca. Gdy znajdzie niedopasowanie, używa heurystyk przesunięcia, by pominąć jak najwięcej niepotrzebnych porównań.
+*/
 vector<int> preprocessBadChar(const wstring& pattern) {
-    vector<int> badChar(65536, -1);             //wchar_t ma taki range
+    vector<int> badChar(65536, -1);
     for (int i = 0; i < pattern.size(); i++) {
         badChar[pattern[i]] = i;
     }
     return badChar;
 }
 
+vector<int> preprocessGoodSuffix(const wstring& pattern) {
+    int m = pattern.size();
+    vector<int> goodSuffix(m + 1, m);
+    vector<int> border(m + 1, 0);
+
+    int i = m, j = m + 1;
+    border[i] = j;
+
+    while (i > 0) {
+        while (j <= m && pattern[i - 1] != pattern[j - 1]) {
+            if (goodSuffix[j] == m)
+                goodSuffix[j] = j - i;
+            j = border[j];
+        }
+        i--;
+        j--;
+        border[i] = j;
+    }
+
+    j = border[0];
+    for (i = 0; i <= m; i++) {
+        if (goodSuffix[i] == m)
+            goodSuffix[i] = j;
+        if (i == j)
+            j = border[j];
+    }
+
+    return goodSuffix;
+}
+
 void boyerMoore(const wstring& text, const wstring& pattern, int lineNumber) {
     int n = text.size(), m = pattern.size();
     if (m > n) return;
+
     vector<int> badChar = preprocessBadChar(pattern);
+    vector<int> goodSuffix = preprocessGoodSuffix(pattern);
 
     int shift = 0;
 
@@ -147,14 +178,14 @@ void boyerMoore(const wstring& text, const wstring& pattern, int lineNumber) {
             j--;
         if (j < 0) {
             cout << lineNumber << " " << shift + 1 << endl;
-            shift += (shift + m < n) ? m - badChar[text[shift + m]] : 1;
+            shift += goodSuffix[0];
         }
         else {
-            shift += max(1, j - badChar[text[shift + j]]);
+            shift += max(goodSuffix[j + 1], j - badChar[text[shift + j]]);
         }
     }
 }
-
+/*
 // ------------------------- TRIE -----------------------------
 // Przeszukiwanie odbywa sie znak po znaku w strukturze drzewa.
 // (jeden wezel triea to taka galaz w drzewie znakow)
@@ -223,7 +254,7 @@ public:
 };
 
 
-
+*/
 
 // --------------------- MAIN -----------------------------
 int wmain(int argc, wchar_t* argv[]) {
@@ -275,9 +306,9 @@ int wmain(int argc, wchar_t* argv[]) {
     else if (option == L"boyer-moore") {
         selectedAlgorithm = boyer_moore;
     }
-    else if (option == L"trie") {
-        selectedAlgorithm = trie;
-    }
+    /* else if (option == L"trie") {
+         selectedAlgorithm = trie;
+     }*/
     else {
         wcout << L"Nieznana opcja dla wyboru algorytmu." << endl;
         return 1;
@@ -287,89 +318,80 @@ int wmain(int argc, wchar_t* argv[]) {
     wstring_convert<codecvt_utf8<wchar_t>> converter;
     switch (selectedAlgorithm)
     {
-        case unknown:
+    case unknown:
+    {
+        return 3;
+    }
+    case naive:
+    {
+        while (getline(file, line))
         {
-            return 3;
-        }
-        case naive:
-        {
-            while (getline(file, line))
+            if (ignoreCase)
             {
-                if (ignoreCase)
-                {
-                    naiveSearch(toLower(line), pattern, lineNumber++);
-                }
-                else
-                {
+                naiveSearch(toLower(line), pattern, lineNumber++);
+            }
+            else
+            {
                 naiveSearch(line, pattern, lineNumber++);
-                }
             }
-            break;
         }
-        case rabin_karp:
+        break;
+    }
+    case rabin_karp:
+    {
+        while (getline(file, line))
         {
-            while (getline(file, line))
+            if (ignoreCase)
             {
-                if (ignoreCase)
-                {
-                    rabinKarp(toLower(line), pattern, lineNumber++);
-                }
-                else
-                {
-                    rabinKarp(line, pattern, lineNumber++);
-                }
+                rabinKarp(toLower(line), pattern, lineNumber++);
             }
-            break;
-        }
-        case kmp:
-        {
-            while (getline(file, line))
+            else
             {
-                if (ignoreCase)
-                {
-                    kmpSearch(toLower(line), pattern, lineNumber++);
-                }
-                else
-                {
-                    kmpSearch(line, pattern, lineNumber++);
-                }
+                rabinKarp(line, pattern, lineNumber++);
             }
-            break;
         }
-        case boyer_moore:
+        break;
+    }
+    case kmp:
+    {
+        while (getline(file, line))
         {
-            while (getline(file, line))
+            if (ignoreCase)
             {
-                if (ignoreCase)
-                {
-                    boyerMoore(toLower(line), pattern, lineNumber++);
-                }
-                else
-                {
-                    boyerMoore(line, pattern, lineNumber++);
-                }
+                kmpSearch(toLower(line), pattern, lineNumber++);
             }
-            break;
-        }
-        case trie:
-        {
-            Trie trie;
-            trie.pattern = pattern; //ustawiamy wzorzec bo bedziemy wycinac slowa o odpowiedniej długosci
-
-            while (getline(file, line)) {
-                //przetwarzamy linie:
-                wstring lineToUse = ignoreCase ? toLower(line) : line;
-
-                //dodajemy wszystkie mozliwe slowa o długości wzorca z tej linii do drzewa
-                trie.insert(lineToUse, lineNumber);
-
-                //szukamy wystapien wzorca w tej linii i wypisujemy gdzie jest
-                trie.search(ignoreCase ? toLower(pattern) : pattern, lineNumber);
-
-                lineNumber++; //przechodzimy do nastepnej linii
+            else
+            {
+                kmpSearch(line, pattern, lineNumber++);
             }
-            break;
         }
+        break;
+    }
+    case boyer_moore:
+    {
+        while (getline(file, line))
+            boyerMoore(ignoreCase ? toLower(line) : line, pattern, lineNumber++);
+        break;
+    }
+    /*case trie:
+    {
+        Trie trie;
+        trie.pattern = pattern; //ustawiamy wzorzec bo bedziemy wycinac slowa o odpowiedniej długosci
+
+        while (getline(file, line)) {
+            //przetwarzamy linie:
+            wstring lineToUse = ignoreCase ? toLower(line) : line;
+
+            //dodajemy wszystkie mozliwe slowa o długości wzorca z tej linii do drzewa
+            trie.insert(lineToUse, lineNumber);
+
+            //szukamy wystapien wzorca w tej linii i wypisujemy gdzie jest
+            trie.search(ignoreCase ? toLower(pattern) : pattern, lineNumber);
+
+            lineNumber++; //przechodzimy do nastepnej linii
+        }
+        break;
+    }*/
     }
 
 
