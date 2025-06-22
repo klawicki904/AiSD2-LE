@@ -36,9 +36,6 @@ public:
     //Path mergeWith(const Path& other) const;
     //static vector<Path> mergeVectors(const vector<Path>& first, const vector<Path>& second);
 
-    static vector<Path> filterPaths(const vector<Path>& roads, const vector<vector<EdgeData>>& graph);
-    static Path mergePaths(const Path& a, const Path& b);
-    static vector<Path> combineRoads(const vector<Path>& raw1, const vector<Path>& raw2, const vector<vector<EdgeData>>& graph);
     static vector<Path> filterRoads(const vector<Path>& raw, int n);
 
     static double sumUniqueEdgesCost(const std::vector<Path>& paths, const vector<vector<EdgeData>>& graf);

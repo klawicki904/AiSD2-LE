@@ -863,9 +863,8 @@ double Matrix::BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& 
         while (tmp != s) {
             if (abs(tmpT - tmp) >= midLayer) {
                 conversionChceck = false;
-                tab[tmp][tmpT].remainingFlow -= maxFlowOfPathPiwo;
             }
-            else {
+
                 if (conversionChceck) {
                     tab[tmp][tmpT].remainingFlow -= maxFlowOfPathPiwo;
                     tab[tmpT][tmp].remainingFlow += maxFlowOfPathPiwo;
@@ -874,7 +873,7 @@ double Matrix::BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& 
                     tab[tmp][tmpT].remainingFlow -= maxFlowOfPathJeczmien;
                     tab[tmpT][tmp].remainingFlow += maxFlowOfPathJeczmien;
                 }
-            }
+
             tab[tmpT][tmp].cost = -tab[tmp][tmpT].cost;
             path.push_back(tmpT);
             tmpT = tmp;
