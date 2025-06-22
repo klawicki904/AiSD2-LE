@@ -84,3 +84,57 @@ TEST(MinCostMaxFlowTest, Case3_15NodeGraph_FlowAndCost) {
     EXPECT_DOUBLE_EQ(81, maxFlow);
 
 }
+
+
+
+
+
+TEST(MinCostMaxFlowTest, Case4_SimpleThreeNodeLinearGraph) {
+    Matrix m(3);
+    m.addEdge(0, 1, 10, 5);
+    m.addEdge(1, 2, 10, 2);
+
+    double maxFlow = m.edmondsKarp();
+    EXPECT_DOUBLE_EQ(10, maxFlow);
+}
+
+TEST(MinCostMaxFlowTest, Case5_ParallelEdgesGraph) {
+    Matrix m(4);
+    m.addEdge(0, 1, 10, 1);
+    m.addEdge(0, 1, 5, 3);   // drugi rownolegly z wiekszym kosztem
+    m.addEdge(1, 2, 15, 1);
+    m.addEdge(2, 3, 15, 1);
+
+    double maxFlow = m.edmondsKarp();
+    EXPECT_DOUBLE_EQ(15, maxFlow);
+}
+
+TEST(MinCostMaxFlowTest, Case6_BottleneckMiddleNode) {
+    Matrix m(4);
+    m.addEdge(0, 1, 100, 1);
+    m.addEdge(1, 2, 1, 1);      // blokuje wiekszy przeplyw
+    m.addEdge(2, 3, 100, 1);
+
+    double maxFlow = m.edmondsKarp();
+    EXPECT_DOUBLE_EQ(1, maxFlow);
+}
+
+TEST(MinCostMaxFlowTest, Case7_DeadEndEdge) {
+    Matrix m(4);
+    m.addEdge(0, 1, 10, 1);
+    m.addEdge(1, 2, 10, 1);
+    m.addEdge(1, 3, 5, 1);  // niewykorzystana galaz
+
+    double maxFlow = m.edmondsKarp();
+    EXPECT_DOUBLE_EQ(10, maxFlow);
+}
+
+TEST(MinCostMaxFlowTest, Case8_ZeroCapacityEdgeIgnored) {
+    Matrix m(3);
+    m.addEdge(0, 1, 0, 5);  // krawedz z zerowa przepustowoscia ignorowana
+    m.addEdge(0, 1, 7, 3);
+    m.addEdge(1, 2, 7, 1);
+
+    double maxFlow = m.edmondsKarp();
+    EXPECT_DOUBLE_EQ(7, maxFlow);
+}
