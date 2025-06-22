@@ -825,8 +825,8 @@ double Matrix::BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& 
         int tmpT = t;
         int tmp = f[t];
         double maxFlowOfPathPiwo = tab[tmp][tmpT].remainingFlow;
-       // cout << " Droga: z " << t << " do " << s << endl;
-       // cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
+        cout << " Droga: z " << t << " do " << s << endl;
+        cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
         while (tmp != s) {
             tmpT = tmp;
             tmp = f[tmp];
@@ -836,11 +836,11 @@ double Matrix::BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& 
             }
             if (conversionChceck) {
                 maxFlowOfPathPiwo = min(maxFlowOfPathPiwo, tab[tmp][tmpT].remainingFlow);
-                //cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
+                cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathPiwo << endl;
             }
             else {
                 maxFlowOfPathJeczmien = min(maxFlowOfPathJeczmien, tab[tmp][tmpT].remainingFlow);
-                //cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathJeczmien << endl;
+                cout << tmpT << " -> " << tmp << " f: " << maxFlowOfPathJeczmien << endl;
             }
         }
 
@@ -863,19 +863,23 @@ double Matrix::BusackerGowen3(double const maxFlow, int s, int t, vector<Path>& 
         while (tmp != s) {
             if (abs(tmpT - tmp) >= midLayer) {
                 conversionChceck = false;
-            }
-            if (conversionChceck) {
                 tab[tmp][tmpT].remainingFlow -= maxFlowOfPathPiwo;
-                tab[tmpT][tmp].remainingFlow += maxFlowOfPathPiwo;
             }
             else {
-                tab[tmp][tmpT].remainingFlow -= maxFlowOfPathJeczmien;
-                tab[tmpT][tmp].remainingFlow += maxFlowOfPathJeczmien;
+                if (conversionChceck) {
+                    tab[tmp][tmpT].remainingFlow -= maxFlowOfPathPiwo;
+                    tab[tmpT][tmp].remainingFlow += maxFlowOfPathPiwo;
+                }
+                else {
+                    tab[tmp][tmpT].remainingFlow -= maxFlowOfPathJeczmien;
+                    tab[tmpT][tmp].remainingFlow += maxFlowOfPathJeczmien;
+                }
             }
             tab[tmpT][tmp].cost = -tab[tmp][tmpT].cost;
             path.push_back(tmpT);
             tmpT = tmp;
             tmp = f[tmp];
+            
         }
         tab[tmp][tmpT].remainingFlow -= maxFlowOfPathJeczmien;
         tab[tmpT][tmp].remainingFlow += maxFlowOfPathJeczmien;
