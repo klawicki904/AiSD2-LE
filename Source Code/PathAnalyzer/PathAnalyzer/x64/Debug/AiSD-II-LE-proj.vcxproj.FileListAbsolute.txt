@@ -4,3 +4,6 @@ G:\Dokumenty\ProjektKoncowy\AiSD2-LE\source CPP\PathAnalyzer\x64\Debug\AiSD-II-.
 C:\AiSD2-LE\PathAnalyzer\x64\Debug\gtest.pdb
 C:\AiSD2-LE\PathAnalyzer\x64\Debug\gtest_main.pdb
 C:\AiSD2-LE\PathAnalyzer\PathAnalyzer\x64\Debug\AiSD-II-.83AE3877.Up2Date
+C:\AiSD2-LE\Source Code\PathAnalyzer\x64\Debug\gtest.pdb
+C:\AiSD2-LE\Source Code\PathAnalyzer\x64\Debug\gtest_main.pdb
+C:\AiSD2-LE\Source Code\PathAnalyzer\PathAnalyzer\x64\Debug\AiSD-II-.83AE3877.Up2Date
