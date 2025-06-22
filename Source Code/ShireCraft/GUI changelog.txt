@@ -115,3 +115,36 @@ Changelog 17.06.2025 (v0.9.8)
 - camera can be moved while creating an arrow
 - added multi-select mode for arrows
 
+Changelog 22.06.2025 (v1.0)
+- fixed copy-pasting quarters
+- input field values update on value changed
+- removed "Auto flow" setting
+- fixed a crash happening on exit after first launch in build (the reason was no "Saves" folder on startup)
+- error text field now displays the correct .exe that failed
+- added "Select all arrows" button in special actions panel (shortcut: A)
+- added keyboard shortcuts to change node's type (Q, W, E and R)
+- limited repair cost to unsigned integer values
+- added keyboard shortcuts for simulation steps control ([J or Back (mouse)], K and [L or Forward (mouse)])
+- completed "Help" tab
+- during simulation, upon reaching a new route, the entire route is selected
+- fixed: nodes' values cannot be set to negative anymore
+- fixed quarter areas not reverting quarter's value after undo/redo
+- added fun facts in loading screen
+- fixed solution file not saving in build (export)
+- added "Statistics" tab
+- fixed solution selecting arrows incorrectly when the Busacker-Gowen's algorithm goes back though a non-existent road
+- fixed arrow's cost moving to the next line when there's too many digits
+- fixed nodes sometimes detecting overlapping nodes when they were not (depending on their size)
+- allowed displaying negative flow during simulation (path corrections)
+- fixed loading screen turning off early after generating solution
+- replaced "Capacity" with icons in the node info panel
+- fixed File tab incorrectly interpreting file as too large
+
+Changelog 22.06.2025 (v1.0.1)
+- updated external PathAnalyzer.exe
+
+Changelog 22.06.2025 (v1.0.2)
+- fixed the program requiring Visual Studio installed for external files to work
+
+known bugs:
+- collision of copy-paste keyboard shortcuts for graph and input values editing

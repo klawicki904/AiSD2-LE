@@ -3,13 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AiSD-II-LE-proj", "AiSD-II-LE-proj.vcxproj", "{E7D11FC6-02A2-48F5-9D42-F91450050D8A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PathAnalyzer", "AiSD-II-LE-proj.vcxproj", "{E7D11FC6-02A2-48F5-9D42-F91450050D8A}"
 EndProject
-<<<<<<< HEAD
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "..\Tests\Tests.vcxproj", "{6D4F99F8-8135-4B1A-8EB3-FB07F508F17D}"
 EndProject
-=======
->>>>>>> 13e8c926c000176ec2d89b440a3e794d82fd734c
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -26,7 +23,6 @@ Global
 		{E7D11FC6-02A2-48F5-9D42-F91450050D8A}.Release|x64.Build.0 = Release|x64
 		{E7D11FC6-02A2-48F5-9D42-F91450050D8A}.Release|x86.ActiveCfg = Release|Win32
 		{E7D11FC6-02A2-48F5-9D42-F91450050D8A}.Release|x86.Build.0 = Release|Win32
-<<<<<<< HEAD
 		{6D4F99F8-8135-4B1A-8EB3-FB07F508F17D}.Debug|x64.ActiveCfg = Debug|x64
 		{6D4F99F8-8135-4B1A-8EB3-FB07F508F17D}.Debug|x64.Build.0 = Debug|x64
 		{6D4F99F8-8135-4B1A-8EB3-FB07F508F17D}.Debug|x86.ActiveCfg = Debug|Win32
@@ -35,8 +31,6 @@ Global
 		{6D4F99F8-8135-4B1A-8EB3-FB07F508F17D}.Release|x64.Build.0 = Release|x64
 		{6D4F99F8-8135-4B1A-8EB3-FB07F508F17D}.Release|x86.ActiveCfg = Release|Win32
 		{6D4F99F8-8135-4B1A-8EB3-FB07F508F17D}.Release|x86.Build.0 = Release|Win32
-=======
->>>>>>> 13e8c926c000176ec2d89b440a3e794d82fd734c
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

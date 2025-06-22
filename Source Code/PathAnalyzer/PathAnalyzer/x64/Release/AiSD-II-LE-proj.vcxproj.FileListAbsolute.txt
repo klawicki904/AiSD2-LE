@@ -1,0 +1,3 @@
+C:\AiSD2-LE\Source Code\PathAnalyzer\x64\Release\gtest.pdb
+C:\AiSD2-LE\Source Code\PathAnalyzer\x64\Release\gtest_main.pdb
+C:\AiSD2-LE\Source Code\PathAnalyzer\PathAnalyzer\x64\Release\AiSD-II-.83AE3877.Up2Date
