@@ -156,5 +156,8 @@ Changelog 23.06.2025 (v1.0.4)
 Changelog 23.06.2025 (v1.0.5)
 - fixed fields not turning red after clearing map
 
+Changelog 23.06.2025 (v1.0.6)
+- added a "Force Simulation" button
+
 known bugs:
 - collision of copy-paste keyboard shortcuts for graph and input values editing
