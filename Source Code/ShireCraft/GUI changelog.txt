@@ -159,5 +159,8 @@ Changelog 23.06.2025 (v1.0.5)
 Changelog 23.06.2025 (v1.0.6)
 - added a "Force Simulation" button
 
+Changelog 23.06.2025 (v1.0.7)
+- updated external SearchString.exe
+
 known bugs:
 - collision of copy-paste keyboard shortcuts for graph and input values editing

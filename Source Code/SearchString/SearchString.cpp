@@ -342,7 +342,7 @@ int wmain(int argc, wchar_t* argv[]) {
     {
         while (getline(file, line))
         {
-            kmpSearch(line, pattern, lineNumber++);
+            kmpSearch(ignoreCase ? toLower(line) : line, ignoreCase ? toLower(pattern) : pattern, lineNumber++);
         }
         break;
     }
