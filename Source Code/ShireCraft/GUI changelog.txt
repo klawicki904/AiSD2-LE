@@ -146,5 +146,8 @@ Changelog 22.06.2025 (v1.0.1)
 Changelog 22.06.2025 (v1.0.2)
 - fixed the program requiring Visual Studio installed for external files to work
 
+Changelog 22.06.2025 (v1.0.3)
+- fixed visual bug when selecting an arrow
+
 known bugs:
 - collision of copy-paste keyboard shortcuts for graph and input values editing
