@@ -153,5 +153,8 @@ Changelog 23.06.2025 (v1.0.4)
 - updated external SearchString.exe
 - fixed GUI not highlighting pattern search if there was only 1 result in the first line
 
+Changelog 23.06.2025 (v1.0.5)
+- fixed fields not turning red after clearing map
+
 known bugs:
 - collision of copy-paste keyboard shortcuts for graph and input values editing
