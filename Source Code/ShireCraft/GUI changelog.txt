@@ -146,8 +146,12 @@ Changelog 22.06.2025 (v1.0.1)
 Changelog 22.06.2025 (v1.0.2)
 - fixed the program requiring Visual Studio installed for external files to work
 
-Changelog 22.06.2025 (v1.0.3)
+Changelog 23.06.2025 (v1.0.3)
 - fixed visual bug when selecting an arrow
+
+Changelog 23.06.2025 (v1.0.4)
+- updated external SearchString.exe
+- fixed GUI not highlighting pattern search if there was only 1 result in the first line
 
 known bugs:
 - collision of copy-paste keyboard shortcuts for graph and input values editing

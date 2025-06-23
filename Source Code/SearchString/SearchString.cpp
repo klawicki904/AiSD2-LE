@@ -326,14 +326,7 @@ int wmain(int argc, wchar_t* argv[]) {
     {
         while (getline(file, line))
         {
-            if (ignoreCase)
-            {
-                naiveSearch(toLower(line), pattern, lineNumber++);
-            }
-            else
-            {
-                naiveSearch(line, pattern, lineNumber++);
-            }
+            naiveSearch(ignoreCase ? toLower(line) : line, ignoreCase ? toLower(pattern) : pattern, lineNumber++);
         }
         break;
     }
@@ -341,14 +334,7 @@ int wmain(int argc, wchar_t* argv[]) {
     {
         while (getline(file, line))
         {
-            if (ignoreCase)
-            {
-                rabinKarp(toLower(line), pattern, lineNumber++);
-            }
-            else
-            {
-                rabinKarp(line, pattern, lineNumber++);
-            }
+            rabinKarp(ignoreCase ? toLower(line) : line, ignoreCase ? toLower(pattern) : pattern, lineNumber++);
         }
         break;
     }
@@ -356,21 +342,14 @@ int wmain(int argc, wchar_t* argv[]) {
     {
         while (getline(file, line))
         {
-            if (ignoreCase)
-            {
-                kmpSearch(toLower(line), pattern, lineNumber++);
-            }
-            else
-            {
-                kmpSearch(line, pattern, lineNumber++);
-            }
+            kmpSearch(line, pattern, lineNumber++);
         }
         break;
     }
     case boyer_moore:
     {
         while (getline(file, line))
-            boyerMoore(ignoreCase ? toLower(line) : line, pattern, lineNumber++);
+            boyerMoore(ignoreCase ? toLower(line) : line, ignoreCase ? toLower(pattern) : pattern, lineNumber++);
         break;
     }
     /*case trie:
