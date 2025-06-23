@@ -162,5 +162,8 @@ Changelog 23.06.2025 (v1.0.6)
 Changelog 23.06.2025 (v1.0.7)
 - updated external SearchString.exe
 
+Changelog 23.06.2025 (v1.0.8)
+- fixed 2 buttons to open temporary files in File tab
+
 known bugs:
 - collision of copy-paste keyboard shortcuts for graph and input values editing
